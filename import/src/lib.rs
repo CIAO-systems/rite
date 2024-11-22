@@ -28,6 +28,7 @@ pub mod builtin {
 
     use crate::Importer;
 
+    #[derive(Debug)]
     pub struct TextFileImporter {
         file_name: String,
         reader: Option<BufReader<File>>,
@@ -48,16 +49,11 @@ pub mod builtin {
             n: Option<usize>,
             mut callback: F,
         ) -> Result<(), Box<dyn std::error::Error>> {
-            let mut skipped = 0;
             let mut index: usize = 0;
 
             if let Some(reader) = self.reader.as_mut() {
                 for line in reader.lines() {
-                    if skipped < self.next_line {
-                        skipped += 1;
-                        continue;
-                    }
-
+                    println!("{:?}", line);
                     match line {
                         Ok(line) => {
                             index += 1;
@@ -160,13 +156,48 @@ mod test {
     }
 
     #[test]
-    fn test_next() {
+    fn test_next_all() {
         let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
         match importer.init() {
             Ok(_) => {
                 let records = importer.next(None);
                 if let Ok(records) = records {
                     if let Some(records) = records {
+                        for record in records {
+                            print_record(&record);
+                            check_correct_values(record);
+                        }
+                    }
+                }
+            }
+            Err(e) => panic!("{}", e),
+        }
+    }
+
+    #[test]
+    fn test_next_first_three() {
+        let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+        match importer.init() {
+            Ok(_) => {
+                println!("Read first 3....");
+                let records = importer.next(Some(3)); // Here we only want the first 3 records
+                if let Ok(records) = records {
+                    if let Some(records) = records {
+                        assert_eq!(3, records.len());
+                        for record in records {
+                            print_record(&record);
+                            check_correct_values(record);
+                        }
+                    }
+                }
+
+                println!("Read next 3....");
+                // read the next three records
+                let records = importer.next(Some(3));
+                if let Ok(records) = records {
+                    if let Some(records) = records {
+                        // Since the file has only 5 lines, len must be 2
+                        assert_eq!(2, records.len());
                         for record in records {
                             print_record(&record);
                             check_correct_values(record);
