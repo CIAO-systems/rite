@@ -1,5 +1,6 @@
 use crate::value::Value;
 
+#[derive(Debug)]
 pub struct Field {
     name: String,
     value: Value,
@@ -28,6 +29,13 @@ impl Field {
         Field {
             name,
             value: Value::I32(value),
+        }
+    }
+
+    pub fn new_usize(name: String, value: usize) -> Self {
+        Field {
+            name,
+            value: Value::USize(value),
         }
     }
 

@@ -9,6 +9,9 @@ version = "0.1.0"
 [[package]]
 name = "import"
 version = "0.1.0"
+dependencies = [
+ "model",
+]
 
 [[package]]
 name = "model"

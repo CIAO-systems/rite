@@ -14,6 +14,13 @@ fn test_new_i32() {
 }
 
 #[test]
+fn test_new_usize() {
+    let field = Field::new_usize("size".to_string(), 73);
+    assert_eq!(field.name, "size");
+    assert!(matches!(field.value, Value::USize(73)));
+}
+
+#[test]
 fn test_new_f64() {
     let field = Field::new_f64("price".to_string(), 73.37);
     assert_eq!(field.name, "price");
