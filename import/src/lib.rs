@@ -15,12 +15,15 @@ pub trait Importer {
 
     /// Reads all from the import source and calls the `callback` for each record
     fn read<F: FnMut(Record)>(&mut self, callback: F) -> Result<(), Box<dyn std::error::Error>>;
+
+    /// Resets the importer, so that `next` and `read` start from the beginning again
+    fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>>;
 }
 
 pub mod builtin {
     use std::{
         fs::File,
-        io::{BufRead, BufReader},
+        io::{BufRead, BufReader, Seek},
         path::Path,
     };
 
@@ -52,6 +55,9 @@ pub mod builtin {
             let mut index: usize = 0;
 
             if let Some(reader) = self.reader.as_mut() {
+                // reader.lines() continues at the last position, if this function
+                // was called previously already
+
                 for line in reader.lines() {
                     println!("{:?}", line);
                     match line {
@@ -110,6 +116,14 @@ pub mod builtin {
             callback: F,
         ) -> Result<(), Box<dyn std::error::Error>> {
             self.read_lines(None, callback)?;
+            Ok(())
+        }
+
+        fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+            if let Some(reader) = self.reader.as_mut() {
+                let _ = reader.seek(std::io::SeekFrom::Start(0))?;
+                self.next_line = 0;
+            }
             Ok(())
         }
     }
@@ -204,6 +218,46 @@ mod test {
                         }
                     }
                 }
+            }
+            Err(e) => panic!("{}", e),
+        }
+    }
+
+    #[test]
+    fn test_next_first_three_with_reset() {
+        let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+        match importer.init() {
+            Ok(_) => {
+                println!("Read first 3....");
+                let records = importer.next(Some(3)); // Here we only want the first 3 records
+                if let Ok(records) = records {
+                    if let Some(records) = records {
+                        assert_eq!(3, records.len());
+                        for record in records {
+                            print_record(&record);
+                            check_correct_values(record);
+                        }
+                    }
+                }
+
+                println!("Read first 3 again....");
+                match importer.reset() {
+                    Ok(_) => {
+                        // read the first three records again
+                        let records = importer.next(Some(3));
+                        if let Ok(records) = records {
+                            if let Some(records) = records {
+                                // Since we resetted, it should be 3
+                                assert_eq!(3, records.len());
+                                for record in records {
+                                    print_record(&record);
+                                    check_correct_values(record);
+                                }
+                            }
+                        }
+                    }
+                    Err(e) => panic!("{e}"),
+                };
             }
             Err(e) => panic!("{}", e),
         }
