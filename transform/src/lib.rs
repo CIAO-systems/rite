@@ -1,14 +1,13 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use std::error::Error;
+
+use model::record::Record;
+
+pub trait Transformer {
+    /// Initializes the transformer
+    fn init(&mut self) -> Result<(), Box<dyn Error>>;
+
+    fn process(&self, record: &Record) -> Result<Record, Box<dyn Error>>;
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod builtin;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}

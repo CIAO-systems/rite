@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Clone, Debug)]
 pub enum Value {
     Bool(bool),
@@ -19,4 +21,34 @@ pub enum Value {
     String(String),
     Blob(Vec<u8>),
     None,
+}
+
+impl Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::Bool(val) => write!(f, "{}", val),
+            Value::Char(val) => write!(f, "{}", val),
+            Value::I8(val) => write!(f, "{}", val),
+            Value::I16(val) => write!(f, "{}", val),
+            Value::I32(val) => write!(f, "{}", val),
+            Value::I64(val) => write!(f, "{}", val),
+            Value::I128(val) => write!(f, "{}", val),
+            Value::ISize(val) => write!(f, "{}", val),
+            Value::U8(val) => write!(f, "{}", val),
+            Value::U16(val) => write!(f, "{}", val),
+            Value::U32(val) => write!(f, "{}", val),
+            Value::U64(val) => write!(f, "{}", val),
+            Value::U128(val) => write!(f, "{}", val),
+            Value::USize(val) => write!(f, "{}", val),
+            Value::F32(val) => write!(f, "{}", val),
+            Value::F64(val) => write!(f, "{}", val),
+            Value::String(val) => write!(f, "{}", val), 
+            Value::Blob(vec) => {
+                // Displaying bytes as hexadecimal
+                let hex: Vec<String> = vec.iter().map(|b| format!("{:02x}", b)).collect();
+                write!(f, "[{}]", hex.join(", "))
+            }
+            Value::None => write!(f, "<None>"),
+        }
+    }
 }

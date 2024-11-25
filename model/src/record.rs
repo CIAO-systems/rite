@@ -10,7 +10,11 @@ impl Record {
         Self { fields: vec![] }
     }
 
-    pub fn fields(&mut self) -> &mut Vec<Field> {
+    pub fn fields(&self) -> &Vec<Field> {
+        &self.fields
+    }
+
+    pub fn fields_as_mut(&mut self) -> &mut Vec<Field> {
         &mut self.fields
     }
 

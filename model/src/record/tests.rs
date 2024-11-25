@@ -5,7 +5,7 @@ use super::*;
 #[test]
 fn test_record_new() {
     let mut record = Record::new();
-    assert!(record.fields().is_empty());
+    assert!(record.fields_as_mut().is_empty());
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn test_record_fields() {
         .push(Field::new_string("name".to_string(), "Alice".to_string()));
     record.fields.push(Field::new_i32("age".to_string(), 30));
 
-    let fields = record.fields();
+    let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 2);
     assert_eq!(fields[0].name(), "name");
     assert_eq!(fields[1].name(), "age");
@@ -49,7 +49,7 @@ fn test_record_fields_immutability() {
         .fields
         .push(Field::new_bool("active".to_string(), true));
 
-    let fields = record.fields();
+    let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 1);
 
     // This next line would cause a compilation error if uncommented,
@@ -68,7 +68,7 @@ fn test_record_multiple_fields() {
         .fields
         .push(Field::new_bool("student".to_string(), false));
 
-    let fields = record.fields();
+    let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 3);
     assert!(matches!(fields[0].value(), Value::String(_)));
     assert!(matches!(fields[1].value(), Value::I32(_)));
@@ -78,6 +78,6 @@ fn test_record_multiple_fields() {
 #[test]
 fn test_record_empty_after_new() {
     let mut record = Record::new();
-    assert!(record.fields().is_empty());
-    assert_eq!(record.fields().len(), 0);
+    assert!(record.fields_as_mut().is_empty());
+    assert_eq!(record.fields_as_mut().len(), 0);
 }
