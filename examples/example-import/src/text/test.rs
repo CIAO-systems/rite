@@ -1,6 +1,9 @@
+use import::Importer;
 use model::{record::Record, value::Value};
 
-use crate::{builtin::text::TextFileImporter, Importer};
+use super::TextFileImporter;
+
+static TEST_DATA: &str = "../../data/testfile.txt";
 
 fn check_correct_values(record: model::record::Record) {
     match record.field_by_name("index") {
@@ -38,7 +41,7 @@ fn print_record(record: &Record) {
 
 #[test]
 fn test_next_all() {
-    let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
     match importer.init() {
         Ok(_) => {
             let records = importer.next(None);
@@ -57,7 +60,7 @@ fn test_next_all() {
 
 #[test]
 fn test_next_first_three() {
-    let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
     match importer.init() {
         Ok(_) => {
             println!("Read first 3....");
@@ -92,7 +95,7 @@ fn test_next_first_three() {
 
 #[test]
 fn test_next_first_three_with_reset() {
-    let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
     match importer.init() {
         Ok(_) => {
             println!("Read first 3....");
@@ -132,10 +135,10 @@ fn test_next_first_three_with_reset() {
 
 #[test]
 fn test_read() {
-    let mut importer = TextFileImporter::new("./data/testfile.txt".to_string());
+    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
     match importer.init() {
         Ok(_) => {
-            let _ = importer.read(|record| {
+            let _ = importer.read(&mut |record| {
                 print_record(&record);
                 check_correct_values(record);
             });

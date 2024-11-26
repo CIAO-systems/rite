@@ -4,9 +4,8 @@ use std::{
     path::Path,
 };
 
+use import::Importer;
 use model::{field::Field, record::Record};
-
-use crate::Importer;
 
 #[derive(Debug)]
 pub struct TextFileImporter {
@@ -87,14 +86,6 @@ impl Importer for TextFileImporter {
         Ok(Some(records))
     }
 
-    fn read<F: FnMut(Record)>(
-        &mut self,
-        callback: F,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        self.read_lines(None, callback)?;
-        Ok(())
-    }
-
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(reader) = self.reader.as_mut() {
             let _ = reader.seek(std::io::SeekFrom::Start(0))?;
@@ -102,4 +93,12 @@ impl Importer for TextFileImporter {
         }
         Ok(())
     }
+
+    fn read(&mut self, callback: &mut dyn FnMut(Record)) -> Result<(), Box<dyn std::error::Error>> {
+        self.read_lines(None, callback)?;
+        Ok(())
+    }
 }
+
+#[cfg(test)]
+mod test;

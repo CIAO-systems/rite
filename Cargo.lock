@@ -25,6 +25,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "example_import"
+version = "0.1.0"
+dependencies = [
+ "helper",
+ "import",
+ "model",
+]
+
+[[package]]
 name = "export"
 version = "0.1.0"
 dependencies = [
@@ -60,6 +69,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "helper"
+version = "0.1.0"
+
+[[package]]
 name = "import"
 version = "0.1.0"
 dependencies = [
@@ -71,6 +84,16 @@ name = "libc"
 version = "0.2.164"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "433bfe06b8c75da9b2e3fbea6e5329ff87748f0b144ef75306e674c3f6f7c13f"
+
+[[package]]
+name = "libloading"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4979f22fdb869068da03c9f7528f8297c6fd2606bc3a4affe42e6a823fdb8da4"
+dependencies = [
+ "cfg-if",
+ "windows-targets",
+]
 
 [[package]]
 name = "linux-raw-sys"
@@ -87,6 +110,16 @@ name = "once_cell"
 version = "1.20.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
+
+[[package]]
+name = "plugin"
+version = "0.1.0"
+dependencies = [
+ "export",
+ "import",
+ "libloading",
+ "transform",
+]
 
 [[package]]
 name = "proc-macro2"
@@ -109,6 +142,14 @@ dependencies = [
 [[package]]
 name = "rite"
 version = "0.1.0"
+dependencies = [
+ "export",
+ "gag",
+ "import",
+ "model",
+ "plugin",
+ "transform",
+]
 
 [[package]]
 name = "rustix"

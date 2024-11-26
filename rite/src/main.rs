@@ -1,3 +1,6 @@
 fn main() {
-    println!("Hello, world!");
+    println!("Rust Import/Transform/Export");
 }
+
+#[cfg(test)]
+mod tests;

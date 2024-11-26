@@ -1,0 +1,13 @@
+[package]
+name = "example_import"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { path="../../model" }
+import = { path="../../import" }
+helper = { path="../../helper" }
+
+[lib]
+name = "example_import"
+crate-type = ["dylib"]

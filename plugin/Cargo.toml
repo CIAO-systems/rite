@@ -1,13 +1,11 @@
 [package]
-name = "rite"
+name = "plugin"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-model = { path="../model" }
-plugin = { path="../plugin" }
 import = { path="../import" }
 export = { path="../export" }
 transform = { path="../transform" }
-gag = "1.0.0"
 
+libloading = "0.8.5"
