@@ -1,0 +1,17 @@
+use string::StringFieldConverter;
+use transform::Transformer;
+
+pub mod string;
+
+#[no_mangle]
+pub fn create_transformer(name: &str) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>> {
+    match name {
+        "uppercase" => Ok(Box::new(StringFieldConverter::new(
+            string::StringFieldConversion::UpperCase,
+        ))),
+        "lowercase" => Ok(Box::new(StringFieldConverter::new(
+            string::StringFieldConversion::LowerCase,
+        ))),
+        _ => Err(format!("Unknown transformer '{name}'").into()),
+    }
+}

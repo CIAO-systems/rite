@@ -1,6 +1,6 @@
 use model::{field::Field, record::Record};
 
-use crate::Transformer;
+use transform::Transformer;
 
 pub enum StringFieldConversion {
     UpperCase,

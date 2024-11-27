@@ -8,6 +8,3 @@ pub trait Transformer {
 
     fn process(&self, record: &Record) -> Result<Record, Box<dyn Error>>;
 }
-
-pub mod builtin;
-

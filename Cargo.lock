@@ -44,6 +44,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "example_transform"
+version = "0.1.0"
+dependencies = [
+ "helper",
+ "model",
+ "transform",
+]
+
+[[package]]
 name = "export"
 version = "0.1.0"
 dependencies = [

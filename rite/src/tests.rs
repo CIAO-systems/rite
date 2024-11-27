@@ -1,15 +1,13 @@
 use export::Exporter;
 use import::Importer;
 use plugin::Plugin;
-use std::{env, io::Read};
-use transform::{
-    builtin::string::{StringFieldConversion, StringFieldConverter},
-    Transformer,
-};
+use std::io::Read;
+use transform::Transformer;
 
 static PLUGIN_PATH: &str = "../target/debug";
 static IMPORT_PLUGIN_NAME: &str = "example_import";
 static EXPORT_PLUGIN_NAME: &str = "example_export";
+static TRANSFORM_PLUGIN_NAME: &str = "example_transform";
 
 fn load_importer() -> Result<Plugin, Box<dyn std::error::Error>> {
     Plugin::new(PLUGIN_PATH, IMPORT_PLUGIN_NAME)
@@ -19,9 +17,21 @@ fn load_exporter() -> Result<Plugin, Box<dyn std::error::Error>> {
     Plugin::new(PLUGIN_PATH, EXPORT_PLUGIN_NAME)
 }
 
-fn create_transformer() -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>> {
-    let transformer = StringFieldConverter::new(StringFieldConversion::UpperCase);
-    Ok(Box::new(transformer))
+fn load_transformer() -> Result<Plugin, Box<dyn std::error::Error>> {
+    Plugin::new(PLUGIN_PATH, TRANSFORM_PLUGIN_NAME)
+}
+
+fn create_transformer<'a>(
+    transformer_plugin: &'a mut Plugin,
+    transformer_name: &str,
+) -> Result<&'a mut Box<dyn Transformer>, Box<dyn std::error::Error>> {
+    // 1. load plugin
+    // 2. Call creator function in plugin for a transformer
+    // 3. box it and return it
+    match transformer_plugin.create_transformer(transformer_name) {
+        Ok(transformer) => Ok(transformer),
+        Err(e) => Err(e),
+    }
 }
 
 fn create_exporter<'a>(
@@ -56,38 +66,10 @@ pub fn create_importer<'a>(
     }
 }
 
-#[test]
-fn test_big_picture() {
-    if let Ok(cwd) = env::current_dir() {
-        println!("{}", cwd.display());
-    }
-
-    // Redirect stdout
-    let buf = gag::BufferRedirect::stdout().unwrap();
-
-    match load_importer() {
-        Ok(mut importer_plugin) => match create_importer(&mut importer_plugin, "text") {
-            Ok(importer) => match load_exporter() {
-                Ok(mut exporter_plugin) => match create_exporter(&mut exporter_plugin, "console") {
-                    Ok(exporter) => match create_transformer() {
-                        Ok(transformer) => {
-                            check_all(importer, transformer, exporter, buf);
-                        }
-                        Err(e) => panic!("create_transformer: {e}"),
-                    },
-                    Err(e) => panic!("create_exporter: {e}"),
-                },
-                Err(e) => panic!("load_exporter: {e}"),
-            },
-            Err(e) => panic!("create_importer: {e}"),
-        },
-        Err(e) => panic!("load_importer: {e}"),
-    }
-}
-
 fn check_all(
+    expected: &str,
     importer: &mut Box<dyn Importer>,
-    transformer: Box<dyn Transformer>,
+    transformer: &mut Box<dyn Transformer>,
     exporter: &mut Box<dyn Exporter>,
     mut buf: gag::BufferRedirect,
 ) {
@@ -108,7 +90,52 @@ fn check_all(
     let mut output = String::new();
     let _ = buf.read_to_string(&mut output);
 
-    assert_eq!(
-        "line=LINE1,index=1\nline=LINE2,index=2\nline=LINE3,index=3\nline=,index=4\nline=LINE5,index=5\n", 
-        output);
+    assert_eq!(expected, output);
+}
+
+
+#[test]
+fn test_big_picture() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = test_lowercase()?;
+    let _ = test_uppercase()?;
+
+    Ok(())
+}
+
+fn test_uppercase() -> Result<(), Box<dyn std::error::Error>> {
+    // Redirect stdout
+    let buf = gag::BufferRedirect::stdout().unwrap();
+
+    let mut importer_plugin = load_importer()?;
+    let mut exporter_plugin = load_exporter()?;
+    let mut transformer_plugin = load_transformer()?;
+
+    let importer = create_importer(&mut importer_plugin, "text")?;
+    let exporter = create_exporter(&mut exporter_plugin, "console")?;
+    let transformer = create_transformer(&mut transformer_plugin, "uppercase")?;
+
+    check_all(
+        "line=LINE1,index=1\nline=LINE2,index=2\nline=LINE3,index=3\nline=,index=4\nline=LINE5,index=5\n",
+        importer, transformer, exporter, buf);
+
+    Ok(())
+}
+
+fn test_lowercase() -> Result<(), Box<dyn std::error::Error>> {
+    // Redirect stdout
+    let buf = gag::BufferRedirect::stdout().unwrap();
+
+    let mut importer_plugin = load_importer()?;
+    let mut exporter_plugin = load_exporter()?;
+    let mut transformer_plugin = load_transformer()?;
+
+    let importer = create_importer(&mut importer_plugin, "text")?;
+    let exporter = create_exporter(&mut exporter_plugin, "console")?;
+    let transformer = create_transformer(&mut transformer_plugin, "lowercase")?;
+
+    check_all(
+        "line=line1,index=1\nline=line2,index=2\nline=line3,index=3\nline=,index=4\nline=line5,index=5\n",
+        importer, transformer, exporter, buf);
+
+    Ok(())
 }
