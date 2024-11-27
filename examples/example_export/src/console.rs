@@ -1,6 +1,7 @@
 use std::io::{self, Write};
 
-use crate::Exporter;
+use export::Exporter;
+
 
 pub struct ConsoleExporter {
     writer: Box<dyn Write>,
@@ -11,6 +12,7 @@ impl ConsoleExporter {
         let stdout: Box<dyn Write> = Box::new(io::stdout()); // Get a handle to stdout
         ConsoleExporter::new_writer(stdout)
     }
+
     pub fn new_writer(writer: Box<dyn Write>) -> Self {
         ConsoleExporter { writer }
     }
