@@ -1,0 +1,14 @@
+[package]
+name = "example_export"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gag = "1.0.0"
+model = { path="../../model" }
+export = { path="../../export" }
+helper = { path="../../helper" }
+
+[lib]
+name = "example_export"
+crate-type = ["dylib"]

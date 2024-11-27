@@ -7,5 +7,3 @@ pub trait Exporter {
 
     fn write(&mut self, record: &Record) -> Result<(), Box<dyn Error>>;
 }
-
-pub mod builtin;
