@@ -68,15 +68,15 @@ pub fn create_importer<'a>(
     match importer_plugin.create_importer(importer_name) {
         Ok(importer) => {
             let config = create_test_importer_config();
-            let _ = importer.init(config)?;
+            let _ = importer.init(Some(config))?;
             Ok(importer)
         }
         Err(e) => Err(e),
     }
 }
 
-fn create_test_importer_config() -> xml::ImporterConfiguration {
-    let mut config = xml::ImporterConfiguration {
+fn create_test_importer_config() -> xml::Configuration {
+    let mut config = xml::Configuration {
         configs: HashMap::new(),
     };
     config
@@ -132,8 +132,18 @@ fn test_importer() -> Result<(), Box<dyn std::error::Error>> {
     let importer = create_importer(&mut importer_plugin, IMPORTER_NAME)?;
 
     let config = create_test_importer_config();
-    let _ = importer.init(config)?;
+    let _ = importer.init(Some(config))?;
 
+    Ok(())
+}
+
+#[test]
+fn test_importer_no_config() -> Result<(), Box<dyn std::error::Error>> {
+    let mut importer_plugin = load_importer()?;
+    let importer = create_importer(&mut importer_plugin, IMPORTER_NAME)?;
+
+    // this importer *needs* a configuration
+    assert!(importer.init(None).is_err());
     Ok(())
 }
 

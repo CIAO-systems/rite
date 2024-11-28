@@ -42,11 +42,11 @@ pub struct Importer {
     #[serde(rename = "plugin")]
     pub plugin: String,
     pub name: String,
-    pub configuration: Option<ImporterConfiguration>,
+    pub configuration: Option<Configuration>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ImporterConfiguration {
+pub struct Configuration {
     #[serde(rename = "config", deserialize_with = "deserialize_config_hashmap")]
     pub configs: HashMap<String, String>,
 }
@@ -62,13 +62,7 @@ pub struct Transformer {
     #[serde(rename = "plugin")]
     pub plugin: String,
     pub name: String,
-    pub configuration: Option<TransformerConfiguration>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TransformerConfiguration {
-    #[serde(rename = "config", deserialize_with = "deserialize_config_hashmap")]
-    pub configs: HashMap<String, String>,
+    pub configuration: Option<Configuration>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -82,13 +76,7 @@ pub struct Exporter {
     #[serde(rename = "plugin")]
     pub plugin: String,
     pub name: String,
-    pub configuration: Option<ExporterConfiguration>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ExporterConfiguration {
-    #[serde(rename = "config", deserialize_with = "deserialize_config_hashmap")]
-    pub configs: HashMap<String, String>,
+    pub configuration: Option<Configuration>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -108,7 +96,6 @@ where
         .map(|config| (config.key, config.value))
         .collect())
 }
-
 
 #[cfg(test)]
 mod test;

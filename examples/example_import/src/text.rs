@@ -5,11 +5,11 @@ use std::{
 };
 
 use import::Importer;
-use model::{field::Field, record::Record, xml};
+use model::{field::Field, record::Record, xml, Initializable};
 
 #[derive(Debug)]
 pub struct TextFileImporter {
-    config: Option<xml::ImporterConfiguration>,
+    config: Option<xml::Configuration>,
     reader: Option<BufReader<File>>,
     next_line: usize,
 }
@@ -69,34 +69,6 @@ impl TextFileImporter {
 }
 
 impl Importer for TextFileImporter {
-    fn init(
-        &mut self,
-        config: xml::ImporterConfiguration,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        // take ownership for `config`
-        self.config = Some(config);
-
-        match self.config.as_ref() {
-            Some(config) => match config.configs.get("file_name") {
-                Some(file_name) => {
-                    let path = Path::new(&file_name);
-                    let file = match File::open(path) {
-                        Ok(f) => f,
-                        Err(e) => {
-                            eprintln!("Error opening file {}: {}", path.display(), e);
-                            return Err(e.into());
-                        }
-                    };
-                    self.reader = Some(BufReader::new(file));
-                    self.next_line = 0;
-                    Ok(())
-                }
-                None => Err("Missing configuration for 'file_name'".into()),
-            },
-            None => Err("Missing configuration for 'file_name'".into()),
-        }
-    }
-
     fn next(
         &mut self,
         n: Option<usize>,
@@ -117,6 +89,36 @@ impl Importer for TextFileImporter {
     fn read(&mut self, callback: &mut dyn FnMut(Record)) -> Result<(), Box<dyn std::error::Error>> {
         self.read_lines(None, callback)?;
         Ok(())
+    }
+}
+
+impl Initializable for TextFileImporter {
+    fn init(
+        &mut self,
+        config: Option<xml::Configuration>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // take ownership for `config`
+        self.config = config;
+
+        match self.config.as_ref() {
+            Some(config) => match config.configs.get("file_name") {
+                Some(file_name) => {
+                    let path = Path::new(&file_name);
+                    let file = match File::open(path) {
+                        Ok(f) => f,
+                        Err(e) => {
+                            eprintln!("Error opening file {}: {}", path.display(), e);
+                            return Err(e.into());
+                        }
+                    };
+                    self.reader = Some(BufReader::new(file));
+                    self.next_line = 0;
+                    Ok(())
+                }
+                None => Err("Missing configuration for 'file_name'".into()),
+            },
+            None => Err("Missing configuration for 'file_name'".into()),
+        }
     }
 }
 

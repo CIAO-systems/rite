@@ -1,15 +1,6 @@
-use model::{record::Record, xml};
+use model::{record::Record, Initializable};
 
-pub trait Importer {
-    /// Initializes the importer
-    ///
-    /// `config` should be stored in the struct, to make sure, all
-    /// configuration values live as long the Importer instance
-    fn init(
-        &mut self,
-        config: xml::ImporterConfiguration,
-    ) -> Result<(), Box<dyn std::error::Error>>;
-
+pub trait Importer: Initializable {
     /// Returns the next `n` records or None. If `n` is `None` the method must
     /// return all records
     fn next(
