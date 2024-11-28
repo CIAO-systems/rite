@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 model = { path="../model" }
+helper = { path="../helper" }
 plugin = { path="../plugin" }
 import = { path="../import" }
 export = { path="../export" }

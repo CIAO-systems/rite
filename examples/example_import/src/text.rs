@@ -5,19 +5,19 @@ use std::{
 };
 
 use import::Importer;
-use model::{field::Field, record::Record};
+use model::{field::Field, record::Record, xml};
 
 #[derive(Debug)]
 pub struct TextFileImporter {
-    file_name: String,
+    config: Option<xml::ImporterConfiguration>,
     reader: Option<BufReader<File>>,
     next_line: usize,
 }
 
 impl TextFileImporter {
-    pub fn new(file_name: String) -> Self {
+    pub fn new() -> Self {
         TextFileImporter {
-            file_name,
+            config: None,
             reader: None,
             next_line: 0,
         }
@@ -69,12 +69,32 @@ impl TextFileImporter {
 }
 
 impl Importer for TextFileImporter {
-    fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let path = Path::new(&self.file_name);
-        let file = File::open(path)?;
-        self.reader = Some(BufReader::new(file));
-        self.next_line = 0;
-        Ok(())
+    fn init(
+        &mut self,
+        config: xml::ImporterConfiguration,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // take ownership for `config`
+        self.config = Some(config);
+
+        match self.config.as_ref() {
+            Some(config) => match config.configs.get("file_name") {
+                Some(file_name) => {
+                    let path = Path::new(&file_name);
+                    let file = match File::open(path) {
+                        Ok(f) => f,
+                        Err(e) => {
+                            eprintln!("Error opening file {}: {}", path.display(), e);
+                            return Err(e.into());
+                        }
+                    };
+                    self.reader = Some(BufReader::new(file));
+                    self.next_line = 0;
+                    Ok(())
+                }
+                None => Err("Missing configuration for 'file_name'".into()),
+            },
+            None => Err("Missing configuration for 'file_name'".into()),
+        }
     }
 
     fn next(
@@ -101,4 +121,4 @@ impl Importer for TextFileImporter {
 }
 
 #[cfg(test)]
-mod test;
+mod tests;

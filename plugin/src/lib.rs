@@ -78,7 +78,7 @@ impl Plugin {
                 .entry(importer_name.to_string())
                 .or_insert_with(|| unsafe {
                     match creator(importer_name) {
-                        Ok(v) => v,
+                        Ok(importer) => importer,
                         Err(e) => panic!("Creating importer failed: {e}"),
                     }
                 });

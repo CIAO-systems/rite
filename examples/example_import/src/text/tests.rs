@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use import::Importer;
-use model::{record::Record, value::Value};
+use model::{record::Record, value::Value, xml};
 
 use super::TextFileImporter;
 
@@ -41,9 +43,8 @@ fn print_record(record: &Record) {
 
 #[test]
 fn test_next_all() {
-    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
-    match importer.init() {
-        Ok(_) => {
+    match create_test_importer_configuration() {
+        Ok(mut importer) => {
             let records = importer.next(None);
             if let Ok(records) = records {
                 if let Some(records) = records {
@@ -60,9 +61,8 @@ fn test_next_all() {
 
 #[test]
 fn test_next_first_three() {
-    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
-    match importer.init() {
-        Ok(_) => {
+    match create_test_importer_configuration() {
+        Ok(mut importer) => {
             println!("Read first 3....");
             let records = importer.next(Some(3)); // Here we only want the first 3 records
             if let Ok(records) = records {
@@ -95,9 +95,8 @@ fn test_next_first_three() {
 
 #[test]
 fn test_next_first_three_with_reset() {
-    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
-    match importer.init() {
-        Ok(_) => {
+    match create_test_importer_configuration() {
+        Ok(mut importer) => {
             println!("Read first 3....");
             let records = importer.next(Some(3)); // Here we only want the first 3 records
             if let Ok(records) = records {
@@ -135,9 +134,8 @@ fn test_next_first_three_with_reset() {
 
 #[test]
 fn test_read() {
-    let mut importer = TextFileImporter::new(TEST_DATA.to_string());
-    match importer.init() {
-        Ok(_) => {
+    match create_test_importer_configuration() {
+        Ok(mut importer) => {
             let _ = importer.read(&mut |record| {
                 print_record(&record);
                 check_correct_values(record);
@@ -145,4 +143,33 @@ fn test_read() {
         }
         Err(e) => panic!("{}", e),
     }
+}
+
+fn create_test_importer_configuration() -> Result<TextFileImporter, Box<dyn std::error::Error>> {
+    let mut config = xml::ImporterConfiguration {
+        configs: HashMap::new(),
+    };
+    config
+        .configs
+        .insert(String::from("file_name"), TEST_DATA.to_string());
+
+    let mut importer = TextFileImporter::new();
+    importer.init(config)?;
+    Ok(importer)
+}
+
+#[test]
+fn test_importer_config() -> Result<(), Box<dyn std::error::Error>> {
+    let mut importer = TextFileImporter::new();
+
+    let mut config = xml::ImporterConfiguration {
+        configs: HashMap::new(),
+    };
+    config
+        .configs
+        .insert(String::from("file_name"), TEST_DATA.to_string());
+
+    let _ = importer.init(config)?;
+
+    Ok(())
 }

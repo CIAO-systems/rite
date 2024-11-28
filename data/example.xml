@@ -1,0 +1,34 @@
+<rite>
+    <plugins>
+        <plugin id="import_plugin" path="../target/debug" name="example_import"/>
+        <plugin id="export_plugin" path="../target/debug" name="example_export"/>
+        <plugin id="transform_plugin" path="../target/debug" name="example_transform"/>
+    </plugins>
+    <processes>
+        <process id="text-uppercase-console">
+            <importer plugin="import_plugin" name="text">
+                <configuration>
+                    <config key="file_name" value="../data/testfile.txt" />
+                </configuration>
+            </importer>
+            <transformers>
+                <transformer plugin="transform_plugin" name="uppercase">
+                    <!--
+                    <configuration>
+                        <config key="key" value="value" />
+                    </configuration>
+                    -->
+                </transformer>
+            </transformers>
+            <exporters>
+                <exporter plugin="export_plugin" name="console">
+                    <!--
+                    <configuration>
+                        <config key="key" value="value" />
+                    </configuration>
+                    -->
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>
