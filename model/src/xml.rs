@@ -97,5 +97,7 @@ where
         .collect())
 }
 
+pub mod file;
+
 #[cfg(test)]
 mod test;

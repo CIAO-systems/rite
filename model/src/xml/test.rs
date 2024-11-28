@@ -1,25 +1,10 @@
-use super::Rite;
-use std::{fs::File, io::Read};
+use crate::xml::file::create_rite;
+
+static EXAMPLE_XML: &str = "../data/example.xml";
 
 #[test]
-fn test_example_xml() {
-    let file_path = "../data/example.xml";
-    let mut file = match File::open(file_path) {
-        Ok(file) => file,
-        Err(e) => panic!("Cannot open {}: {}", file_path, e),
-    };
-
-    let mut xml_contents = String::new();
-    match file.read_to_string(&mut xml_contents) {
-        Ok(_) => { //ignore
-        }
-        Err(e) => panic!("Cannot read contents from {}: {}", file_path, e),
-    }
-
-    let rite: Rite = match serde_xml_rs::from_str(&xml_contents) {
-        Ok(rite) => rite,
-        Err(e) => panic!("Cannot parse contents from {}: {}", file_path, e),
-    };
+fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
+    let rite = create_rite(EXAMPLE_XML)?;
 
     // Add some basic assertions to verify the parsing
     assert!(
@@ -61,4 +46,5 @@ fn test_example_xml() {
 
     // Print parsed data for manual inspection
     println!("Parsed Rite XML: {:?}", rite);
+    Ok(())
 }

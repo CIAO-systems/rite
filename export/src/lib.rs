@@ -1,9 +1,7 @@
-use model::record::Record;
+use model::{record::Record, Initializable};
 use std::error::Error;
 
-pub trait Exporter {
-    /// Initializes the importer
-    fn init(&mut self) -> Result<(), Box<dyn Error>>;
-
+pub trait Exporter: Initializable {
+    /// Takes a [Record] and writes it
     fn write(&mut self, record: &Record) -> Result<(), Box<dyn Error>>;
 }

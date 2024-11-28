@@ -1,10 +1,7 @@
 use std::error::Error;
 
-use model::record::Record;
+use model::{record::Record, Initializable};
 
-pub trait Transformer {
-    /// Initializes the transformer
-    fn init(&mut self) -> Result<(), Box<dyn Error>>;
-
+pub trait Transformer: Initializable {
     fn process(&self, record: &Record) -> Result<Record, Box<dyn Error>>;
 }

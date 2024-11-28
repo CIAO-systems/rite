@@ -1,4 +1,4 @@
-use model::{field::Field, record::Record};
+use model::{field::Field, record::Record, Initializable};
 
 use transform::Transformer;
 
@@ -17,11 +17,16 @@ impl StringFieldConverter {
     }
 }
 
-impl Transformer for StringFieldConverter {
-    fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+impl Initializable for StringFieldConverter {
+    fn init(
+        &mut self,
+        _config: Option<model::xml::Configuration>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }
+}
 
+impl Transformer for StringFieldConverter {
     fn process(
         &self,
         record: &model::record::Record,

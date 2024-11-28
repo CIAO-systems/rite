@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 
 use export::Exporter;
-
+use model::{xml, Initializable};
 
 pub struct ConsoleExporter {
     writer: Box<dyn Write>,
@@ -19,10 +19,6 @@ impl ConsoleExporter {
 }
 
 impl Exporter for ConsoleExporter {
-    fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        Ok(())
-    }
-
     fn write(&mut self, record: &model::record::Record) -> Result<(), Box<dyn std::error::Error>> {
         let fields = record.fields();
 
@@ -34,6 +30,15 @@ impl Exporter for ConsoleExporter {
         }
         writeln!(&mut self.writer)?;
 
+        Ok(())
+    }
+}
+
+impl Initializable for ConsoleExporter {
+    fn init(
+        &mut self,
+        _config: Option<xml::Configuration>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }
 }
