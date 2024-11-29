@@ -45,7 +45,7 @@ pub struct Importer {
     pub configuration: Option<Configuration>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Configuration {
     #[serde(rename = "config", deserialize_with = "deserialize_config_hashmap")]
     pub configs: HashMap<String, String>,
