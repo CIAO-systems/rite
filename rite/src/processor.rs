@@ -1,3 +1,4 @@
+use log::{debug, error, info};
 use model::{record::Record, xml};
 pub struct Rite {
     rite: xml::Rite,
@@ -22,7 +23,7 @@ impl Rite {
 
     pub fn process(&self) -> Result<(), Box<dyn std::error::Error>> {
         for process in &self.rite.processes.processes {
-            println!("Run process '{}'", process.id);
+            info!("Run process '{}'", process.id);
             // Import data using the importer
             self.import(&process)?;
         }
@@ -32,7 +33,7 @@ impl Rite {
     fn import(&self, process: &xml::Process) -> Result<(), Box<dyn std::error::Error>> {
         // Import data using the importer
         if let Some(plugin_desc) = self.get_plugin_desc(&process.importer.plugin.as_str()) {
-            println!("Importer plugin: {:#?}", plugin_desc);
+            debug!("Importer plugin: {:#?}", plugin_desc);
 
             let mut importer_plugin = plugin::Plugin::new(&plugin_desc.path, &plugin_desc.name)?;
             let importer = importer_plugin.create_importer(&process.importer.name)?;
@@ -44,10 +45,13 @@ impl Rite {
                 // transform
                 let transformed_record = match self.transform(&record, &process) {
                     Ok(record) => {
-                        println!("Transformed record: {:#?}", record);
+                        debug!("Transformed record: {:#?}", record);
                         record
                     }
-                    Err(e) => panic!("Error transforming: {e}"),
+                    Err(e) => {
+                        error!("Error transforming: {e}");
+                        None
+                    }
                 };
 
                 // export
@@ -56,6 +60,7 @@ impl Rite {
                 }
             });
         }
+
         Ok(())
     }
 
@@ -67,7 +72,7 @@ impl Rite {
         let mut transformed_record = Record::copy(record);
         for transformer_desc in &process.transformers.transformers {
             if let Some(plugin_desc) = self.get_plugin_desc(&transformer_desc.plugin.as_str()) {
-                println!(
+                debug!(
                     "Transformer plugin ({}): {:#?}",
                     transformer_desc.name, plugin_desc
                 );
@@ -92,7 +97,7 @@ impl Rite {
     ) -> Result<(), Box<dyn std::error::Error>> {
         for exporter_desc in &process.exporters.exporters {
             if let Some(plugin_desc) = self.get_plugin_desc(&exporter_desc.plugin.as_str()) {
-                println!(
+                debug!(
                     "Exporter plugin ({}): {:#?}",
                     exporter_desc.name, plugin_desc
                 );
