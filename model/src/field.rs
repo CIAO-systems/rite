@@ -1,6 +1,6 @@
 use crate::value::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Field {
     name: String,
     value: Value,

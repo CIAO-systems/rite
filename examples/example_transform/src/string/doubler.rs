@@ -1,23 +1,14 @@
 use model::{field::Field, record::Record, Initializable};
-
 use transform::Transformer;
 
-pub enum StringFieldConversion {
-    UpperCase,
-    LowerCase,
-}
-
-pub struct StringFieldConverter {
-    conversion: StringFieldConversion,
-}
-
-impl StringFieldConverter {
-    pub fn new(conversion: StringFieldConversion) -> Self {
-        StringFieldConverter { conversion }
+pub struct CharacterDoubler;
+impl CharacterDoubler {
+    pub(crate) fn new() -> Self {
+        Self
     }
 }
 
-impl Initializable for StringFieldConverter {
+impl Initializable for CharacterDoubler {
     fn init(
         &mut self,
         _config: Option<model::xml::Configuration>,
@@ -26,7 +17,7 @@ impl Initializable for StringFieldConverter {
     }
 }
 
-impl Transformer for StringFieldConverter {
+impl Transformer for CharacterDoubler {
     fn process(
         &self,
         record: &model::record::Record,
@@ -35,10 +26,10 @@ impl Transformer for StringFieldConverter {
         for field in record.fields() {
             match field.value() {
                 model::value::Value::String(value) => {
-                    let converted = match self.conversion {
-                        StringFieldConversion::UpperCase => value.to_uppercase(),
-                        StringFieldConversion::LowerCase => value.to_lowercase(),
-                    };
+                    let converted = value
+                        .chars()
+                        .flat_map(|c| std::iter::repeat(c).take(2))
+                        .collect();
                     result
                         .fields_as_mut()
                         .push(Field::new_string(field.name().to_string(), converted));
@@ -55,8 +46,3 @@ impl Transformer for StringFieldConverter {
         Ok(result)
     }
 }
-
-pub mod doubler;
-
-#[cfg(test)]
-mod test;

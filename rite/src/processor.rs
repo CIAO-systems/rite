@@ -64,6 +64,7 @@ impl Rite {
         record: &Record,
         process: &xml::Process,
     ) -> Result<Option<Record>, Box<dyn std::error::Error>> {
+        let mut transformed_record = Record::copy(record);
         for transformer_desc in &process.transformers.transformers {
             if let Some(plugin_desc) = self.get_plugin_desc(&transformer_desc.plugin.as_str()) {
                 println!(
@@ -77,12 +78,11 @@ impl Rite {
 
                 let config = &transformer_desc.configuration;
                 let _ = transformer.init(config.clone())?;
-                let result = transformer.process(record)?;
-                return Ok(Some(result));
+                transformed_record = transformer.process(&transformed_record)?;
             }
         }
 
-        Ok(None)
+        Ok(Some(transformed_record))
     }
 
     fn export(
@@ -103,7 +103,8 @@ impl Rite {
 
                 let config = &exporter_desc.configuration;
                 let _ = exporter.init(config.clone())?;
-                return Ok(exporter.write(record)?);
+
+                exporter.write(record)?;
             }
         }
 

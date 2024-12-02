@@ -12,6 +12,7 @@ pub fn create_transformer(name: &str) -> Result<Box<dyn Transformer>, Box<dyn st
         "lowercase" => Ok(Box::new(StringFieldConverter::new(
             string::StringFieldConversion::LowerCase,
         ))),
+        "doubler" => Ok(Box::new(string::doubler::CharacterDoubler::new())),
         _ => Err(format!("Unknown transformer '{name}'").into()),
     }
 }

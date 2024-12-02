@@ -10,6 +10,12 @@ impl Record {
         Self { fields: vec![] }
     }
 
+    pub fn copy(other: &Record) -> Self {
+        Self {
+            fields: other.fields.clone(),
+        }
+    }
+
     pub fn fields(&self) -> &Vec<Field> {
         &self.fields
     }
