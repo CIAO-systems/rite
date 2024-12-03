@@ -4,8 +4,6 @@ use log::{debug, error, info};
 use model::{record::Record, xml};
 use moka::sync::Cache;
 
-// mod cache;
-
 pub struct Rite {
     rite: xml::Rite,
     plugin_cache: Cache<String, Arc<plugin::Plugin>>,
@@ -101,10 +99,8 @@ impl Rite {
                     transformer_desc.name, plugin_desc
                 );
 
-                let transformer_plugin =
-                    plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
-                let mut transformer =
-                    transformer_plugin.create_transformer(&transformer_desc.name)?;
+                let plugin = self.load_plugin(plugin_desc)?;
+                let mut transformer = plugin.create_transformer(&transformer_desc.name)?;
 
                 let config = &transformer_desc.configuration;
                 let _ = transformer.init(config.clone())?;
@@ -127,9 +123,8 @@ impl Rite {
                     exporter_desc.name, plugin_desc
                 );
 
-                let exporter_plugin =
-                    plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
-                let mut exporter = exporter_plugin.create_exporter(&exporter_desc.name)?;
+                let plugin = self.load_plugin(plugin_desc)?;
+                let mut exporter = plugin.create_exporter(&exporter_desc.name)?;
 
                 let config = &exporter_desc.configuration;
                 let _ = exporter.init(config.clone())?;
