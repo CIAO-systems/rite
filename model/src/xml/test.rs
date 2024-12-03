@@ -1,6 +1,6 @@
 use crate::xml::file::create_rite;
 
-static EXAMPLE_XML: &str = "../data/example.xml";
+static EXAMPLE_XML: &str = "../data/test-example.xml";
 
 #[test]
 fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {

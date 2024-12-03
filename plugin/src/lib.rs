@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use export::Exporter;
 use import::Importer;
 use libloading::{Library, Symbol};
@@ -17,14 +15,6 @@ pub type TransformerCreator =
     unsafe fn(name: &str) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>>;
 
 pub struct Plugin {
-    importers: HashMap<String, Box<dyn Importer>>,
-    exporters: HashMap<String, Box<dyn Exporter>>,
-    transformers: HashMap<String, Box<dyn Transformer>>,
-
-    importer_creator: Option<ImporterCreator>,
-    exporter_creator: Option<ExporterCreator>,
-    transformer_creator: Option<TransformerCreator>,
-
     // this must be last, so it get dropped last
     _lib: Library,
 }
@@ -55,118 +45,62 @@ impl Plugin {
         };
 
         let _lib = unsafe {
-            // log::error!(module_path!());
             log::debug!("Loading {}", lib_path);
             Library::new(lib_path)?
         };
 
-        Ok(Self {
-            importers: HashMap::new(),
-            exporters: HashMap::new(),
-            transformers: HashMap::new(),
-            importer_creator: None,
-            exporter_creator: None,
-            transformer_creator: None,
-            _lib,
-        })
+        Ok(Self { _lib })
     }
 
     pub fn create_importer(
-        &mut self,
-        importer_name: &str,
-    ) -> Result<&mut Box<dyn Importer>, Box<dyn std::error::Error>> {
-        // Create the method lazily
-        if let None = self.importer_creator {
-            let importer_creator: Symbol<ImporterCreator> =
-                unsafe { self._lib.get(CREATE_IMPORTER)? };
-            self.importer_creator = Some(*importer_creator);
-        }
-
-        // Only, if we have a creator function
-        if let Some(creator) = self.importer_creator {
-            // If the element is already in our map, return it,
-            // otherwise create, insert and return it.
-            self.importers
-                .entry(importer_name.to_string())
-                .or_insert_with(|| unsafe {
-                    match creator(importer_name) {
-                        Ok(importer) => importer,
-                        Err(e) => panic!("Creating importer failed: {e}"),
-                    }
-                });
-        }
-
-        if let Some(importer) = self.importers.get_mut(importer_name) {
-            // we have an instance of this importer
-            return Ok(importer);
-        }
-
-        Err("Cannot create importer".into())
+        &self,
+        name: &str,
+    ) -> Result<Box<dyn Importer>, Box<dyn std::error::Error>> {
+        let creator: Symbol<ImporterCreator> = unsafe { self._lib.get(CREATE_IMPORTER)? };
+        unsafe { creator(name) }
     }
 
     pub fn create_exporter(
-        &mut self,
-        exporter_name: &str,
-    ) -> Result<&mut Box<dyn Exporter>, Box<dyn std::error::Error>> {
-        // Create the method lazily
-        if let None = self.exporter_creator {
-            let exporter_creator: Symbol<ExporterCreator> =
-                unsafe { self._lib.get(CREATE_EXPORTER)? };
-            self.exporter_creator = Some(*exporter_creator);
-        }
-
-        // Only, if we have a creator function
-        if let Some(creator) = self.exporter_creator {
-            // If the element is already in our map, return it,
-            // otherwise create, insert and return it.
-            self.exporters
-                .entry(exporter_name.to_string())
-                .or_insert_with(|| unsafe {
-                    match creator(exporter_name) {
-                        Ok(v) => v,
-                        Err(e) => panic!("Creating exporter failed: {e}"),
-                    }
-                });
-        }
-
-        if let Some(exporter) = self.exporters.get_mut(exporter_name) {
-            // we have an instance of this exporter
-            return Ok(exporter);
-        }
-
-        Err("Cannot create exporter".into())
+        &self,
+        name: &str,
+    ) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
+        let creator: Symbol<ExporterCreator> = unsafe { self._lib.get(CREATE_EXPORTER)? };
+        unsafe { creator(name) }
     }
 
     pub fn create_transformer(
-        &mut self,
-        transformer_name: &str,
-    ) -> Result<&mut Box<dyn Transformer>, Box<dyn std::error::Error>> {
-        // Create the method lazily
-        if let None = self.transformer_creator {
-            let transformer_creator: Symbol<TransformerCreator> =
-                unsafe { self._lib.get(CREATE_TRANSFORMER)? };
-            self.transformer_creator = Some(*transformer_creator);
+        &self,
+        name: &str,
+    ) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>> {
+        let creator: Symbol<TransformerCreator> = unsafe { self._lib.get(CREATE_TRANSFORMER)? };
+        unsafe { creator(name) }
+    }
+}
+
+mod tests {
+
+    #[test]
+    fn exp() {
+        struct Data {
+            value: std::cell::RefCell<Option<i32>>,
         }
 
-        // Only, if we have a creator function
-        if let Some(creator) = self.transformer_creator {
-            // If the element is already in our map, return it,
-            // otherwise create, insert and return it.
-            self.transformers
-                .entry(transformer_name.to_string())
-                .or_insert_with(|| unsafe {
-                    match creator(transformer_name) {
-                        Ok(v) => v,
-                        Err(e) => panic!("Creating transformer failed: {e}"),
-                    }
-                });
+        impl Data {
+            fn get(&self, new_value: i32) -> i32 {
+                let mut value = self.value.borrow_mut();
+
+                if value.is_none() {
+                    *value = Some(new_value);
+                }
+                value.unwrap()
+            }
         }
 
-        if let Some(transformer) = self.transformers.get_mut(transformer_name) {
-            // we have an instance of this transformer
-            return Ok(transformer);
-        }
+        let data = Data {
+            value: std::cell::RefCell::new(None),
+        };
 
-        Err("Cannot create transformer".into())
+        assert_eq!(42, data.get(42));
+        assert_eq!(42, data.get(73));
     }
 }

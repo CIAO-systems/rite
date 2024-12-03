@@ -1,16 +1,22 @@
+use std::sync::Arc;
+
 use log::{debug, error, info};
 use model::{record::Record, xml};
+use moka::sync::Cache;
+
+// mod cache;
+
 pub struct Rite {
     rite: xml::Rite,
+    plugin_cache: Cache<String, Arc<plugin::Plugin>>,
 }
 
 impl Rite {
     pub fn new(xml_file_name: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let rite_processor = Rite {
+        Ok(Rite {
             rite: xml::file::create_rite(xml_file_name)?,
-        };
-
-        Ok(rite_processor)
+            plugin_cache: Cache::builder().build(),
+        })
     }
 
     fn get_plugin_desc(&self, plugin_name: &str) -> Option<&xml::Plugin> {
@@ -19,6 +25,24 @@ impl Rite {
             .plugins
             .iter()
             .find(|&plugin_desc| plugin_desc.id == plugin_name)
+    }
+
+    fn load_plugin(
+        &self,
+        plugin_desc: &xml::Plugin,
+    ) -> Result<Arc<plugin::Plugin>, Box<dyn std::error::Error>> {
+        if let Some(cached_plugin) = self.plugin_cache.get(&plugin_desc.id) {
+            return Ok(cached_plugin);
+        }
+
+        // Create the plugin
+        let plugin = Arc::new(plugin::Plugin::new(
+            plugin_desc.path.as_deref(),
+            &plugin_desc.name,
+        )?);
+        self.plugin_cache
+            .insert(plugin_desc.id.clone(), plugin.clone());
+        Ok(plugin)
     }
 
     pub fn process(&self) -> Result<(), Box<dyn std::error::Error>> {
@@ -35,9 +59,8 @@ impl Rite {
         if let Some(plugin_desc) = self.get_plugin_desc(&process.importer.plugin.as_str()) {
             debug!("Importer plugin: {:#?}", plugin_desc);
 
-            let mut importer_plugin =
-                plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
-            let importer = importer_plugin.create_importer(&process.importer.name)?;
+            let plugin = self.load_plugin(plugin_desc)?;
+            let mut importer = plugin.create_importer(&process.importer.name)?;
 
             let config = &process.importer.configuration;
             let _ = importer.init(config.clone())?;
@@ -78,9 +101,10 @@ impl Rite {
                     transformer_desc.name, plugin_desc
                 );
 
-                let mut transformer_plugin =
+                let transformer_plugin =
                     plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
-                let transformer = transformer_plugin.create_transformer(&transformer_desc.name)?;
+                let mut transformer =
+                    transformer_plugin.create_transformer(&transformer_desc.name)?;
 
                 let config = &transformer_desc.configuration;
                 let _ = transformer.init(config.clone())?;
@@ -103,9 +127,9 @@ impl Rite {
                     exporter_desc.name, plugin_desc
                 );
 
-                let mut exporter_plugin =
+                let exporter_plugin =
                     plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
-                let exporter = exporter_plugin.create_exporter(&exporter_desc.name)?;
+                let mut exporter = exporter_plugin.create_exporter(&exporter_desc.name)?;
 
                 let config = &exporter_desc.configuration;
                 let _ = exporter.init(config.clone())?;

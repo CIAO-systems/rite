@@ -13,4 +13,4 @@ transform = { path="../transform" }
 gag = "1.0"
 log = "0.4"
 log4rs = "1.3"
-
+moka = {version="0.12", features = ["sync"]}
