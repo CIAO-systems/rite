@@ -8,4 +8,6 @@ import = { path="../import" }
 export = { path="../export" }
 transform = { path="../transform" }
 
-libloading = "0.8.5"
+libloading = "0.8"
+log = "0.4"
+log4rs = "1.3"

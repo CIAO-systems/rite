@@ -23,3 +23,8 @@ loggers:
     appenders:
       - stdout
     additive: false
+  plugin:
+    level: debug
+    appenders:
+      - stdout
+    additive: false

@@ -36,7 +36,7 @@ impl Plugin {
     /// located
     /// `name` is a platorm agnostic name of the library (without prefix `lib` and
     /// without extension)
-    pub fn new(path: &str, name: &str) -> Result<Plugin, Box<dyn std::error::Error>> {
+    pub fn new(path: Option<&str>, name: &str) -> Result<Plugin, Box<dyn std::error::Error>> {
         // check the OS we're running on
         let os_lib_name = match std::env::consts::OS {
             "linux" => format!("lib{name}.so"),
@@ -45,8 +45,20 @@ impl Plugin {
             _ => return Err("Unsupported operating system".into()),
         };
 
-        let lib_path = format!("{path}/{os_lib_name}");
-        let _lib = unsafe { Library::new(lib_path)? };
+        // Only if a path is given, prefix the file_name with it
+        // Without path, library will be loaded using the system library search
+        // path
+        let lib_path = if let Some(path) = path {
+            format!("{path}/{os_lib_name}")
+        } else {
+            format!("{os_lib_name}")
+        };
+
+        let _lib = unsafe {
+            // log::error!(module_path!());
+            log::debug!("Loading {}", lib_path);
+            Library::new(lib_path)?
+        };
 
         Ok(Self {
             importers: HashMap::new(),

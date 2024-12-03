@@ -17,15 +17,15 @@ static TRANSFORMER_NAME: &str = "uppercase";
 static TEST_DATA: &str = "../data/testfile.txt";
 
 fn load_importer() -> Result<Plugin, Box<dyn std::error::Error>> {
-    Plugin::new(PLUGIN_PATH, IMPORT_PLUGIN_NAME)
+    Plugin::new(Some(PLUGIN_PATH), IMPORT_PLUGIN_NAME)
 }
 
 fn load_exporter() -> Result<Plugin, Box<dyn std::error::Error>> {
-    Plugin::new(PLUGIN_PATH, EXPORT_PLUGIN_NAME)
+    Plugin::new(Some(PLUGIN_PATH), EXPORT_PLUGIN_NAME)
 }
 
 fn load_transformer() -> Result<Plugin, Box<dyn std::error::Error>> {
-    Plugin::new(PLUGIN_PATH, TRANSFORM_PLUGIN_NAME)
+    Plugin::new(Some(PLUGIN_PATH), TRANSFORM_PLUGIN_NAME)
 }
 
 fn create_transformer<'a>(

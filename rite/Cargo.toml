@@ -10,7 +10,7 @@ plugin = { path="../plugin" }
 import = { path="../import" }
 export = { path="../export" }
 transform = { path="../transform" }
-gag = "1.0.0"
-log = "0.4.22"
-log4rs = "1.3.0"
+gag = "1.0"
+log = "0.4"
+log4rs = "1.3"
 

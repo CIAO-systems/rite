@@ -18,7 +18,7 @@ pub struct Plugins {
 pub struct Plugin {
     #[serde(rename = "id")]
     pub id: String,
-    pub path: String,
+    pub path: Option<String>,
     pub name: String,
 }
 

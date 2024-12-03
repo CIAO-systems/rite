@@ -413,6 +413,8 @@ dependencies = [
  "export",
  "import",
  "libloading",
+ "log",
+ "log4rs",
  "transform",
 ]
 

@@ -22,7 +22,7 @@ fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
     // Verify specific plugin details
     let import_plugin = &rite.plugins.plugins[0];
     assert_eq!(import_plugin.id, "import_plugin");
-    assert_eq!(import_plugin.path, "../target/debug");
+    assert_eq!(import_plugin.path, Some("../target/debug".to_string()));
     assert_eq!(import_plugin.name, "example_import");
 
     // Verify process details

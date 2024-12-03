@@ -35,7 +35,8 @@ impl Rite {
         if let Some(plugin_desc) = self.get_plugin_desc(&process.importer.plugin.as_str()) {
             debug!("Importer plugin: {:#?}", plugin_desc);
 
-            let mut importer_plugin = plugin::Plugin::new(&plugin_desc.path, &plugin_desc.name)?;
+            let mut importer_plugin =
+                plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
             let importer = importer_plugin.create_importer(&process.importer.name)?;
 
             let config = &process.importer.configuration;
@@ -78,7 +79,7 @@ impl Rite {
                 );
 
                 let mut transformer_plugin =
-                    plugin::Plugin::new(&plugin_desc.path, &plugin_desc.name)?;
+                    plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
                 let transformer = transformer_plugin.create_transformer(&transformer_desc.name)?;
 
                 let config = &transformer_desc.configuration;
@@ -103,7 +104,7 @@ impl Rite {
                 );
 
                 let mut exporter_plugin =
-                    plugin::Plugin::new(&plugin_desc.path, &plugin_desc.name)?;
+                    plugin::Plugin::new(plugin_desc.path.as_deref(), &plugin_desc.name)?;
                 let exporter = exporter_plugin.create_exporter(&exporter_desc.name)?;
 
                 let config = &exporter_desc.configuration;

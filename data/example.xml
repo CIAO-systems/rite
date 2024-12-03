@@ -1,8 +1,8 @@
 <rite>
     <plugins>
-        <plugin id="import_plugin" path="target/debug" name="example_import"/>
-        <plugin id="export_plugin" path="target/debug" name="example_export"/>
-        <plugin id="transform_plugin" path="target/debug" name="example_transform"/>
+        <plugin id="import_plugin" name="example_import"/>
+        <plugin id="export_plugin" name="example_export"/>
+        <plugin id="transform_plugin" name="example_transform"/>
     </plugins>
     <processes>
         <process id="text-uppercase-console">
