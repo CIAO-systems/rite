@@ -15,11 +15,14 @@
                 <transformer plugin="transform_plugin" name="uppercase"/>
                 <transformer plugin="transform_plugin" name="lowercase" />
                 <transformer plugin="transform_plugin" name="doubler" />
-                <transformer plugin="transform_plugin" name="doubler" />
-                <transformer plugin="transform_plugin" name="uppercase"/>
             </transformers>
             <exporters>
-                <exporter plugin="export_plugin" name="console" />
+                <exporter plugin="export_plugin" name="console">
+                    <configuration>
+                        <config key="prefix" value="First: " />
+                    </configuration>
+                </exporter>
+
                 <exporter plugin="export_plugin" name="console" />
             </exporters>
         </process>

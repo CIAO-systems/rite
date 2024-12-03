@@ -5,6 +5,7 @@ use model::{xml, Initializable};
 
 pub struct ConsoleExporter {
     writer: Box<dyn Write>,
+    prefix: Option<String>,
 }
 
 impl ConsoleExporter {
@@ -14,7 +15,10 @@ impl ConsoleExporter {
     }
 
     pub fn new_writer(writer: Box<dyn Write>) -> Self {
-        ConsoleExporter { writer }
+        ConsoleExporter {
+            writer,
+            prefix: None,
+        }
     }
 }
 
@@ -22,6 +26,10 @@ impl Exporter for ConsoleExporter {
     fn write(&mut self, record: &model::record::Record) -> Result<(), Box<dyn std::error::Error>> {
         let fields = record.fields();
 
+        if let Some(ref prefix) = self.prefix {
+            write!(&mut self.writer, "{prefix}")?;
+        }
+        
         for (i, field) in fields.iter().enumerate() {
             if i > 0 {
                 write!(&mut self.writer, ",")?;
@@ -37,8 +45,13 @@ impl Exporter for ConsoleExporter {
 impl Initializable for ConsoleExporter {
     fn init(
         &mut self,
-        _config: Option<xml::Configuration>,
+        config: Option<xml::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        if let Some(config) = config {
+            if let Some(prefix) = config.configs.get("prefix") {
+                self.prefix = Some(String::from(prefix));
+            }
+        }
         Ok(())
     }
 }
