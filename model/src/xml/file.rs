@@ -46,16 +46,8 @@ mod tests {
 
     #[test]
     fn test_subsitution() -> Result<(), Box<dyn std::error::Error>> {
-        let input_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
-            <example>
-                <element>${ELEMENT}</element>
-                <attribute value="${ATTRIBUTE}" /> 
-            </example>"#;
-        let expected_xml = r#"<?xml version="1.0" encoding="UTF-8"?>
-            <example>
-                <element>replaced element</element>
-                <attribute value="replaced attribute" /> 
-            </example>"#;
+        let input_xml = r#"<?xml version="1.0" encoding="UTF-8"?><example><element>${ELEMENT}</element><attribute value="${ATTRIBUTE}" /></example>"#;
+        let expected_xml = r#"<?xml version="1.0" encoding="UTF-8"?><example><element>replaced element</element><attribute value="replaced attribute" /></example>"#;
 
         let mut output = Vec::new();
         // Create XML reader and writer
@@ -68,6 +60,24 @@ mod tests {
                     // Substitute variables in `text`
                     let substituted = substitute(&text);
                     writer.write(WriteEvent::Characters(&substituted))?;
+                }
+                ReaderEvent::StartElement {
+                    ref name,
+                    ref mut attributes,
+                    ref namespace,
+                } => {
+                    let element = WriteEvent::StartElement {
+                        name: name.borrow(),
+                        attributes: attributes
+                            .iter_mut()
+                            .map(|a| {
+                                a.value = substitute(&a.value).to_string();
+                                a.borrow()
+                            })
+                            .collect(),
+                        namespace: namespace.borrow(),
+                    };
+                    writer.write(element)?;
                 }
                 // ReaderEvent::StartElement {
                 //     name,
