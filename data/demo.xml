@@ -1,0 +1,11 @@
+<root>
+    <configuration xml="filename" />
+    <configuration>
+        <config key="1" value="one" />
+        <config key="2" value="two" />
+    </configuration>
+    <configuration xml="anotherfile">
+        <config key="1" value="one.1" />
+        <config key="2" value="two.2" />
+    </configuration>
+</root>
