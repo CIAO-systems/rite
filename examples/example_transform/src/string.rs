@@ -20,7 +20,7 @@ impl StringFieldConverter {
 impl Initializable for StringFieldConverter {
     fn init(
         &mut self,
-        _config: Option<model::xml::Configuration>,
+        _config: Option<model::xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }

@@ -8,11 +8,11 @@ const CREATE_IMPORTER: &[u8] = b"create_importer";
 const CREATE_TRANSFORMER: &[u8] = b"create_transformer";
 
 pub type ImporterCreator =
-    unsafe fn(name: &str) -> Result<Box<dyn Importer>, Box<dyn std::error::Error>>;
+    unsafe fn(name: Option<&str>) -> Result<Box<dyn Importer>, Box<dyn std::error::Error>>;
 pub type ExporterCreator =
-    unsafe fn(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>>;
+    unsafe fn(name: Option<&str>) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>>;
 pub type TransformerCreator =
-    unsafe fn(name: &str) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>>;
+    unsafe fn(name: Option<&str>) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>>;
 
 pub struct Plugin {
     // this must be last, so it get dropped last
@@ -54,7 +54,7 @@ impl Plugin {
 
     pub fn create_importer(
         &self,
-        name: &str,
+        name: Option<&str>,
     ) -> Result<Box<dyn Importer>, Box<dyn std::error::Error>> {
         let creator: Symbol<ImporterCreator> = unsafe { self._lib.get(CREATE_IMPORTER)? };
         unsafe { creator(name) }
@@ -62,7 +62,7 @@ impl Plugin {
 
     pub fn create_exporter(
         &self,
-        name: &str,
+        name: Option<&str>,
     ) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
         let creator: Symbol<ExporterCreator> = unsafe { self._lib.get(CREATE_EXPORTER)? };
         unsafe { creator(name) }
@@ -70,7 +70,7 @@ impl Plugin {
 
     pub fn create_transformer(
         &self,
-        name: &str,
+        name: Option<&str>,
     ) -> Result<Box<dyn Transformer>, Box<dyn std::error::Error>> {
         let creator: Symbol<TransformerCreator> = unsafe { self._lib.get(CREATE_TRANSFORMER)? };
         unsafe { creator(name) }

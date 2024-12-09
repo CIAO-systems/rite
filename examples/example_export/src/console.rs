@@ -29,7 +29,7 @@ impl Exporter for ConsoleExporter {
         if let Some(ref prefix) = self.prefix {
             write!(&mut self.writer, "{prefix}")?;
         }
-        
+
         for (i, field) in fields.iter().enumerate() {
             if i > 0 {
                 write!(&mut self.writer, ",")?;
@@ -45,10 +45,10 @@ impl Exporter for ConsoleExporter {
 impl Initializable for ConsoleExporter {
     fn init(
         &mut self,
-        config: Option<xml::Configuration>,
+        config: Option<xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(config) = config {
-            if let Some(prefix) = config.configs.get("prefix") {
+            if let Some(prefix) = config.get("prefix") {
                 self.prefix = Some(String::from(prefix));
             }
         }

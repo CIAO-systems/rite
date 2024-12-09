@@ -1,0 +1,16 @@
+<rite>
+    <plugins>
+        <plugin id="rite_postgres" name="PostgresSQL"/>
+        <plugin id="export_plugin" name="example_export"/>
+    </plugins>
+    <processes>
+        <process id="read-from-table-print-on-console">
+            <importer plugin="rite_postgres">
+                <configuration xml="postgres-import-config.xml" />
+            </importer>
+            <exporters>
+                <exporter plugin="export_plugin" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

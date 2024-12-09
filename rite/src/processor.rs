@@ -58,7 +58,7 @@ impl Rite {
             debug!("Importer plugin: {:#?}", plugin_desc);
 
             let plugin = self.load_plugin(plugin_desc)?;
-            let mut importer = plugin.create_importer(&process.importer.name)?;
+            let mut importer = plugin.create_importer(process.importer.name.as_deref())?;
 
             let config = &process.importer.configuration;
             let _ = importer.init(config.clone())?;
@@ -92,19 +92,24 @@ impl Rite {
         process: &xml::Process,
     ) -> Result<Option<Record>, Box<dyn std::error::Error>> {
         let mut transformed_record = Record::copy(record);
-        for transformer_desc in &process.transformers.transformers {
-            if let Some(plugin_desc) = self.get_plugin_desc(&transformer_desc.plugin.as_str()) {
-                debug!(
-                    "Transformer plugin ({}): {:#?}",
-                    transformer_desc.name, plugin_desc
-                );
 
-                let plugin = self.load_plugin(plugin_desc)?;
-                let mut transformer = plugin.create_transformer(&transformer_desc.name)?;
+        if let Some(ref transformers) = process.transformers {
+            for transformer_desc in &transformers.transformers {
+                if let Some(plugin_desc) = self.get_plugin_desc(&transformer_desc.plugin.as_str()) {
+                    debug!(
+                        "Transformer plugin ({:?}): {:#?}",
+                        transformer_desc.name, plugin_desc
+                    );
 
-                let config = &transformer_desc.configuration;
-                let _ = transformer.init(config.clone())?;
-                transformed_record = transformer.process(&transformed_record)?;
+                    let plugin = self.load_plugin(plugin_desc)?;
+
+                    let mut transformer =
+                        plugin.create_transformer(transformer_desc.name.as_deref())?;
+
+                    let config = &transformer_desc.configuration;
+                    let _ = transformer.init(config.clone())?;
+                    transformed_record = transformer.process(&transformed_record)?;
+                }
             }
         }
 
@@ -119,12 +124,12 @@ impl Rite {
         for exporter_desc in &process.exporters.exporters {
             if let Some(plugin_desc) = self.get_plugin_desc(&exporter_desc.plugin.as_str()) {
                 debug!(
-                    "Exporter plugin ({}): {:#?}",
+                    "Exporter plugin ({:?}): {:#?}",
                     exporter_desc.name, plugin_desc
                 );
 
                 let plugin = self.load_plugin(plugin_desc)?;
-                let mut exporter = plugin.create_exporter(&exporter_desc.name)?;
+                let mut exporter = plugin.create_exporter(exporter_desc.name.as_deref())?;
 
                 let config = &exporter_desc.configuration;
                 let _ = exporter.init(config.clone())?;

@@ -2,7 +2,7 @@ use export::Exporter;
 use import::Importer;
 use model::xml;
 use plugin::Plugin;
-use std::{collections::HashMap, io::Read};
+use std::io::Read;
 use transform::Transformer;
 
 static PLUGIN_PATH: &str = "../target/debug";
@@ -35,7 +35,7 @@ fn create_transformer<'a>(
     // 1. load plugin
     // 2. Call creator function in plugin for a transformer
     // 3. box it and return it
-    match transformer_plugin.create_transformer(transformer_name) {
+    match transformer_plugin.create_transformer(Some(transformer_name)) {
         Ok(mut transformer) => {
             let _ = transformer.init(None);
             Ok(transformer)
@@ -51,7 +51,7 @@ fn create_exporter<'a>(
     // 1. load plugin
     // 2. Call creator function in plugin for an exporter
     // 3. box it and return it
-    match exporter_plugin.create_exporter(exporter_name) {
+    match exporter_plugin.create_exporter(Some(exporter_name)) {
         Ok(mut exporter) => {
             let _ = exporter.init(None);
             Ok(exporter)
@@ -68,7 +68,7 @@ pub fn create_importer<'a>(
     // 2. Call creator function in plugin for an importer
     // 3. Initialize the importer
     // 3. box it and return it
-    match importer_plugin.create_importer(importer_name) {
+    match importer_plugin.create_importer(Some(importer_name)) {
         Ok(mut importer) => {
             let config = create_test_importer_config();
             let _ = importer.init(Some(config))?;
@@ -78,13 +78,9 @@ pub fn create_importer<'a>(
     }
 }
 
-fn create_test_importer_config() -> xml::Configuration {
-    let mut config = xml::Configuration {
-        configs: HashMap::new(),
-    };
-    config
-        .configs
-        .insert(String::from("file_name"), TEST_DATA.to_string());
+fn create_test_importer_config() -> xml::config::Configuration {
+    let mut config = xml::config::Configuration::new();
+    config.insert(String::from("file_name"), TEST_DATA.to_string());
     config
 }
 

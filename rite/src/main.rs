@@ -1,7 +1,16 @@
+use clap::Parser;
 use log::info;
 
 mod processor;
-static EXAMPLE_XML: &str = "data/example.xml";
+
+/// Struct for the command line options for the replay binary
+#[derive(clap::Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// XML File location
+    #[arg(short, long)]
+    file: Option<String>,
+}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     helper::pwd();
@@ -9,8 +18,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Rust Import/Transform/Export");
 
-    let rp = processor::Rite::new(EXAMPLE_XML)?;
-    rp.process()?;
+    let cli = Cli::parse();
+    if let Some(file) = cli.file {
+        let rp = processor::Rite::new(&file)?;
+        rp.process()?;
+    } else {
+        log::error!("No XML file given. Try with -f <filename> or --file=<filename>");
+    }
 
     Ok(())
 }

@@ -5,9 +5,11 @@ members = [
     "helper",
     "import", 
     "model", 
-    "examples/example_import", 
     "rite", 
     "transform", 
     "plugin", 
-    "examples/example_export"
-    , "examples/example_transform"]
+    "examples/example_import", 
+    "examples/example_export", 
+    "examples/example_transform", 
+    "plugins/postgres"
+]

@@ -1,0 +1,18 @@
+[package]
+name = "rite_postgres"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { path="../../model" }
+import = { path="../../import" }
+helper = { path="../../helper" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde-xml-rs = "0.5"
+postgres = "0.19.9"
+chrono = "0.4.39"
+
+[lib]
+name = "rite_postgres"
+crate-type = ["dylib"]

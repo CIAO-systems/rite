@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+
+pub mod config;
+pub mod file;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Rite {
@@ -32,7 +34,7 @@ pub struct Process {
     #[serde(rename = "id")]
     pub id: String,
     pub importer: Importer,
-    pub transformers: Transformers,
+    pub transformers: Option<Transformers>,
     pub exporters: Exporters,
 }
 
@@ -40,14 +42,8 @@ pub struct Process {
 pub struct Importer {
     #[serde(rename = "plugin")]
     pub plugin: String,
-    pub name: String,
-    pub configuration: Option<Configuration>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Configuration {
-    #[serde(rename = "config", deserialize_with = "deserialize_config_hashmap")]
-    pub configs: HashMap<String, String>,
+    pub name: Option<String>,
+    pub configuration: Option<config::Configuration>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -60,8 +56,8 @@ pub struct Transformers {
 pub struct Transformer {
     #[serde(rename = "plugin")]
     pub plugin: String,
-    pub name: String,
-    pub configuration: Option<Configuration>,
+    pub name: Option<String>,
+    pub configuration: Option<config::Configuration>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -74,29 +70,9 @@ pub struct Exporters {
 pub struct Exporter {
     #[serde(rename = "plugin")]
     pub plugin: String,
-    pub name: String,
-    pub configuration: Option<Configuration>,
+    pub name: Option<String>,
+    pub configuration: Option<config::Configuration>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ConfigItem {
-    pub key: String,
-    pub value: String,
-}
-
-// Custom deserialization function to convert config items to a HashMap
-fn deserialize_config_hashmap<'de, D>(deserializer: D) -> Result<HashMap<String, String>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let configs = Vec::<ConfigItem>::deserialize(deserializer)?;
-    Ok(configs
-        .into_iter()
-        .map(|config| (config.key, config.value))
-        .collect())
-}
-
-pub mod file;
 
 #[cfg(test)]
 mod test;

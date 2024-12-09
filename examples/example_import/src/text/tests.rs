@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use import::Importer;
 use model::{record::Record, value::Value, xml, Initializable};
 
@@ -146,12 +144,9 @@ fn test_read() {
 }
 
 fn create_test_importer_configuration() -> Result<TextFileImporter, Box<dyn std::error::Error>> {
-    let mut config = xml::Configuration {
-        configs: HashMap::new(),
-    };
-    config
-        .configs
-        .insert(String::from("file_name"), TEST_DATA.to_string());
+    let mut config = xml::config::Configuration::new();
+
+    config.insert(String::from("file_name"), TEST_DATA.to_string());
 
     let mut importer = TextFileImporter::new();
     importer.init(Some(config))?;

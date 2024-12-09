@@ -11,7 +11,7 @@ impl CharacterDoubler {
 impl Initializable for CharacterDoubler {
     fn init(
         &mut self,
-        _config: Option<model::xml::Configuration>,
+        _config: Option<model::xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }

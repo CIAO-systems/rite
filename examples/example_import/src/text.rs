@@ -9,7 +9,7 @@ use model::{field::Field, record::Record, xml, Initializable};
 
 #[derive(Debug)]
 pub struct TextFileImporter {
-    config: Option<xml::Configuration>,
+    config: Option<xml::config::Configuration>,
     reader: Option<BufReader<File>>,
     next_line: usize,
 }
@@ -66,10 +66,8 @@ impl TextFileImporter {
         self.next_line += index;
         Ok(())
     }
-}
 
-impl Importer for TextFileImporter {
-    fn next(
+    pub fn next(
         &mut self,
         n: Option<usize>,
     ) -> Result<Option<Vec<model::record::Record>>, Box<dyn std::error::Error>> {
@@ -77,7 +75,9 @@ impl Importer for TextFileImporter {
         self.read_lines(n, |record| records.push(record))?;
         Ok(Some(records))
     }
+}
 
+impl Importer for TextFileImporter {
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(reader) = self.reader.as_mut() {
             let _ = reader.seek(std::io::SeekFrom::Start(0))?;
@@ -95,13 +95,13 @@ impl Importer for TextFileImporter {
 impl Initializable for TextFileImporter {
     fn init(
         &mut self,
-        config: Option<xml::Configuration>,
+        config: Option<xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // take ownership for `config`
         self.config = config;
 
         match self.config.as_ref() {
-            Some(config) => match config.configs.get("file_name") {
+            Some(config) => match config.get("file_name") {
                 Some(file_name) => {
                     let path = Path::new(&file_name);
                     let file = match File::open(path) {

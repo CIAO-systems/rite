@@ -10,6 +10,6 @@ pub trait Initializable {
     /// configuration values live as long the instance
     fn init(
         &mut self,
-        config: Option<xml::Configuration>,
+        config: Option<xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>>;
 }
