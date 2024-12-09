@@ -21,7 +21,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     if let Some(file) = cli.file {
         let rp = processor::Rite::new(&file)?;
-        rp.process()?;
+        match rp.process() {
+            Ok(_) => log::info!("Successfully processed"),
+            Err(e) => log::error!("Error processing: {}", e),
+        }
     } else {
         log::error!("No XML file given. Try with -f <filename> or --file=<filename>");
     }

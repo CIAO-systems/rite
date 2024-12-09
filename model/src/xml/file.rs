@@ -13,7 +13,6 @@ pub fn create_rite(xml_file: &str) -> Result<Rite, Box<dyn std::error::Error>> {
         Ok(rite) => rite,
         Err(e) => return Err(format!("Cannot parse contents from {}: {}", xml_file, e).into()),
     };
-    println!("here");
     Ok(rite)
 }
 

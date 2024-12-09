@@ -19,12 +19,12 @@ root:
 
 loggers:
   rite::processor:
-    level: info
+    level: error
     appenders:
       - stdout
     additive: false
   plugin:
-    level: debug
+    level: error
     appenders:
       - stdout
     additive: false

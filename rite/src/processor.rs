@@ -121,6 +121,7 @@ impl Rite {
         record: &Record,
         process: &xml::Process,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        // Export to every onfigured exporter
         for exporter_desc in &process.exporters.exporters {
             if let Some(plugin_desc) = self.get_plugin_desc(&exporter_desc.plugin.as_str()) {
                 debug!(
@@ -128,13 +129,17 @@ impl Rite {
                     exporter_desc.name, plugin_desc
                 );
 
-                let plugin = self.load_plugin(plugin_desc)?;
-                let mut exporter = plugin.create_exporter(exporter_desc.name.as_deref())?;
+                match self.load_plugin(plugin_desc) {
+                    Ok(plugin) => {
+                        let mut exporter = plugin.create_exporter(exporter_desc.name.as_deref())?;
 
-                let config = &exporter_desc.configuration;
-                let _ = exporter.init(config.clone())?;
+                        let config = &exporter_desc.configuration;
+                        let _ = exporter.init(config.clone())?;
 
-                exporter.write(record)?;
+                        exporter.write(record)?;
+                    }
+                    Err(e) => error!("Error loading plugin {:?}: {}", plugin_desc, e),
+                }
             }
         }
 
