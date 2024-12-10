@@ -125,12 +125,14 @@ impl Rite {
         Ok(Some(transformed_record))
     }
 
+    /// Exports the record to all exporters
+    ///
     fn export(
         &self,
         record: &Record,
         process: &xml::Process,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // Export to every onfigured exporter
+        // Export to every configured exporter
         for exporter_desc in &process.exporters.exporters {
             if let Some(plugin_desc) = self.get_plugin_desc(&exporter_desc.plugin.as_str()) {
                 debug!(
@@ -138,6 +140,7 @@ impl Rite {
                     exporter_desc.name, plugin_desc
                 );
 
+                // FIXME very inefficient, plugin is loaded and initialized with every record
                 match self.load_plugin(plugin_desc) {
                     Ok(plugin) => {
                         let mut exporter = plugin.create_exporter(exporter_desc.name.as_deref())?;

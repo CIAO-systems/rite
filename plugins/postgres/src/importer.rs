@@ -1,4 +1,4 @@
-use config::RitePostgres;
+use config::RitePostgresImport;
 use import::Importer;
 use model::{
     field::Field,
@@ -12,8 +12,9 @@ mod config;
 
 #[derive(Debug)]
 pub struct PostgresImporter {
-    postgres: Option<RitePostgres>,
+    postgres: Option<RitePostgresImport>,
 }
+
 impl PostgresImporter {
     pub(crate) fn new() -> Self {
         Self { postgres: None }
@@ -29,7 +30,7 @@ impl Initializable for PostgresImporter {
             if let Some(ref xml) = config.xml {
                 match load_and_substitute_from_env(xml, &std::collections::HashMap::new()) {
                     Ok(xml_contents) => {
-                        let postgres: config::RitePostgres =
+                        let postgres: config::RitePostgresImport =
                             match serde_xml_rs::from_str(&xml_contents) {
                                 Ok(x) => x,
                                 Err(e) => {

@@ -1,4 +1,4 @@
-<rite-postgres>
+<rite-postgres-import>
     <connection 
         host="localhost"
         port="5432"
@@ -7,4 +7,4 @@
         password="${POSTGRES_PASSWROD:6d598907-a775-4383-ab6f-de525c5ac0bf}"
     />
     <sql>select * from customers</sql>
-</rite-postgres>
+</rite-postgres-import>

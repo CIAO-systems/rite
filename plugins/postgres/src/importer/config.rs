@@ -1,19 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename = "rite-postgres")]
-pub struct RitePostgres {
-    pub connection: Connection,
-    pub sql: String,
-}
+use crate::common::Connection;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Connection {
-    pub host: String,
-    pub port: u16,
-    pub database: String,
-    pub user: String,
-    pub password: String,
+#[serde(rename = "rite-postgres-import")]
+pub struct RitePostgresImport {
+    pub connection: Connection,
+    pub sql: String,
 }
 
 #[cfg(test)]
@@ -21,13 +14,13 @@ mod tests {
     use helper::pwd;
     use model::xml::file::load_and_substitute_from_env;
 
-    use crate::importer::config::RitePostgres;
+    use crate::importer::config::RitePostgresImport;
 
     #[test]
     fn test() {
         // Example usage
         let xml = r#"
-        <rite-postgres>
+        <rite-postgres-import>
             <connection 
                 host="localhost"
                 port="5432"
@@ -36,10 +29,10 @@ mod tests {
                 password="${POSTGRES_PASSWROD:topsecret}"
             />
             <sql>select * from customers</sql>
-        </rite-postgres>
+        </rite-postgres-import>
         "#;
 
-        let config: RitePostgres = serde_xml_rs::from_str(xml).unwrap();
+        let config: RitePostgresImport = serde_xml_rs::from_str(xml).unwrap();
         println!("{:#?}", config);
 
         assert_eq!("localhost", config.connection.host);
@@ -56,7 +49,7 @@ mod tests {
         let xml_file = "../../data/postgres-import-config.xml";
         match load_and_substitute_from_env(xml_file, &std::collections::HashMap::new()) {
             Ok(xml_contents) => {
-                let postgres: RitePostgres = match serde_xml_rs::from_str(&xml_contents) {
+                let postgres: RitePostgresImport = match serde_xml_rs::from_str(&xml_contents) {
                     Ok(x) => x,
                     Err(e) => {
                         return Err(format!("Cannot parse contents from {}: {}", xml_file, e).into())

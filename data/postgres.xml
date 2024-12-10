@@ -16,6 +16,9 @@
             </transformers>
             <exporters>
                 <exporter plugin="export_plugin" name="console" />
+                <exporter plugin="rite_postgres">
+                    <configuration xml="$RITE_CONFIG_PATH/postgres-export-config.xml" />
+                </exporter>
             </exporters>
         </process>
     </processes>

@@ -982,9 +982,12 @@ dependencies = [
 name = "rite_postgres"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "chrono",
+ "export",
  "helper",
  "import",
+ "log",
  "model",
  "postgres",
  "serde",

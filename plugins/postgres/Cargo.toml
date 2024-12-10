@@ -6,12 +6,15 @@ edition = "2021"
 [dependencies]
 model = { path="../../model" }
 import = { path="../../import" }
+export = { path="../../export" }
 helper = { path="../../helper" }
 
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.5"
 postgres = "0.19.9"
 chrono = "0.4.39"
+bytes = "1.9"
+log = "0.4"
 
 [lib]
 name = "rite_postgres"
