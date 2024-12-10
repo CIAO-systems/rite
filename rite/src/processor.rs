@@ -1,5 +1,6 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
+use helper::get_full_path;
 use log::{debug, error, info};
 use model::{record::Record, xml};
 use moka::sync::Cache;
@@ -9,10 +10,14 @@ pub struct Rite {
     plugin_cache: Cache<String, Arc<plugin::Plugin>>,
 }
 
+static RITE_CONFIG_PATH: &str = "RITE_CONFIG_PATH";
+
 impl Rite {
     pub fn new(xml_file_name: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let variables = create_variables(xml_file_name);
+
         Ok(Rite {
-            rite: xml::file::create_rite(xml_file_name)?,
+            rite: xml::file::create_rite(xml_file_name, &variables)?,
             plugin_cache: Cache::builder().build(),
         })
     }
@@ -146,3 +151,23 @@ impl Rite {
         Ok(())
     }
 }
+
+fn create_variables(xml_file_name: &str) -> HashMap<String, String> {
+    let mut variables: HashMap<String, String> = std::collections::HashMap::new();
+    match get_full_path(xml_file_name) {
+        Ok(full_path) => {
+            //
+            if let Some(parent_path) = full_path.parent() {
+                if let Some(parent_path) = parent_path.to_str() {
+                    variables.insert(String::from(RITE_CONFIG_PATH), String::from(parent_path));
+                }
+            }
+        }
+        Err(e) => error!("Error while getting full path for {}: {}", xml_file_name, e),
+    }
+
+    variables
+}
+
+#[cfg(test)]
+mod tests;

@@ -1,12 +1,12 @@
 <rite>
     <plugins>
-        <plugin id="rite_postgres" path="/home/freiheit/git/ciao.systems/rite/target/debug" name="rite_postgres"/>
-        <plugin id="export_plugin" path="/home/freiheit/git/ciao.systems/rite/target/debug" name="example_export"/>
+        <plugin id="rite_postgres" path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
+        <plugin id="export_plugin" path="$RITE_CONFIG_PATH/../target/debug" name="example_export"/>
     </plugins>
     <processes>
         <process id="read-from-table-print-on-console">
             <importer plugin="rite_postgres">
-                <configuration xml="/home/freiheit/git/ciao.systems/rite/data/postgres-import-config.xml" />
+                <configuration xml="$RITE_CONFIG_PATH/postgres-import-config.xml" />
             </importer>
             <exporters>
                 <exporter plugin="export_plugin" name="console" />

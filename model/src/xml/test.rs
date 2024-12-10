@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::xml::file::create_rite;
 
 static EXAMPLE_XML: &str = "../data/test-example.xml";
@@ -5,7 +7,7 @@ static EXAMPLE_2_XML: &str = "../data/test-example-2.xml";
 
 #[test]
 fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
-    let rite = create_rite(EXAMPLE_XML)?;
+    let rite = create_rite(EXAMPLE_XML, &HashMap::new())?;
     println!("{:#?}", rite);
 
     // Add some basic assertions to verify the parsing
@@ -53,7 +55,7 @@ fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 fn test_example_2_xml() -> Result<(), Box<dyn std::error::Error>> {
-    let rite = create_rite(EXAMPLE_2_XML)?;
+    let rite = create_rite(EXAMPLE_2_XML, &HashMap::new())?;
 
     // Add some basic assertions to verify the parsing
     assert!(

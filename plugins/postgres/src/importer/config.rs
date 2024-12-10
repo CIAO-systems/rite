@@ -54,7 +54,7 @@ mod tests {
     fn test_file() -> Result<(), Box<dyn std::error::Error>> {
         pwd();
         let xml_file = "../../data/postgres-import-config.xml";
-        match load_and_substitute_from_env(xml_file) {
+        match load_and_substitute_from_env(xml_file, &std::collections::HashMap::new()) {
             Ok(xml_contents) => {
                 let postgres: RitePostgres = match serde_xml_rs::from_str(&xml_contents) {
                     Ok(x) => x,

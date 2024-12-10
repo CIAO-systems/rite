@@ -27,7 +27,7 @@ impl Initializable for PostgresImporter {
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(config) = config {
             if let Some(ref xml) = config.xml {
-                match load_and_substitute_from_env(xml) {
+                match load_and_substitute_from_env(xml, &std::collections::HashMap::new()) {
                     Ok(xml_contents) => {
                         let postgres: config::RitePostgres =
                             match serde_xml_rs::from_str(&xml_contents) {
