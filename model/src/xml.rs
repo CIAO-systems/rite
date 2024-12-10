@@ -49,7 +49,7 @@ pub struct Importer {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Transformers {
     #[serde(rename = "transformer")]
-    pub transformers: Vec<Transformer>,
+    pub transformers: Option<Vec<Transformer>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

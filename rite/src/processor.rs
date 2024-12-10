@@ -99,21 +99,25 @@ impl Rite {
         let mut transformed_record = Record::copy(record);
 
         if let Some(ref transformers) = process.transformers {
-            for transformer_desc in &transformers.transformers {
-                if let Some(plugin_desc) = self.get_plugin_desc(&transformer_desc.plugin.as_str()) {
-                    debug!(
-                        "Transformer plugin ({:?}): {:#?}",
-                        transformer_desc.name, plugin_desc
-                    );
+            if let Some(ref transformers) = transformers.transformers {
+                for transformer_desc in transformers {
+                    if let Some(plugin_desc) =
+                        self.get_plugin_desc(&transformer_desc.plugin.as_str())
+                    {
+                        debug!(
+                            "Transformer plugin ({:?}): {:#?}",
+                            transformer_desc.name, plugin_desc
+                        );
 
-                    let plugin = self.load_plugin(plugin_desc)?;
+                        let plugin = self.load_plugin(plugin_desc)?;
 
-                    let mut transformer =
-                        plugin.create_transformer(transformer_desc.name.as_deref())?;
+                        let mut transformer =
+                            plugin.create_transformer(transformer_desc.name.as_deref())?;
 
-                    let config = &transformer_desc.configuration;
-                    let _ = transformer.init(config.clone())?;
-                    transformed_record = transformer.process(&transformed_record)?;
+                        let config = &transformer_desc.configuration;
+                        let _ = transformer.init(config.clone())?;
+                        transformed_record = transformer.process(&transformed_record)?;
+                    }
                 }
             }
         }

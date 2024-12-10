@@ -2,12 +2,18 @@
     <plugins>
         <plugin id="rite_postgres" path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
         <plugin id="export_plugin" path="$RITE_CONFIG_PATH/../target/debug" name="example_export"/>
+        <plugin id="transform_plugin" path="$RITE_CONFIG_PATH/../target/debug" name="example_transform"/>
     </plugins>
     <processes>
         <process id="read-from-table-print-on-console">
             <importer plugin="rite_postgres">
                 <configuration xml="$RITE_CONFIG_PATH/postgres-import-config.xml" />
             </importer>
+            <transformers>
+                <!-- <transformer plugin="transform_plugin" name="uppercase"/> -->
+                <!-- <transformer plugin="transform_plugin" name="lowercase"/> -->
+                <!-- <transformer plugin="transform_plugin" name="doubler"/> -->
+            </transformers>
             <exporters>
                 <exporter plugin="export_plugin" name="console" />
             </exporters>
