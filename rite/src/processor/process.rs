@@ -1,6 +1,11 @@
+use exporter::Exporter;
+use importer::Importer;
 use log::debug;
-use model::record::Record;
+use transformer::Transformer;
 
+pub mod exporter;
+pub mod importer;
+pub mod transformer;
 use super::rite::Rite;
 
 pub struct Process {
@@ -107,54 +112,40 @@ impl Process {
 
     /// Run the importer, transformers and exporters
     pub fn run(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        // Import data using the importer
-        if let Some(ref mut importer) = self.importer {
-            let mut records = Vec::new();
-            if let Err(e) = importer.read(&mut |record| {
-                records.push(Record::copy(record));
-            }) {
-                log::error!("Error while importing records: {}", e);
-            }
+        let (mut importer, transformer, mut exporter) = self.create();
 
-            for record in records {
-                match self.transform(&record) {
-                    Ok(tr) => {
-                        if let Some(tr) = tr {
-                            if let Err(e) = self.export(&tr) {
-                                log::error!("Error while exporting record: {}", e);
-                            }
-                        }
-                    }
-                    Err(e) => log::error!("Error while transforming a record: {}", e),
-                }
-            }
+        if let Some(ref mut importer) = importer {
+            importer.import(&transformer, &mut exporter)?;
         }
 
         Ok(())
     }
 
-    fn transform(&self, record: &Record) -> Result<Option<Record>, Box<dyn std::error::Error>> {
-        if let Some(ref transformers) = self.transformers {
-            let mut transformed_record = Record::copy(record);
-            for transformer in transformers {
-                transformed_record = transformer.process(&transformed_record)?;
-            }
-            Ok(Some(transformed_record))
+    fn create(
+        &mut self,
+    ) -> (
+        Option<Importer<'_>>,
+        Option<Transformer<'_>>,
+        Option<Exporter<'_>>,
+    ) {
+        let i = if let Some(ref mut importer) = self.importer {
+            Some(Importer::new(importer))
         } else {
-            Ok(None)
-        }
-    }
+            None
+        };
 
-    /// Exports the record to all exporters
-    ///
-    fn export(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
-        // Export to every configured exporter
-        if let Some(ref mut exporters) = self.exporters {
-            for exporter in exporters {
-                exporter.write(record)?;
-            }
-        }
+        let t = if let Some(ref transformers) = self.transformers {
+            Some(Transformer::new(&transformers))
+        } else {
+            None
+        };
 
-        Ok(())
+        let e = if let Some(ref mut exporters) = self.exporters {
+            Some(Exporter::new(exporters))
+        } else {
+            None
+        };
+
+        (i, t, e)
     }
 }
