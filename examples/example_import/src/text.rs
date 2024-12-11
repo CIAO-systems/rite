@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-use import::Importer;
+use import::{Importer, RecordCallback};
 use model::{field::Field, record::Record, xml, Initializable};
 
 #[derive(Debug)]
@@ -23,10 +23,10 @@ impl TextFileImporter {
         }
     }
 
-    fn read_lines<F: FnMut(Record)>(
+    fn read_lines(
         &mut self,
         n: Option<usize>,
-        mut callback: F,
+        callback: RecordCallback,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let mut index: usize = 0;
 
@@ -48,7 +48,7 @@ impl TextFileImporter {
                             self.next_line + index,
                         ));
 
-                        callback(record);
+                        callback(&record);
 
                         if let Some(n) = n {
                             if index == n {
@@ -71,8 +71,10 @@ impl TextFileImporter {
         &mut self,
         n: Option<usize>,
     ) -> Result<Option<Vec<model::record::Record>>, Box<dyn std::error::Error>> {
-        let mut records = Vec::new();
-        self.read_lines(n, |record| records.push(record))?;
+        let mut records: Vec<Record> = Vec::new();
+        self.read_lines(n, &mut |record| {
+            records.push(Record::copy(record));
+        })?;
         Ok(Some(records))
     }
 }
@@ -86,7 +88,10 @@ impl Importer for TextFileImporter {
         Ok(())
     }
 
-    fn read(&mut self, callback: &mut dyn FnMut(Record)) -> Result<(), Box<dyn std::error::Error>> {
+    fn read(
+        &mut self,
+        callback: &mut dyn FnMut(&Record),
+    ) -> Result<(), Box<dyn std::error::Error>> {
         self.read_lines(None, callback)?;
         Ok(())
     }

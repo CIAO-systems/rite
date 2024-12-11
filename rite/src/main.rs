@@ -13,14 +13,13 @@ struct Cli {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    helper::pwd();
     log4rs::init_file("log4rs.yaml", Default::default())?;
-
     info!("Rust Import/Transform/Export");
 
     let cli = Cli::parse();
     if let Some(file) = cli.file {
-        let rp = processor::Rite::new(&file)?;
+        let mut rp = processor::rite::Rite::new(&file)?;
+        rp.init()?;
         match rp.process() {
             Ok(_) => log::info!("Successfully processed"),
             Err(e) => log::error!("Error processing: {}", e),

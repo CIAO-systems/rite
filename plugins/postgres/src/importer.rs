@@ -54,7 +54,7 @@ impl Initializable for PostgresImporter {
 impl Importer for PostgresImporter {
     fn read(
         &mut self,
-        callback: &mut dyn FnMut(model::record::Record),
+        callback: &mut dyn for<'a> FnMut(&'a model::record::Record),
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref postgres) = self.postgres {
             // connect to database
@@ -75,7 +75,7 @@ impl Importer for PostgresImporter {
             // convert each row to a Record and send it to the callback
             for row in rows {
                 let record = handle_row(row)?;
-                callback(record);
+                callback(&record);
             }
         }
 

@@ -1,5 +1,4 @@
-use super::create_variables;
-use crate::processor::RITE_CONFIG_PATH;
+use crate::processor::rite::{create_variables, RITE_CONFIG_PATH};
 
 #[test]
 fn test_create_variables_relative1() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,7 +7,10 @@ fn test_create_variables_relative1() -> Result<(), Box<dyn std::error::Error>> {
 
     let value = variables.get(RITE_CONFIG_PATH);
     assert!(value.is_some());
-    assert_eq!(String::from(format!("{}/data", cwd.display())), *value.unwrap(),);
+    assert_eq!(
+        String::from(format!("{}/data", cwd.display())),
+        *value.unwrap(),
+    );
 
     Ok(())
 }
@@ -22,7 +24,10 @@ fn test_create_variables_relative2() -> Result<(), Box<dyn std::error::Error>> {
 
     let value = variables.get(RITE_CONFIG_PATH);
     assert!(value.is_some());
-    assert_eq!(String::from(format!("{}/data", cwdp.display())), *value.unwrap(),);
+    assert_eq!(
+        String::from(format!("{}/data", cwdp.display())),
+        *value.unwrap(),
+    );
 
     Ok(())
 }
@@ -34,7 +39,10 @@ fn test_create_variables_relative3() -> Result<(), Box<dyn std::error::Error>> {
 
     let value = variables.get(RITE_CONFIG_PATH);
     assert!(value.is_some());
-    assert_eq!(String::from(format!("{}/data", cwd.display())), *value.unwrap(),);
+    assert_eq!(
+        String::from(format!("{}/data", cwd.display())),
+        *value.unwrap(),
+    );
 
     Ok(())
 }

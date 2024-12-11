@@ -5,7 +5,7 @@ use super::TextFileImporter;
 
 static TEST_DATA: &str = "../../data/testfile.txt";
 
-fn check_correct_values(record: model::record::Record) {
+fn check_correct_values(record: &model::record::Record) {
     match record.field_by_name("index") {
         Some(field) => match field.value() {
             Value::USize(index) if index != 4 => {
@@ -48,7 +48,7 @@ fn test_next_all() {
                 if let Some(records) = records {
                     for record in records {
                         print_record(&record);
-                        check_correct_values(record);
+                        check_correct_values(&record);
                     }
                 }
             }
@@ -68,7 +68,7 @@ fn test_next_first_three() {
                     assert_eq!(3, records.len());
                     for record in records {
                         print_record(&record);
-                        check_correct_values(record);
+                        check_correct_values(&record);
                     }
                 }
             }
@@ -82,7 +82,7 @@ fn test_next_first_three() {
                     assert_eq!(2, records.len());
                     for record in records {
                         print_record(&record);
-                        check_correct_values(record);
+                        check_correct_values(&record);
                     }
                 }
             }
@@ -102,7 +102,7 @@ fn test_next_first_three_with_reset() {
                     assert_eq!(3, records.len());
                     for record in records {
                         print_record(&record);
-                        check_correct_values(record);
+                        check_correct_values(&record);
                     }
                 }
             }
@@ -118,7 +118,7 @@ fn test_next_first_three_with_reset() {
                             assert_eq!(3, records.len());
                             for record in records {
                                 print_record(&record);
-                                check_correct_values(record);
+                                check_correct_values(&record);
                             }
                         }
                     }
