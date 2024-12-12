@@ -15,7 +15,7 @@ fn test_generate_insert_statement() {
 
     if let Ok(statement) = generate_insert_statement("tablename", &record) {
         assert_eq!(
-            "INSERT INTO tablename (index, name) VALUES (?, ?);",
+            "INSERT INTO tablename (index, name) VALUES ($1, $2);",
             statement.sql
         );
     }

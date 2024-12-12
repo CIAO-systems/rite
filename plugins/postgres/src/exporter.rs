@@ -105,13 +105,16 @@ fn insert(
     record: &Record,
     client: &mut Client,
 ) -> Result<u64, postgres::Error> {
-    let statement = generate_insert_statement(&config.table.name, record)?;
-    let params = statement
-        .params
-        .iter()
-        .map(|v| v as &(dyn postgres::types::ToSql + Sync))
-        .collect::<Vec<_>>();
-    client.execute(&statement.sql, &params)
+    if let Ok(statement) = generate_insert_statement(&config.table.name, record) {
+        let params = statement
+            .params
+            .iter()
+            .map(|v| v as &(dyn postgres::types::ToSql + Sync))
+            .collect::<Vec<_>>();
+        client.execute(&statement.sql, &params)
+    } else {
+        Ok(0)
+    }
 }
 
 fn update(
@@ -120,13 +123,16 @@ fn update(
     client: &mut Client,
 ) -> Result<u64, postgres::Error> {
     let unique_fields = config.table.get_unique_fields_as_vec();
-    let statement = generate_update_statement(&config.table.name, record, &unique_fields)?;
-    let params = statement
-        .params
-        .iter()
-        .map(|v| v as &(dyn postgres::types::ToSql + Sync))
-        .collect::<Vec<_>>();
-    client.execute(&statement.sql, &params)
+    if let Ok(statement) = generate_update_statement(&config.table.name, record, &unique_fields) {
+        let params = statement
+            .params
+            .iter()
+            .map(|v| v as &(dyn postgres::types::ToSql + Sync))
+            .collect::<Vec<_>>();
+        client.execute(&statement.sql, &params)
+    } else {
+        Ok(0)
+    }
 }
 
 impl Initializable for PostgresExporter {
