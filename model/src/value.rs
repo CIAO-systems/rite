@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Bool(bool),
     Char(char),

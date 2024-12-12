@@ -1,6 +1,6 @@
-use super::generate_insert_statement;
-use crate::exporter::{config::RitePostgresExport, sql::_generate_create_table_statement};
-use model::{field::Field, record::Record, xml::file::load_and_substitute_from_env};
+use super::{generate_insert_statement, generate_update_statement};
+use crate::exporter::config::RitePostgresExport;
+use model::{field::Field, record::Record, value::Value, xml::file::load_and_substitute_from_env};
 use std::collections::HashMap;
 
 #[test]
@@ -13,7 +13,7 @@ fn test_generate_insert_statement() {
         "Some name".to_string(),
     ));
 
-    if let Ok(statement) = generate_insert_statement(&record, "tablename") {
+    if let Ok(statement) = generate_insert_statement("tablename", &record) {
         assert_eq!(
             "INSERT INTO tablename (index, name) VALUES (?, ?);",
             statement.sql
@@ -22,19 +22,31 @@ fn test_generate_insert_statement() {
 }
 
 #[test]
-fn test_generate_create_statement() {
-    let mut record = Record::new();
-    record.fields_as_mut().extend([
-        Field::new_i32("user_id".to_string(), 0),
-        Field::new_string("username".to_string(), "User name".to_string()),
-        Field::new_i32("age".to_string(), 42),
-        Field::new_bool("active".to_string(), true),
-    ]);
+fn test_generate_update_statement() {
+    let expected = [
+        Value::I32(0),
+        Value::String("user@company".to_string()),
+        Value::String("Some name".to_string()),
+    ];
 
-    let create_table_sql = _generate_create_table_statement(&record, "users");
-    println!("{}", create_table_sql);
-    assert_eq!("CREATE TABLE users (user_id INTEGER NOT NULL,username TEXT NOT NULL,age INTEGER NOT NULL,active BOOLEAN NOT NULL);", 
-    create_table_sql);
+    let mut record = Record::new();
+    let fields = record.fields_as_mut();
+    fields.push(Field::new_value("index".to_string(), expected[0].clone()));
+    fields.push(Field::new_value("email".to_string(), expected[1].clone()));
+    fields.push(Field::new_value("name".to_string(), expected[2].clone()));
+
+    let unique_fields = ["index".to_string(), "email".to_string()].to_vec();
+    if let Ok(statement) = generate_update_statement("tablename", &record, &unique_fields) {
+        assert_eq!(
+            "UPDATE tablename SET name = $3 WHERE index = $1 AND email = $2",
+            statement.sql
+        );
+
+        assert_eq!(3, statement.params.len());
+        for (i, value) in expected.iter().enumerate() {
+            assert_eq!(*value, statement.params[i].0);
+        }
+    }
 }
 
 static EXAMPLE_XML: &str = "../../data/test-postgres-export-config.xml";

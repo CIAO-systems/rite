@@ -1,6 +1,6 @@
-use model::{xml::file::load_and_substitute_from_env, Initializable};
+use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
 use postgres::Client;
-use sql::generate_insert_statement;
+use sql::{generate_insert_statement, generate_update_statement};
 
 mod config;
 mod sql;
@@ -73,25 +73,62 @@ impl PostgresExporter {
         Ok(())
     }
 
-    fn insert(&mut self, record: &model::record::Record) -> Result<(), Box<dyn std::error::Error>> {
+    fn insert_or_update(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref mut client) = self.client {
             if let Some(ref config) = self.postgres {
-                let statement = generate_insert_statement(record, &config.table.name)?;
-
-                client.execute(
-                    &statement.sql,
-                    &statement
-                        .params
-                        .iter()
-                        .map(|v| v as &(dyn postgres::types::ToSql + Sync))
-                        .collect::<Vec<_>>(),
-                )?;
+                let insert_result = insert(config, record, client);
+                return match insert_result {
+                    Ok(count) => {
+                        log::info!("Inserted {} records", count);
+                        Ok(())
+                    }
+                    Err(e) if e.code() == Some(&postgres::error::SqlState::UNIQUE_VIOLATION) => {
+                        return match update(config, record, client) {
+                            Ok(count) => {
+                                log::info!("Updated {} records", count);
+                                Ok(())
+                            }
+                            Err(e) => Err(Box::new(e)),
+                        };
+                    }
+                    Err(e) => Err(Box::new(e)),
+                };
             }
         }
 
         Ok(())
     }
 }
+
+fn insert(
+    config: &config::RitePostgresExport,
+    record: &Record,
+    client: &mut Client,
+) -> Result<u64, postgres::Error> {
+    let statement = generate_insert_statement(&config.table.name, record)?;
+    let params = statement
+        .params
+        .iter()
+        .map(|v| v as &(dyn postgres::types::ToSql + Sync))
+        .collect::<Vec<_>>();
+    client.execute(&statement.sql, &params)
+}
+
+fn update(
+    config: &config::RitePostgresExport,
+    record: &Record,
+    client: &mut Client,
+) -> Result<u64, postgres::Error> {
+    let unique_fields = config.table.get_unique_fields_as_vec();
+    let statement = generate_update_statement(&config.table.name, record, &unique_fields)?;
+    let params = statement
+        .params
+        .iter()
+        .map(|v| v as &(dyn postgres::types::ToSql + Sync))
+        .collect::<Vec<_>>();
+    client.execute(&statement.sql, &params)
+}
+
 impl Initializable for PostgresExporter {
     fn init(
         &mut self,
@@ -130,7 +167,7 @@ impl Initializable for PostgresExporter {
 }
 
 impl export::Exporter for PostgresExporter {
-    fn write(&mut self, record: &model::record::Record) -> Result<(), Box<dyn std::error::Error>> {
+    fn write(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         // Check, if we need to create the table first
         if self.has_create() && !self.is_created() {
             // Table should be created, but has not yet been created
@@ -138,7 +175,8 @@ impl export::Exporter for PostgresExporter {
         }
 
         // Try to insert the record
-        self.insert(record)?;
+        self.insert_or_update(record)?;
+
         Ok(())
     }
 }

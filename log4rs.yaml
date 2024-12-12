@@ -23,14 +23,19 @@ root:
     - stderr
     - file
 
-loggers:
-  rite::processor:
-    level: debug
-    appenders:
-      - stderr
-    additive: false
-  plugin:
-    level: error
-    appenders:
-      - stderr
-    additive: false
+# loggers:
+#   rite::processor:
+#     level: debug
+#     appenders:
+#       - stderr
+#     additive: false
+#   plugin:
+#     level: error
+#     appenders:
+#       - stderr
+#     additive: false
+#   rite::processor::process::importer:
+#     level: error
+#     appenders:
+#       - stderr
+#     additive: false

@@ -39,6 +39,7 @@ impl ToSql for ValueWrapper {
         matches!(
             ty,
             &Type::BOOL
+                | &Type::VARCHAR
                 | &Type::CHAR
                 | &Type::INT2
                 | &Type::INT4

@@ -13,11 +13,52 @@ pub struct RitePostgresExport {
 pub struct Table {
     pub name: String,
     pub create: Option<String>,
+    #[serde(rename = "uniqueFields")]
+    pub unique_fields: Option<String>,
+}
+
+impl Table {
+    pub fn get_unique_fields_as_vec(&self) -> Vec<String> {
+        if let Some(ref input) = self.unique_fields {
+            return input.split(',').map(|s| s.trim().to_string()).collect();
+        }
+        Vec::new()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::exporter::config::RitePostgresExport;
+
+    use super::Table;
+    #[test]
+    fn test_unique_fields_ser() {
+        let table = Table {
+            name: "Name".to_string(),
+            create: Some("CREATE-Statement".to_string()),
+            unique_fields: Some("field1,field2".to_string()),
+        };
+
+        let x = serde_xml_rs::to_string(&table);
+        assert!(x.is_ok());
+        if let Ok(x) = x {
+            assert_eq!("<Table><name>Name</name><create>CREATE-Statement</create><uniqueFields>field1,field2</uniqueFields></Table>".to_string(),
+            x
+        );
+            println!("{:?}", x);
+        }
+    }
+
+    #[test]
+    fn test_unique_fields_de() {
+        let xml = r#"<Table name="Name" uniqueFields="field1,field2">
+            <create>CREATE-Statement</create>
+        </Table>"#;
+
+        let x: Table = serde_xml_rs::from_str(xml).unwrap();
+        assert_eq!("Name", x.name);
+        println!("{:?}", x);
+    }
 
     #[test]
     fn test() {
@@ -31,7 +72,15 @@ mod tests {
                 user="postgres"
                 password="${POSTGRES_PASSWROD:topsecret}"
             />
-            <table name="backup_customer" create="true"/>
+            <table name="backup_customer" uniqueFields="id">
+                <create>CREATE TABLE IF NOT EXISTS backup_customer 
+                (
+	                id serial4 NOT NULL,
+	                "name" varchar NOT NULL,
+	                CONSTRAINT backup_customers_pkey PRIMARY KEY (id)
+                )
+                </create>
+            </table>
         </rite-postgres-export>
         "#;
 
@@ -44,5 +93,7 @@ mod tests {
         assert_eq!("postgres", config.connection.user);
         assert_eq!("${POSTGRES_PASSWROD:topsecret}", config.connection.password);
         assert_eq!("backup_customer", config.table.name);
+        assert!(config.table.create.is_some());
+        assert_eq!(Some("id".to_string()), config.table.unique_fields);
     }
 }
