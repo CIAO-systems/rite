@@ -27,6 +27,10 @@ impl Record {
     pub fn field_by_name(&self, name: &str) -> Option<&Field> {
         self.fields.iter().find(|field| field.name() == name)
     }
+
+    pub fn field_by_name_mut(&mut self, name: &str) -> Option<&mut Field> {
+        self.fields.iter_mut().find(|field| field.name() == name)
+    }
 }
 
 #[cfg(test)]

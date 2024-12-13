@@ -7,7 +7,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'rite'",
+            "name": "Postgres-Example",
             "cargo": {
                 "args": [
                     "build",
@@ -22,90 +22,13 @@
             "args": ["-f", "data/postgres.xml"],
             "cwd": "${workspaceFolder}"
         },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'export'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=export"
-        //         ],
-        //         "filter": {
-        //             "name": "export",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'model'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=model"
-        //         ],
-        //         "filter": {
-        //             "name": "model",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'helper'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=helper"
-        //         ],
-        //         "filter": {
-        //             "name": "helper",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'import'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=import"
-        //         ],
-        //         "filter": {
-        //             "name": "import",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'rite'",
+            "name": "Star-Wars/Postgres example",
             "cargo": {
                 "args": [
-                    "test",
-                    "--no-run",
+                    "build",
                     "--bin=rite",
                     "--package=rite"
                 ],
@@ -114,122 +37,9 @@
                     "kind": "bin"
                 }
             },
-            "args": [],
+            "args": ["-f", "data/star-wars.xml"],
             "cwd": "${workspaceFolder}"
         },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'plugin'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=plugin"
-        //         ],
-        //         "filter": {
-        //             "name": "plugin",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'transform'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=transform"
-        //         ],
-        //         "filter": {
-        //             "name": "transform",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'example_import'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=example_import"
-        //         ],
-        //         "filter": {
-        //             "name": "example_import",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'example_export'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=example_export"
-        //         ],
-        //         "filter": {
-        //             "name": "example_export",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'example_transform'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=example_transform"
-        //         ],
-        //         "filter": {
-        //             "name": "example_transform",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // },
-        // {
-        //     "type": "lldb",
-        //     "request": "launch",
-        //     "name": "Debug unit tests in library 'rite_postgres'",
-        //     "cargo": {
-        //         "args": [
-        //             "test",
-        //             "--no-run",
-        //             "--lib",
-        //             "--package=rite_postgres"
-        //         ],
-        //         "filter": {
-        //             "name": "rite_postgres",
-        //             "kind": "lib"
-        //         }
-        //     },
-        //     "args": [],
-        //     "cwd": "${workspaceFolder}"
-        // }
-    ]
+
+   ]
 }

@@ -54,6 +54,11 @@ impl Configuration {
         }
     }
 
+    /// Returns the items
+    pub fn as_vec_ref(&self) -> Option<&Vec<ConfigItem>> {
+        self.config.as_ref()
+    }
+
     /// Adds a new key to the map with the given value
     ///
     pub fn insert(&mut self, key: String, value: String) {

@@ -12,4 +12,4 @@ members = [
     "examples/example_export", 
     "examples/example_transform", 
     "plugins/postgres"
-, "plugins/rest"]
+, "plugins/rest", "plugins/common_transformers"]

@@ -1467,6 +1467,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rite_common_transformers"
+version = "0.1.0"
+dependencies = [
+ "model",
+ "transform",
+ "uuid",
+]
+
+[[package]]
 name = "rite_postgres"
 version = "0.1.0"
 dependencies = [
