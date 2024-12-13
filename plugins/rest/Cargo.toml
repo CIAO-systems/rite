@@ -1,0 +1,17 @@
+[package]
+name = "rite_rest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { path="../../model" }
+import = { path="../../import" }
+
+log = "0.4"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+json = "0.12"
+
+
+[lib]
+name = "rite_rest"
+crate-type = ["dylib"]

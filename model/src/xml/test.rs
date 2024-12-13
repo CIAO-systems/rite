@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::xml::file::create_rite;
 
-static EXAMPLE_XML: &str = "../data/test-example.xml";
-static EXAMPLE_2_XML: &str = "../data/test-example-2.xml";
+static EXAMPLE_XML: &str = "../data/test/test-example.xml";
+static EXAMPLE_2_XML: &str = "../data/test/test-example-2.xml";
 
 #[test]
 fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
@@ -42,7 +42,7 @@ fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(config.len(), 1);
         assert_eq!(
             config.get("file_name"),
-            Some("../data/testfile.txt".to_string())
+            Some("../data/test/testfile.txt".to_string())
         );
     } else {
         panic!("Importer configuration should exist");

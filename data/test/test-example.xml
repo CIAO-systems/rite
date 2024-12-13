@@ -8,7 +8,7 @@
         <process id="text-uppercase-console">
             <importer plugin="import_plugin" name="text">
                 <configuration>
-                    <config key="file_name" value="../data/testfile.txt" />
+                    <config key="file_name" value="../data/test/testfile.txt" />
                 </configuration>
             </importer>
             <transformers>

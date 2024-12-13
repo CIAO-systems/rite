@@ -49,7 +49,7 @@ fn test_generate_update_statement() {
     }
 }
 
-static EXAMPLE_XML: &str = "../../data/test-postgres-export-config.xml";
+static EXAMPLE_XML: &str = "../../data/test/test-postgres-export-config.xml";
 
 #[test]
 fn test_generate_create_statement_from_xml() -> Result<(), Box<dyn std::error::Error>> {

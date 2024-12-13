@@ -73,5 +73,11 @@ impl Field {
     }
 }
 
+impl Default for Field {
+    fn default() -> Self {
+        Field::new("default".to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests;

@@ -3,7 +3,7 @@ use model::{record::Record, value::Value, xml, Initializable};
 
 use super::TextFileImporter;
 
-static TEST_DATA: &str = "../../data/testfile.txt";
+static TEST_DATA: &str = "../../data/test/testfile.txt";
 
 fn check_correct_values(record: &model::record::Record) {
     match record.field_by_name("index") {

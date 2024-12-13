@@ -14,7 +14,7 @@ static IMPORTER_NAME: &str = "text";
 static EXPORTER_NAME: &str = "console";
 static TRANSFORMER_NAME: &str = "uppercase";
 
-static TEST_DATA: &str = "../data/testfile.txt";
+static TEST_DATA: &str = "../data/test/testfile.txt";
 
 fn load_importer() -> Result<Plugin, Box<dyn std::error::Error>> {
     Plugin::new(Some(PLUGIN_PATH), IMPORT_PLUGIN_NAME)
