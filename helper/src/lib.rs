@@ -1,11 +1,17 @@
 use std::{env, path::Path};
 
+/// INFO logs the current working directoy 
 pub fn pwd() {
     if let Ok(cwd) = env::current_dir() {
         log::info!("{}", cwd.display());
     }
 }
 
+/// Returns the full absolute path of the `filename`
+/// 
+/// If the filename has no path, the current working directory is added before the 
+/// filename
+/// 
 pub fn get_full_path(filename: &str) -> std::io::Result<std::path::PathBuf> {
     let path = Path::new(filename);
     // If the path is already absolute, return it
@@ -20,6 +26,12 @@ pub fn get_full_path(filename: &str) -> std::io::Result<std::path::PathBuf> {
     Ok(normalize_path(&full_path))
 }
 
+/// Converts a path to normalized form (eliminating . and .. relative path components)
+/// 
+/// For example: 
+/// - /home/user/../user/data/./filename.txt ->
+///   /home/user/data/filename.txt
+/// 
 pub fn normalize_path(path: &Path) -> std::path::PathBuf {
     let mut normalized = std::path::PathBuf::new();
 

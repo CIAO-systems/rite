@@ -2,14 +2,15 @@
 name = "rite"
 version = "0.1.0"
 edition = "2021"
+publish = ["kellnr"]
 
 [dependencies]
-model = { path="../model" }
-helper = { path="../helper" }
-plugin = { path="../plugin" }
-import = { path="../import" }
-export = { path="../export" }
-transform = { path="../transform" }
+model = { version="0.1.0", path="../model" }
+helper = { version="0.1.0", path="../helper" }
+plugin = { version="0.1.0", path="../plugin" }
+import = { version="0.1.0", path="../import" }
+export = { version="0.1.0", path="../export" }
+transform = { version="0.1.0", path="../transform" }
 gag = "1.0"
 log = "0.4"
 log4rs = "1.3"

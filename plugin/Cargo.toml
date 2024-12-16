@@ -2,11 +2,12 @@
 name = "plugin"
 version = "0.1.0"
 edition = "2021"
+publish = ["kellnr"]
 
 [dependencies]
-import = { path="../import" }
-export = { path="../export" }
-transform = { path="../transform" }
+import = { version="0.1.0", path="../import" }
+export = { version="0.1.0", path="../export" }
+transform = { version="0.1.0", path="../transform" }
 
 libloading = "0.8"
 log = "0.4"
