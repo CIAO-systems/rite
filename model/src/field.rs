@@ -161,7 +161,7 @@ impl Field {
     ///
     /// # Arguments
     /// * `name` -  The name for the new field
-    /// * `value` -  The [Vec<u8>] of the new field
+    /// * `value` -  The [Vec] of the new field
     ///
     /// # Example
     /// ```
