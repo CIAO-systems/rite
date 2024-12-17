@@ -3,6 +3,7 @@ use std::process::exit;
 use clap::Parser;
 use log::info;
 
+mod variables;
 mod processor;
 
 /// Struct for the command line options for the replay binary

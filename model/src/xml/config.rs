@@ -1,25 +1,40 @@
+//! The configuration element for all RITE elements (importer, transformer and exporter)
+//!
 use serde::{Deserialize, Serialize};
 
+/// A struct for a configuration key/value list or a special XML file
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Configuration {
+    /// If the component needs a more complex configuration, this optional string
+    /// can point to a XML file, that the component can use for its configuration
     pub xml: Option<String>,
 
+    /// An optional list of [ConfigItem]s
     #[serde(rename = "config")]
     pub config: Option<Vec<ConfigItem>>,
 }
 
+/// A key/value configuration variable
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigItem {
+    /// Name of the configuration variable
     pub key: String,
+
+    /// A string value for this configuration variable
     pub value: String,
 }
 impl ConfigItem {
+    /// Creates a new configuration variable
+    /// # Arguments
+    /// * `key` -  the name of the configuration variable
+    /// * `value` - the string value of the configuration variable
     fn new(key: String, value: String) -> Self {
         Self { key, value }
     }
 }
 
 impl Configuration {
+    /// Creates a new empty [Configuration]
     pub fn new() -> Self {
         Self {
             xml: None,
@@ -27,6 +42,10 @@ impl Configuration {
         }
     }
 
+    /// Creates a new [Configuration] with an external `xml` file attribute
+    /// # Arguments
+    /// * `xml` - Path to a extra configuration XML
+    /// 
     pub fn with_xml(xml: &str) -> Self {
         Self {
             xml: Some(String::from(xml)),

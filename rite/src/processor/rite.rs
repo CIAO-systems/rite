@@ -12,8 +12,6 @@ pub struct Rite {
     processes: Vec<Process>,
 }
 
-pub static RITE_CONFIG_PATH: &str = "RITE_CONFIG_PATH";
-
 impl Rite {
     pub fn new(xml_file_name: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let variables = create_variables(xml_file_name);
@@ -78,7 +76,10 @@ pub fn create_variables(xml_file_name: &str) -> HashMap<String, String> {
             //
             if let Some(parent_path) = full_path.parent() {
                 if let Some(parent_path) = parent_path.to_str() {
-                    variables.insert(String::from(RITE_CONFIG_PATH), String::from(parent_path));
+                    variables.insert(
+                        String::from(crate::variables::RITE_CONFIG_PATH),
+                        String::from(parent_path),
+                    );
                 }
             }
         }

@@ -1,3 +1,5 @@
+//! Module for the Value
+//!
 use std::fmt::Display;
 /// An enum for all known field values. 
 #[derive(Clone, Debug, PartialEq)]

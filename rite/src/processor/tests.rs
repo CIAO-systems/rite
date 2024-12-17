@@ -1,11 +1,11 @@
-use crate::processor::rite::{create_variables, RITE_CONFIG_PATH};
+use crate::processor::rite::create_variables;
 
 #[test]
 fn test_create_variables_relative1() -> Result<(), Box<dyn std::error::Error>> {
     let cwd = std::env::current_dir().unwrap_or("".into());
     let variables = create_variables("data/filename.xml");
 
-    let value = variables.get(RITE_CONFIG_PATH);
+    let value = variables.get(crate::variables::RITE_CONFIG_PATH);
     assert!(value.is_some());
     assert_eq!(
         String::from(format!("{}/data", cwd.display())),
@@ -22,7 +22,7 @@ fn test_create_variables_relative2() -> Result<(), Box<dyn std::error::Error>> {
 
     let variables = create_variables("../data/filename.xml");
 
-    let value = variables.get(RITE_CONFIG_PATH);
+    let value = variables.get(crate::variables::RITE_CONFIG_PATH);
     assert!(value.is_some());
     assert_eq!(
         String::from(format!("{}/data", cwdp.display())),
@@ -37,7 +37,7 @@ fn test_create_variables_relative3() -> Result<(), Box<dyn std::error::Error>> {
     let cwd = std::env::current_dir().unwrap_or("".into());
     let variables = create_variables("./data/filename.xml");
 
-    let value = variables.get(RITE_CONFIG_PATH);
+    let value = variables.get(crate::variables::RITE_CONFIG_PATH);
     assert!(value.is_some());
     assert_eq!(
         String::from(format!("{}/data", cwd.display())),
@@ -51,7 +51,7 @@ fn test_create_variables_relative3() -> Result<(), Box<dyn std::error::Error>> {
 fn test_create_variables_relative4() -> Result<(), Box<dyn std::error::Error>> {
     let variables = create_variables("/data/filename.xml");
 
-    let value = variables.get(RITE_CONFIG_PATH);
+    let value = variables.get(crate::variables::RITE_CONFIG_PATH);
     assert!(value.is_some());
     assert_eq!(String::from("/data"), *value.unwrap(),);
 

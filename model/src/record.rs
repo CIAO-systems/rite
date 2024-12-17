@@ -1,3 +1,5 @@
+//! Module for the Record
+//!
 use crate::field::Field;
 
 /// A record struct, that is used to transfer data from the import data source
