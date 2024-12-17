@@ -81,3 +81,20 @@ fn test_record_empty_after_new() {
     assert!(record.fields_as_mut().is_empty());
     assert_eq!(record.fields_as_mut().len(), 0);
 }
+
+#[test]
+fn test_record_copy() {
+    let mut original = Record::new();
+    original
+        .fields_as_mut()
+        .push(Field::new_i32("value".to_string(), 42));
+    let copyied = Record::copy(&original);
+    assert_eq!(original.fields().len(), copyied.fields().len());
+    for field in original.fields() {
+        assert!(copyied.field_by_name(field.name()).is_some());
+    }
+    assert_eq!(
+        original.field_by_name("value").unwrap().value(),
+        copyied.field_by_name("value").unwrap().value()
+    );
+}

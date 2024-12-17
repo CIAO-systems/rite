@@ -1,5 +1,5 @@
 use std::fmt::Display;
-
+/// An enum for all known field values. 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Bool(bool),
@@ -23,6 +23,7 @@ pub enum Value {
     None,
 }
 
+/// Implements the [Display] trait for the [Value]
 impl Display for Value {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
