@@ -1,6 +1,7 @@
 //! RITE exporter trait
-use model::{record::Record, Initializable};
 use std::error::Error;
+
+use model::{record::Record, Initializable};
 
 /// The interface for RITE exporter components
 pub trait Exporter: Initializable {
