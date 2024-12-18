@@ -1,6 +1,7 @@
 [registries]
 # The index needs to point to the host where your Kellnr instance runs
-# The token is the authentication token for the user configured in Kellnr
+# The token is the authentication token for the user configured in Kellnr 
+# on https://crates.ciao-systems.tech/settings
 [registries.kellnr]
 index = "sparse+https://crates.ciao-systems.tech/api/v1/crates/"
 credential-provider = ["cargo:token"]
