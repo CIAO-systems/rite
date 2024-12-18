@@ -4,7 +4,7 @@
 //! system environment variables are available. Additionally, the following variables can be used:
 //! * `RITE_CONFIG_PATH` - The path of the XML file (so other XML files can be addressed relative to the main file)
 //! # Example
-//! ```
+//! ```xml
 //! <rite>
 //!     <!-- ... -->
 //!     <processes>

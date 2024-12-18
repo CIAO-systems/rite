@@ -1,3 +1,5 @@
+//! Module for text substitution
+
 use std::collections::HashMap;
 
 use subst::VariableMap;
@@ -5,29 +7,20 @@ use xml::reader::XmlEvent as ReaderEvent;
 use xml::writer::XmlEvent as WriteEvent;
 use xml::{EventReader, EventWriter};
 
+/// A comination of user defined variables en system environment
 pub struct VariablesAndEnv {
     variables: HashMap<String, String>,
     env: subst::Env,
 }
 
 impl VariablesAndEnv {
-    // pub fn new() -> Self {
-    //     Self {
-    //         variables: HashMap::new(),
-    //         env: subst::Env,
-    //     }
-    // }
-
+    /// Creates a [VariablesAndEnv] from a map of variables
     pub fn from(variables: &HashMap<String, String>) -> Self {
         Self {
             variables: variables.clone(),
             env: subst::Env,
         }
     }
-
-    // pub fn insert(&mut self, key: &str, value: String) {
-    //     self.variables.insert(String::from(key), value);
-    // }
 }
 
 impl VariableMap<'_> for VariablesAndEnv {
@@ -42,6 +35,13 @@ impl VariableMap<'_> for VariablesAndEnv {
     }
 }
 
+/// Replaces variables in `text` with values from `variables`
+///
+/// # Arguments
+/// * `text` - The text, that containes variables to be subsituted
+/// * `variables` - A [VariableMap] that contains variables to substitue placeholders in in `text`
+/// 
+/// In case of any error, the `text` is returned as is
 fn substitute_with_env(text: &str, variables: &VariablesAndEnv) -> String {
     // Replace environment variables
     match subst::substitute(&text, variables) {
@@ -50,6 +50,12 @@ fn substitute_with_env(text: &str, variables: &VariablesAndEnv) -> String {
     }
 }
 
+/// Replaces all placeholders in `xml_contents` with values from `variables`
+/// 
+/// # Arguments
+/// * `xml_contents` - The text with placeholders
+/// * `variables` - A key/value [HashMap] which contains values to replace 
+///     placeholders in `xml_contents`
 pub(crate) fn replace_env_variables(
     xml_contents: String,
     variables: &HashMap<String, String>,
