@@ -2,10 +2,17 @@
 name = "example_export"
 version = "0.1.0"
 edition = "2021"
+description = "RITE example exporter"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+publish = ["kellnr"]
 
 [dependencies]
 gag = "1.0.0"
-model = { path="../../model" }
+# model = { path="../../model" }
+model = { version="0.1.0", registry="kellnr" }
+
 export = { path="../../export" }
 helper = { path="../../helper" }
 

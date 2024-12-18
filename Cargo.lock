@@ -375,7 +375,7 @@ dependencies = [
  "export",
  "gag",
  "helper",
- "model 0.1.0",
+ "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
 ]
 
 [[package]]
@@ -886,7 +886,7 @@ dependencies = [
 name = "import"
 version = "0.1.0"
 dependencies = [
- "model 0.1.0",
+ "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
 ]
 
 [[package]]
