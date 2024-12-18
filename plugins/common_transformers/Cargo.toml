@@ -2,10 +2,15 @@
 name = "rite_common_transformers"
 version = "0.1.0"
 edition = "2021"
+description = "RITE common transformers"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+publish = ["kellnr"]
 
 [dependencies]
-model = { path="../../model" }
-transform = { path="../../transform" }
+model = { version="0.1.0", registry="kellnr" }
+transform = { version="0.1.0", registry="kellnr", path="../../transform" }
 uuid = { version = "1.11", features = ["v4"] }
 
 

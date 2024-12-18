@@ -2,15 +2,19 @@
 name = "rite"
 version = "0.1.0"
 edition = "2021"
+description = "RITE - rust import/transform/export"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
 publish = ["kellnr"]
 
 [dependencies]
-model = { version="0.1.0", path="../model" }
-helper = { version="0.1.0", path="../helper" }
-plugin = { version="0.1.0", path="../plugin" }
-import = { version="0.1.0", path="../import" }
-export = { version="0.1.0", path="../export" }
-transform = { version="0.1.0", path="../transform" }
+model = { version="0.1.0", registry="kellnr" }
+helper = { version="0.1.0", path="../helper", registry="kellnr" }
+plugin = { version="0.1.0", path="../plugin", registry="kellnr" }
+import = { version="0.1.0", path="../import", registry="kellnr" }
+export = { version="0.1.0", path="../export", registry="kellnr" }
+transform = { version="0.1.0", path="../transform", registry="kellnr" }
 gag = "1.0"
 log = "0.4"
 log4rs = "1.3"
