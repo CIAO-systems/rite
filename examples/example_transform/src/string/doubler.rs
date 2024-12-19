@@ -1,6 +1,10 @@
+//! Another example transformer for doubling characters of a string
 use model::{field::Field, record::Record, Initializable};
 use transform::Transformer;
 
+/// Converst string field values to double each character
+/// For example, the string "Hello" will be converted to "HHeelllloo"
+/// 
 pub struct CharacterDoubler;
 impl CharacterDoubler {
     pub(crate) fn new() -> Self {
@@ -9,6 +13,7 @@ impl CharacterDoubler {
 }
 
 impl Initializable for CharacterDoubler {
+    /// This transformer does not have any configuration
     fn init(
         &mut self,
         _config: Option<model::xml::config::Configuration>,

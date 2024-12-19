@@ -1,3 +1,5 @@
+//! Module for the example text file importer
+
 use std::{
     fs::File,
     io::{BufRead, BufReader, Seek},
@@ -5,16 +7,20 @@ use std::{
 };
 
 use import::{Importer, RecordCallback};
-use model::{field::Field, record::Record, xml, Initializable};
+use model::{field::Field, record::Record, xml::config::Configuration, Initializable};
 
+/// An [Importer] that reads lines from a text file
+/// 
+/// The text file to read must be configured in a configuration key named `file_name`
 #[derive(Debug)]
 pub struct TextFileImporter {
-    config: Option<xml::config::Configuration>,
+    config: Option<Configuration>,
     reader: Option<BufReader<File>>,
     next_line: usize,
 }
 
 impl TextFileImporter {
+    /// Creates an unconfigured [TextFileImporter]
     pub fn new() -> Self {
         TextFileImporter {
             config: None,
@@ -23,6 +29,13 @@ impl TextFileImporter {
         }
     }
 
+    /// Reads the (optional) next n lines from the text file and creates [Record]s.
+    /// For every [Record], the callback is called
+    /// # Arguments
+    /// * `n` - an (optional) amount of how many lines should be read. 
+    ///     If it is [None], all remaining lines will be read
+    /// * `callback` - The [Record] that is created for each line will be given 
+    ///     to the `callback`
     fn read_lines(
         &mut self,
         n: Option<usize>,
@@ -67,6 +80,10 @@ impl TextFileImporter {
         Ok(())
     }
 
+    /// Reads the nex `n` lines, creates a [Record] and returns a vector with all records
+    /// 
+    /// # Arguments
+    /// * `n` - If `n` is [None], all lines a read into [Record]s, otherwise the next n records will be read
     pub fn next(
         &mut self,
         n: Option<usize>,
@@ -80,6 +97,7 @@ impl TextFileImporter {
 }
 
 impl Importer for TextFileImporter {
+    /// Resets the importer to start importing from the beginning
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(reader) = self.reader.as_mut() {
             let _ = reader.seek(std::io::SeekFrom::Start(0))?;
@@ -88,6 +106,9 @@ impl Importer for TextFileImporter {
         Ok(())
     }
 
+    /// Reads the lines of the configured text file and calls the `callback` for each created [Record]
+    /// # Arguments
+    /// * `callback` - Function that will be called with the constructed [Record]
     fn read(
         &mut self,
         callback: &mut dyn FnMut(&Record),
@@ -98,9 +119,12 @@ impl Importer for TextFileImporter {
 }
 
 impl Initializable for TextFileImporter {
+    /// Initializes the importer from the [Configuration]
+    /// # Configuration
+    /// * `file_name` - The name of the text file to read from
     fn init(
         &mut self,
-        config: Option<xml::config::Configuration>,
+        config: Option<Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // take ownership for `config`
         self.config = config;

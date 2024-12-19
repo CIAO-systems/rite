@@ -1,9 +1,14 @@
+//! Example transformer to convert string fields
+
 use model::{field::Field, record::Record, Initializable};
 
 use transform::Transformer;
 
+/// The type of conversion to apply
 pub enum StringFieldConversion {
+    /// Convert to upper case
     UpperCase,
+    /// Convert to lower case
     LowerCase,
 }
 
@@ -12,12 +17,17 @@ pub struct StringFieldConverter {
 }
 
 impl StringFieldConverter {
+    /// Creates a new [StringFieldConverter]
+    /// # Arguments
+    /// * `conversion` - The type of conversion to apply
     pub fn new(conversion: StringFieldConversion) -> Self {
         StringFieldConverter { conversion }
     }
 }
 
 impl Initializable for StringFieldConverter {
+    /// Initializes the transformer from the configuration
+    /// This transformer does not have any configuration
     fn init(
         &mut self,
         _config: Option<model::xml::config::Configuration>,

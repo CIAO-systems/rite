@@ -1,19 +1,25 @@
+//! Module for the example console exporter
 use std::io::{self, Write};
 
 use export::Exporter;
-use model::{xml, Initializable};
+use model::{record::Record, xml, Initializable};
 
+/// An [Exporter] that writes the [Record] to a [Write]
 pub struct ConsoleExporter {
     writer: Box<dyn Write>,
     prefix: Option<String>,
 }
 
 impl ConsoleExporter {
+    /// Creates a new [ConsoleExporter] that writes the [Record] to [io::stdout]
     pub fn new() -> Self {
         let stdout: Box<dyn Write> = Box::new(io::stdout()); // Get a handle to stdout
         ConsoleExporter::new_writer(stdout)
     }
 
+    /// Creates a new [ConsoleExporter] that writes the [Record] to the given [Write]
+    /// # Arguments
+    /// * `writer` - A boxed [Write] instance that the [Record]s will be written to
     pub fn new_writer(writer: Box<dyn Write>) -> Self {
         ConsoleExporter {
             writer,
@@ -22,8 +28,17 @@ impl ConsoleExporter {
     }
 }
 
+/// [Exporter] implementation for the [ConsoleExporter]
 impl Exporter for ConsoleExporter {
-    fn write(&mut self, record: &model::record::Record) -> Result<(), Box<dyn std::error::Error>> {
+    /// Writes the given [Record] to the configured [Write]
+    /// If there is a `prefix` configured, the value of the configuration variable
+    /// will be written before the contents of the record.
+    /// The [Record] will be written in one line as a comma separated list of
+    /// fields in the format: `field`=`value`
+    ///
+    /// # Arguments
+    /// * `record` -  A [Record] that will be written to the [Write]
+    fn write(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         let fields = record.fields();
 
         if let Some(ref prefix) = self.prefix {
@@ -43,6 +58,9 @@ impl Exporter for ConsoleExporter {
 }
 
 impl Initializable for ConsoleExporter {
+    /// Initializes the exporter from the configuration variables (it uses the key/values)
+    /// # Configuration keys
+    /// * `prefix` - A text that should be printed before the [Record]s field values
     fn init(
         &mut self,
         config: Option<xml::config::Configuration>,
