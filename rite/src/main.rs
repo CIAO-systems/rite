@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // FIXME this exit prevents a SEGFAULT while dropping Box<dyn Transformer>
         // need more investigation
-        exit(0);
+        // exit(0);
     } else {
         log::error!("No XML file given. Try with -f <filename> or --file=<filename>");
     }

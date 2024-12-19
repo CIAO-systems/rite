@@ -9,8 +9,9 @@
         <process id="read-from-star-wars-api-write-2-postgres">
             <importer plugin="star-wars">
                 <configuration>
-                    <config key="url" value="https://swapi.dev/api/films" />
-                    <config key="records_field" value="results" />
+                    <config key="url" value="https://swapi.info/api/films" />
+                    <!-- <config key="url" value="https://swapi.dev/api/films" /> -->
+                    <!-- <config key="records_field" value="results" /> -->
                 </configuration>
             </importer>
             <transformers>

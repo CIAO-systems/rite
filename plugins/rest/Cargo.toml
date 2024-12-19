@@ -1,6 +1,6 @@
 [package]
 name = "rite_rest"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "RITE REST importer"
 readme = "README.md"
@@ -15,8 +15,8 @@ import = { version="0.1.0", registry="kellnr", path="../../import" }
 
 log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
-json = "0.12"
-
+json_dotpath = "1.1"
+serde_json = "1.0"
 
 [lib]
 name = "rite_rest"

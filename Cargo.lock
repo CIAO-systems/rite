@@ -398,7 +398,7 @@ dependencies = [
 
 [[package]]
 name = "export"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
 ]
@@ -928,10 +928,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "json"
-version = "0.12.4"
+name = "json_dotpath"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "078e285eafdfb6c4b434e0d31e8cfcb5115b651496faca5749b88fafd4f23bfd"
+checksum = "dbdcfef3cf5591f0cef62da413ae795e3d1f5a00936ccec0b2071499a32efd1a"
+dependencies = [
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "thiserror",
+]
 
 [[package]]
 name = "libc"
@@ -1463,7 +1469,7 @@ dependencies = [
 
 [[package]]
 name = "rite"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "export",
@@ -1505,13 +1511,14 @@ dependencies = [
 
 [[package]]
 name = "rite_rest"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "import",
- "json",
+ "json_dotpath",
  "log",
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
  "reqwest",
+ "serde_json",
 ]
 
 [[package]]
