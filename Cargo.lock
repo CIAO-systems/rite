@@ -1469,7 +1469,7 @@ dependencies = [
 
 [[package]]
 name = "rite"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "clap",
  "export",
@@ -1486,7 +1486,7 @@ dependencies = [
 
 [[package]]
 name = "rite_common_transformers"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
  "transform",
