@@ -9,6 +9,8 @@ use super::process::Process;
 pub struct Rite {
     rite: xml::Rite,
     processes: Vec<Process>,
+
+    // Make sure, the plugin cache is dropped last
     plugin_cache: Cache<String, Arc<plugin::Plugin>>,
 }
 
