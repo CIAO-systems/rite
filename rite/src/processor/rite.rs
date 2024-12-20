@@ -8,8 +8,8 @@ use moka::sync::Cache;
 use super::process::Process;
 pub struct Rite {
     rite: xml::Rite,
-    plugin_cache: Cache<String, Arc<plugin::Plugin>>,
     processes: Vec<Process>,
+    plugin_cache: Cache<String, Arc<plugin::Plugin>>,
 }
 
 impl Rite {

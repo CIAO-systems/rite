@@ -1,5 +1,3 @@
-use std::process::exit;
-
 use clap::Parser;
 use log::info;
 
@@ -27,10 +25,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(_) => log::info!("Successfully processed"),
             Err(e) => log::error!("Error processing: {}", e),
         }
-
-        // FIXME this exit prevents a SEGFAULT while dropping Box<dyn Transformer>
-        // need more investigation
-        // exit(0);
     } else {
         log::error!("No XML file given. Try with -f <filename> or --file=<filename>");
     }

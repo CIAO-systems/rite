@@ -100,24 +100,3 @@ impl Transformer for CommonTransformer {
         return Ok(transformed);
     }
 }
-
-impl Drop for CommonTransformer {
-    fn drop(&mut self) {
-        println!("Dropping CommonTransformer");
-
-        // Print debug information about the config
-        match &self.config {
-            Some(config) => {
-                println!("  Config: {:?}", config);
-                if let Some(items) = &config.config {
-                    println!("  Number of config items: {}", items.len());
-                }
-            }
-            None => println!("  No config present"),
-        }
-
-        // Add any additional cleanup code here
-
-        println!("CommonTransformer dropped successfully");
-    }
-}
