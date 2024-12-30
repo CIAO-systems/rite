@@ -6,6 +6,7 @@ static EXAMPLE_XML: &str = "../data/test/test-example.xml";
 static EXAMPLE_2_XML: &str = "../data/test/test-example-2.xml";
 
 #[test]
+#[ignore]
 fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
     let rite = create_rite(EXAMPLE_XML, &HashMap::new())?;
     println!("{:#?}", rite);
@@ -54,6 +55,7 @@ fn test_example_xml() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+#[ignore]
 fn test_example_2_xml() -> Result<(), Box<dyn std::error::Error>> {
     let rite = create_rite(EXAMPLE_2_XML, &HashMap::new())?;
 

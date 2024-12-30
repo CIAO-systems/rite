@@ -1,3 +1,4 @@
+use log::debug;
 use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
 use postgres::Client;
 use sql::{generate_insert_statement, generate_update_statement};
@@ -33,10 +34,17 @@ impl PostgresExporter {
                 config.connection.database
             );
 
-            self.client = Some(postgres::Client::connect(
-                &connection_string,
-                postgres::NoTls,
-            )?);
+            debug!("Connecting to {}", connection_string);
+            self.client = match postgres::Client::connect(&connection_string, postgres::NoTls) {
+                Ok(client) => Some(client),
+                Err(e) => {
+                    return Err(format!(
+                        "postgres plugin: {}, connection string: {}",
+                        e, connection_string
+                    )
+                    .into())
+                }
+            }
         }
 
         Ok(())

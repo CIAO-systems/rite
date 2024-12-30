@@ -1,9 +1,9 @@
 <rite>
     <plugins>
-        <plugin id="postgres" path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
-        <plugin id="console" path="$RITE_CONFIG_PATH/../target/debug" name="example_export"/>
-        <plugin id="star-wars" path="$RITE_CONFIG_PATH/../target/debug" name="rite_rest"/>
-        <plugin id="common-transformers" path="$RITE_CONFIG_PATH/../target/debug" name="rite_common_transformers"/>
+        <plugin id="postgres" name="rite_postgres"/>
+        <plugin id="console" name="example_export"/>
+        <plugin id="star-wars" name="rite_rest"/>
+        <plugin id="common-transformers" name="rite_common_transformers"/>
     </plugins>
     <processes>
         <process id="read-from-star-wars-api-write-2-postgres">

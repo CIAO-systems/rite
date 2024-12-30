@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use helper::get_full_path;
-use log::error;
+use log::{debug, error};
 use model::xml;
 use moka::sync::Cache;
 
@@ -28,8 +28,10 @@ impl Rite {
     pub fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         for process_desc in &self.rite.processes.processes {
             let mut process = Process::new();
+            debug!("Initialize process {}", process_desc.id);
             process.init(self, process_desc)?;
             self.processes.push(process);
+            debug!("Process {} initialized", process_desc.id);
         }
 
         Ok(())
@@ -62,11 +64,13 @@ impl Rite {
     }
 
     pub fn process(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        debug!("Start processing...");
         for process in &mut self.processes {
+            debug!("Processing {}...", process.id);
             // execute it
             process.run()?;
         }
-
+        debug!("End processing...");
         Ok(())
     }
 }

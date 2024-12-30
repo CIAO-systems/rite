@@ -1,6 +1,6 @@
 use exporter::Exporter;
 use importer::Importer;
-use log::debug;
+use log::{debug, info};
 use transformer::Transformer;
 
 pub mod exporter;
@@ -9,6 +9,7 @@ pub mod transformer;
 use super::rite::Rite;
 
 pub struct Process {
+    pub id: String,
     importer: Option<Box<dyn import::Importer>>,
     transformers: Option<Vec<Box<dyn transform::Transformer>>>,
     exporters: Option<Vec<Box<dyn export::Exporter>>>,
@@ -17,6 +18,7 @@ pub struct Process {
 impl Process {
     pub fn new() -> Self {
         Process {
+            id: "".to_string(),
             importer: None,
             transformers: None,
             exporters: None,
@@ -29,14 +31,19 @@ impl Process {
         rite: &Rite,
         process_desc: &model::xml::process::Process,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        debug!("Init process {}", process_desc.id);
+        self.id = process_desc.id.clone();
         // fill importer
         self.fill_importer(rite, process_desc)?;
+        debug!("Filled importer {}", process_desc.id);
 
         // fill transformers
         self.fill_transformers(rite, process_desc)?;
+        debug!("Filled transformers {}", process_desc.id);
 
         // fill exporters
         self.fill_exporters(rite, process_desc)?;
+        debug!("Filled exporters {}", process_desc.id);
 
         Ok(())
     }
@@ -129,18 +136,21 @@ impl Process {
         Option<Exporter<'_>>,
     ) {
         let i = if let Some(ref mut importer) = self.importer {
+            info!("Create importer");
             Some(Importer::new(importer))
         } else {
             None
         };
 
         let t = if let Some(ref transformers) = self.transformers {
+            info!("Create transformers");
             Some(Transformer::new(&transformers))
         } else {
             None
         };
 
         let e = if let Some(ref mut exporters) = self.exporters {
+            info!("Create exporters");
             Some(Exporter::new(exporters))
         } else {
             None

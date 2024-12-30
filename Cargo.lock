@@ -1503,6 +1503,7 @@ dependencies = [
  "helper",
  "import",
  "log",
+ "log4rs",
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
  "postgres",
  "serde",

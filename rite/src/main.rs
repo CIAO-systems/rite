@@ -1,8 +1,8 @@
 use clap::Parser;
 use log::info;
 
-mod variables;
 mod processor;
+mod variables;
 
 /// Struct for the command line options for the replay binary
 #[derive(clap::Parser)]
@@ -20,14 +20,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     if let Some(file) = cli.file {
         let mut rp = processor::rite::Rite::new(&file)?;
-        rp.init()?;
-        match rp.process() {
-            Ok(_) => log::info!("Successfully processed"),
-            Err(e) => log::error!("Error processing: {}", e),
+        match rp.init() {
+            Ok(_) => match rp.process() {
+                Ok(_) => log::info!("Successfully processed"),
+                Err(e) => log::error!("Error processing: {}", e),
+            },
+            Err(e) => log::error!("Error initializing: {}", e),
         }
     } else {
         log::error!("No XML file given. Try with -f <filename> or --file=<filename>");
     }
+
     Ok(())
 }
 
