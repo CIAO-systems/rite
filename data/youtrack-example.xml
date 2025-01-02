@@ -1,0 +1,19 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="youtrack" name="rite_youtrack"/>
+    </plugins>
+    <processes>
+        <process id="read-timetracking-from-issues">
+            <importer plugin="youtrack">
+                <configuration xml="youtrack-timetracking-config.xml">
+                    <config key="url" value="https://ciao-systems.youtrack.cloud" />
+                    <config key="token" value="$YOUTRACK_TOKEN" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

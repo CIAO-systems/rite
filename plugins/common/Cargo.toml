@@ -1,0 +1,21 @@
+[package]
+name = "rite_common"
+version = "0.1.2"
+edition = "2021"
+description = "RITE common transformers/exporters"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+publish = ["kellnr"]
+
+[dependencies]
+model = { version="0.1", registry="kellnr" }
+transform = { version="0.1", registry="kellnr", path="../../transform" }
+export = { version="0.1", registry="kellnr", path="../../export" }
+uuid = { version = "1.11", features = ["v4"] }
+gag = "1.0.0"
+
+
+[lib]
+name = "rite_common"
+crate-type = ["dylib"]

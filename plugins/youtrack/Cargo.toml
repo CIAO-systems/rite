@@ -1,0 +1,18 @@
+[package]
+name = "rite_youtrack"
+version = "0.1.0"
+edition = "2021"
+description = "RITE YouTrack plugin"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+publish = ["kellnr"]
+
+[dependencies]
+model = { version="0.1", registry="kellnr" }
+import = { version="0.1", registry="kellnr", path="../../import" }
+
+[lib]
+name = "rite_youtrack"
+crate-type = ["dylib"]
+

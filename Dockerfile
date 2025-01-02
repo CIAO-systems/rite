@@ -52,11 +52,8 @@ WORKDIR /app
 COPY --from=builder /build/target/release/*.so .
 COPY --from=builder /build/target/release/rite .
 
-# Mount for providing extra plugins
-VOLUME ["/plugins"]
-
 # Set the library path
-ENV LD_LIBRARY_PATH=/lib:/lib64:/app:/plugins
+ENV LD_LIBRARY_PATH=/lib:/lib64:/app
 
 # Create mount point for input files
 RUN mkdir /data 

@@ -1485,9 +1485,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "rite_common_transformers"
-version = "0.1.1"
+name = "rite_common"
+version = "0.1.2"
 dependencies = [
+ "export",
+ "gag",
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
  "transform",
  "uuid",
@@ -1520,6 +1522,14 @@ dependencies = [
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
  "reqwest",
  "serde_json",
+]
+
+[[package]]
+name = "rite_youtrack"
+version = "0.1.0"
+dependencies = [
+ "import",
+ "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
 ]
 
 [[package]]
