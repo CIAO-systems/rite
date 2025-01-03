@@ -37,24 +37,12 @@ impl YouTrackImporter {
         if let Some(ref base_url) = self.url {
             if let Some(ref token) = self.token {
                 if let Some(ref xml_config) = self.xml_config {
-                    let client = reqwest::blocking::Client::new();
-                    let url = format!(
-                        "{}/api/{}/{}/{}?fields={}",
-                        base_url,
-                        xml_config.dataset.path,
-                        xml_config.dataset.resource,
-                        xml_config.dataset.sub_resource,
-                        xml_config.dataset.fields
-                    );
-
-                    let response = client.get(url).bearer_auth(token).send()?;
-                    let status = response.status();
-                    if status.is_success() {
-                        handle_response(callback, response)?;
-                    } else {
-                        let error_for_status_ref = response.error_for_status_ref();
-                        if let Err(e) = error_for_status_ref {
-                            return Err(e.into());
+                    match xml_config.dataset.path.as_str() {
+                        "issues" => {
+                            handle_issues(callback, &xml_config, &base_url, &token)?;
+                        }
+                        _ => {
+                            return Err(format!("Unknown path '{}'", xml_config.dataset.path).into())
                         }
                     }
                 }
@@ -63,6 +51,56 @@ impl YouTrackImporter {
 
         Ok(())
     }
+}
+
+fn handle_issues(
+    callback: import::RecordCallback,
+    xml_config: &RiteYoutrackImport,
+    base_url: &str,
+    token: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    match xml_config.dataset.sub_resource.as_str() {
+        "timeTracking/workItems" => {
+            handle_issue_time_tracking(callback, &xml_config, &base_url, &token)?;
+        }
+        _ => {
+            return Err(
+                format!("Unknown sub-resource '{}'", xml_config.dataset.sub_resource).into(),
+            )
+        }
+    }
+
+    Ok(())
+}
+
+fn handle_issue_time_tracking(
+    callback: import::RecordCallback,
+    xml_config: &RiteYoutrackImport,
+    base_url: &str,
+    token: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let client = reqwest::blocking::Client::new();
+    let url = format!(
+        "{}/api/{}/{}/{}?fields={}",
+        base_url,
+        xml_config.dataset.path,
+        xml_config.dataset.resource,
+        xml_config.dataset.sub_resource,
+        xml_config.dataset.fields
+    );
+
+    let response = client.get(url).bearer_auth(token).send()?;
+    let status = response.status();
+    if status.is_success() {
+        handle_response(callback, response)?;
+    } else {
+        let error_for_status_ref = response.error_for_status_ref();
+        if let Err(e) = error_for_status_ref {
+            return Err(e.into());
+        }
+    }
+
+    Ok(())
 }
 
 fn handle_response(
