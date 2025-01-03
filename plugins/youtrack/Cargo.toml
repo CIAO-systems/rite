@@ -11,6 +11,11 @@ publish = ["kellnr"]
 [dependencies]
 model = { version="0.1", registry="kellnr" }
 import = { version="0.1", registry="kellnr", path="../../import" }
+log = "0.4"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde-xml-rs = "0.5"
 
 [lib]
 name = "rite_youtrack"

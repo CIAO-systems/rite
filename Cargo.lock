@@ -1529,7 +1529,12 @@ name = "rite_youtrack"
 version = "0.1.0"
 dependencies = [
  "import",
+ "log",
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "reqwest",
+ "serde",
+ "serde-xml-rs",
+ "serde_json",
 ]
 
 [[package]]

@@ -1,5 +1,6 @@
+use config::RiteYoutrackImport;
 use import::Importer;
-use model::{field::Field, record::Record, Initializable};
+use model::{field::Field, record::Record, xml::file::load_and_substitute_from_env, Initializable};
 
 static CFG_URL: &str = "url";
 static CFG_TOKEN: &str = "token";
@@ -7,6 +8,7 @@ static CFG_TOKEN: &str = "token";
 pub struct YouTrackImporter {
     token: Option<String>,
     url: Option<String>,
+    xml_config: Option<RiteYoutrackImport>,
 }
 
 impl YouTrackImporter {
@@ -14,6 +16,7 @@ impl YouTrackImporter {
         YouTrackImporter {
             token: None,
             url: None,
+            xml_config: None,
         }
     }
 
@@ -23,6 +26,55 @@ impl YouTrackImporter {
             .is_none()
             .then_some(CFG_URL)
             .or_else(|| self.token.is_none().then_some(CFG_TOKEN))
+    }
+
+    fn read_from_youtrack(
+        &mut self,
+        callback: import::RecordCallback,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        if let Some(ref base_url) = self.url {
+            if let Some(ref token) = self.token {
+                if let Some(ref xml_config) = self.xml_config {
+                    let client = reqwest::blocking::Client::new();
+                    let url = format!(
+                        "{}/api/{}/{}/{}?fields={}",
+                        base_url,
+                        xml_config.dataset.path,
+                        xml_config.dataset.resource,
+                        xml_config.dataset.sub_resource,
+                        xml_config.dataset.fields
+                    );
+
+                    let response = client.get(url).bearer_auth(token).send()?;
+                    let status = response.status();
+                    if status.is_success() {
+                        match response.text() {
+                            Ok(data) => {
+                                let mut record = Record::new();
+                                let fields = record.fields_as_mut();
+                                fields.push(Field::new_value(
+                                    "data".to_string(),
+                                    model::value::Value::String(data),
+                                ));
+                                fields.push(Field::new_value(
+                                    "url".to_string(),
+                                    model::value::Value::String(base_url.to_string()),
+                                ));
+                                callback(&record);
+                            }
+                            Err(e) => return Err(e.into()),
+                        };
+                    } else {
+                        let error_for_status_ref = response.error_for_status_ref();
+                        if let Err(e) = error_for_status_ref {
+                            return Err(e.into());
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -35,12 +87,7 @@ impl Importer for YouTrackImporter {
             }
             None => {
                 // Everything is ok
-                let mut record = Record::new();
-                record.fields_as_mut().push(Field::new_value(
-                    "name".to_string(),
-                    model::value::Value::String("The Name".to_string()),
-                ));
-                callback(&record);
+                self.read_from_youtrack(callback)?;
             }
         }
 
@@ -65,10 +112,23 @@ impl Initializable for YouTrackImporter {
             if let Some(token) = config.get(CFG_TOKEN) {
                 self.token = Some(String::from(token));
             }
+
+            if let Some(ref xml) = config.xml {
+                match load_and_substitute_from_env(xml, &std::collections::HashMap::new()) {
+                    Ok(xml_contents) => {
+                        let xml_config: config::RiteYoutrackImport =
+                            serde_xml_rs::from_str(&xml_contents)?;
+                        self.xml_config = Some(xml_config);
+                    }
+                    Err(e) => return Err(e.into()),
+                }
+            }
         }
         Ok(())
     }
 }
+
+mod config;
 
 #[cfg(test)]
 mod tests;

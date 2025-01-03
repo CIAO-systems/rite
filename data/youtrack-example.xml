@@ -1,12 +1,12 @@
 <rite>
     <plugins>
-        <plugin id="common" name="rite_common"/>
-        <plugin id="youtrack" name="rite_youtrack"/>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="youtrack" path="target/debug" name="rite_youtrack"/>
     </plugins>
     <processes>
         <process id="read-timetracking-from-issues">
             <importer plugin="youtrack">
-                <configuration xml="youtrack-timetracking-config.xml">
+                <configuration xml="$RITE_CONFIG_PATH/youtrack-timetracking-config.xml">
                     <config key="url" value="https://ciao-systems.youtrack.cloud" />
                     <config key="token" value="$YOUTRACK_TOKEN" />
                 </configuration>
