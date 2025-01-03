@@ -1,6 +1,8 @@
 use config::RiteYoutrackImport;
 use import::Importer;
 use model::{field::Field, record::Record, xml::file::load_and_substitute_from_env, Initializable};
+use serde_json::Value;
+use youtrack::IssueWorkItem;
 
 static CFG_URL: &str = "url";
 static CFG_TOKEN: &str = "token";
@@ -48,22 +50,7 @@ impl YouTrackImporter {
                     let response = client.get(url).bearer_auth(token).send()?;
                     let status = response.status();
                     if status.is_success() {
-                        match response.text() {
-                            Ok(data) => {
-                                let mut record = Record::new();
-                                let fields = record.fields_as_mut();
-                                fields.push(Field::new_value(
-                                    "data".to_string(),
-                                    model::value::Value::String(data),
-                                ));
-                                fields.push(Field::new_value(
-                                    "url".to_string(),
-                                    model::value::Value::String(base_url.to_string()),
-                                ));
-                                callback(&record);
-                            }
-                            Err(e) => return Err(e.into()),
-                        };
+                        handle_response(callback, response)?;
                     } else {
                         let error_for_status_ref = response.error_for_status_ref();
                         if let Err(e) = error_for_status_ref {
@@ -76,6 +63,55 @@ impl YouTrackImporter {
 
         Ok(())
     }
+}
+
+fn handle_response(
+    callback: import::RecordCallback,
+    response: reqwest::blocking::Response,
+) -> Result<(), Box<dyn std::error::Error>> {
+    match response.json::<Value>() {
+        Ok(result) => {
+            if let Some(array) = result.as_array() {
+                for element in array {
+                    if let Ok(work_item) = serde_json::from_value::<IssueWorkItem>(element.clone())
+                    {
+                        handle_work_item(callback, work_item);
+                    }
+                }
+            } else {
+                return Err("Response is not a JSON Array".into());
+            }
+        }
+        Err(e) => return Err(e.into()),
+    }
+
+    Ok(())
+}
+
+fn handle_work_item(callback: import::RecordCallback, work_item: IssueWorkItem) {
+    let mut record = Record::new();
+    let fields = record.fields_as_mut();
+    fields.push(Field::new_value(
+        "date".to_string(),
+        model::value::Value::I64(work_item.date),
+    ));
+    fields.push(Field::new_value(
+        "work_item_id".to_string(),
+        model::value::Value::String(work_item.id),
+    ));
+    fields.push(Field::new_value(
+        "user_id".to_string(),
+        model::value::Value::String(work_item.author.id),
+    ));
+    fields.push(Field::new_value(
+        "user_name".to_string(),
+        model::value::Value::String(work_item.author.name),
+    ));
+    fields.push(Field::new_value(
+        "duration_minutes".to_string(),
+        model::value::Value::I32(work_item.duration.minutes),
+    ));
+    callback(&record);
 }
 
 impl Importer for YouTrackImporter {
@@ -129,6 +165,7 @@ impl Initializable for YouTrackImporter {
 }
 
 mod config;
+mod youtrack;
 
 #[cfg(test)]
 mod tests;

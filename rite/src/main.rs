@@ -1,4 +1,5 @@
 use clap::Parser;
+use dotenv::dotenv;
 use log::info;
 
 mod processor;
@@ -14,6 +15,9 @@ struct Cli {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Load environment variables from .env file
+    dotenv().ok();
+
     log4rs::init_file("log4rs.yaml", Default::default())?;
     info!("Rust Import/Transform/Export");
 
