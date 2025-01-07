@@ -1495,6 +1495,7 @@ dependencies = [
 name = "rite_common"
 version = "0.1.2"
 dependencies = [
+ "chrono",
  "export",
  "gag",
  "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",

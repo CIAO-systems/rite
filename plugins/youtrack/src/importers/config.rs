@@ -3,9 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Dataset {
     pub path: String,
-    pub resource: String,
+    pub resource: Option<String>,
+    pub query: Option<String>,
     #[serde(rename = "sub-resource")]
-    pub sub_resource: String,
+    pub sub_resource: Option<String>,
     pub fields: String,
 }
 
@@ -34,8 +35,12 @@ mod tests {
         println!("{:#?}", result);
 
         assert_eq!("issues", result.dataset.path);
-        assert_eq!("INTERNAL-32", result.dataset.resource);
-        assert_eq!("timeTracking/workItems", result.dataset.sub_resource);
+        assert_eq!(Some("INTERNAL-32".to_string()), result.dataset.resource);
+        assert_eq!(None, result.dataset.query);
+        assert_eq!(
+            Some("timeTracking/workItems".to_string()),
+            result.dataset.sub_resource
+        );
         assert_eq!(
             "author(id,name),date,duration(id,minutes,presentation),id,name,type(id,name)",
             result.dataset.fields

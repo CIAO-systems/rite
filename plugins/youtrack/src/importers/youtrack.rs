@@ -7,6 +7,7 @@ pub struct IssueWorkItem {
     #[serde(default)]
     object_type: String,
     pub author: User,
+    pub created: i64,
     pub date: i64,
     pub duration: DurationValue,
     pub id: String,

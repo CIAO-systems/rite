@@ -1,0 +1,9 @@
+<rite-youtrack-import>
+    <dataset 
+        path="issues" 
+        resource="INTERNAL-32"
+        sub-resource="timeTracking/workItems"  
+        query="summary: ciao export"
+        fields="author(id,name),date,created,duration(id,minutes,presentation),id,name,type(id,name)"
+    />
+</rite-youtrack-import>
