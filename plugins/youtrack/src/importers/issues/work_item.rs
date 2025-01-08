@@ -1,6 +1,6 @@
 use model::{field::Field, record::Record};
 
-use crate::importers::youtrack::IssueWorkItem;
+use crate::importers::youtrack::work_item::IssueWorkItem;
 
 /// Processs all the IssueWorkItems
 ///

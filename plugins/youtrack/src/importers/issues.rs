@@ -1,6 +1,6 @@
 use model::{field::Field, record::Record};
 
-use super::{config::RiteYoutrackImport, rest::make_request};
+use super::{config::RiteYoutrackImport, rest::make_request, youtrack::issue::Issue};
 
 mod work_item;
 
@@ -46,13 +46,12 @@ fn handle_issues(
         Ok(result) => {
             if let Some(array) = result.as_array() {
                 for element in array {
-                    let mut record = Record::new();
-                    let fields = record.fields_as_mut();
-                    fields.push(Field::new_value(
-                        "element".to_string(),
-                        model::value::Value::String(format!("{:?}", element)),
-                    ));
-                    callback(&record);
+                    match serde_json::from_value::<Issue>(element.clone()) {
+                        Ok(issue) => {
+                            handle_issue(callback, issue);
+                        }
+                        Err(e) => return Err(e.into()),
+                    }
                 }
             } else {
                 return Err("Response is not a JSON Array".into());
@@ -62,4 +61,23 @@ fn handle_issues(
     }
 
     Ok(())
+}
+
+/// Processes an Issue
+/// See https://www.jetbrains.com/help/youtrack/devportal/resource-api-issues.html
+fn handle_issue(callback: import::RecordCallback, issue: Issue) {
+    let mut record = Record::new();
+    let fields = record.fields_as_mut();
+    fields.push(Field::new_value(
+        "id".to_string(),
+        model::value::Value::String(issue.id),
+    ));
+    if let Some(summary) = issue.summary {
+        fields.push(Field::new_value(
+            "summary".to_string(),
+            model::value::Value::String(summary),
+        ));
+    }
+
+    callback(&record);
 }

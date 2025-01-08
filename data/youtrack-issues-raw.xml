@@ -1,7 +1,8 @@
 <rite-youtrack-import>
     <dataset 
         path="issues" 
-        query="summary: ciao export"
-        fields="author(id,name),date,created,duration(id,minutes,presentation),id,name,type(id,name)"
+        Xquery="summary: ciao export"
+        query="for: me"
+        fields="id,idReadable,numberInProject,project(id,name),commentsCount,created,summary"
     />
 </rite-youtrack-import>
