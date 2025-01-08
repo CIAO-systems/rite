@@ -228,5 +228,28 @@ impl Default for Field {
     }
 }
 
+/// Adds a field, if value is [Some]
+/// # Arguments
+/// * `fields`: A vector of fields where the new field should be added
+/// * `name`: The name for the new field
+/// * `value`: An [Option] that contains the value
+pub fn add_optional_field<T>(fields: &mut Vec<Field>, name: &str, value: Option<T>)
+where
+    T: Into<Value>,
+{
+    if let Some(value) = value {
+        add_field(fields, name, value.into());
+    }
+}
+
+/// Adds a field with the value of `value`
+/// # Arguments
+/// * `fields`: A vector of fields where the new field should be added
+/// * `name`: The name for the new field
+/// * `value`: The value for the new field
+pub fn add_field(fields: &mut Vec<Field>, name: &str, value: Value) {
+    fields.push(Field::new_value(name.to_string(), value));
+}
+
 #[cfg(test)]
 mod tests;

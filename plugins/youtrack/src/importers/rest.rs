@@ -1,4 +1,7 @@
-use super::{config::{Dataset, RiteYoutrackImport}, ResponseHandler};
+use super::{
+    config::{Dataset, RiteYoutrackImport},
+    ResponseHandler,
+};
 
 /// Create a URL string from the dataset values
 pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {
@@ -6,24 +9,36 @@ pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {
         if let Some(ref sub_resource) = dataset.sub_resource {
             format!(
                 "{}/api/{}/{}/{}?fields={}",
-                base_url, dataset.path, resource, sub_resource, dataset.fields
+                base_url,
+                dataset.path,
+                resource,
+                sub_resource,
+                dataset.fields.to_string()
             )
         } else {
             format!(
                 "{}/api/{}/{}?fields={}",
-                base_url, dataset.path, resource, dataset.fields
+                base_url,
+                dataset.path,
+                resource,
+                dataset.fields.to_string()
             )
         }
     } else {
         if let Some(ref query) = dataset.query {
             format!(
                 "{}/api/{}?query={}&fields={}",
-                base_url, dataset.path, query, dataset.fields
+                base_url,
+                dataset.path,
+                query,
+                dataset.fields.to_string()
             )
         } else {
             format!(
                 "{}/api/{}?fields={}",
-                base_url, dataset.path, dataset.fields
+                base_url,
+                dataset.path,
+                dataset.fields.to_string()
             )
         }
     };
@@ -43,7 +58,7 @@ pub fn make_request(
     let response = client.get(url).bearer_auth(token).send()?;
     let status = response.status();
     if status.is_success() {
-        response_handler(callback, response)?;
+        response_handler(xml_config, callback, response)?;
     } else {
         let error_for_status_ref = response.error_for_status_ref();
         if let Err(e) = error_for_status_ref {

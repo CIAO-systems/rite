@@ -1,4 +1,7 @@
-use crate::importers::{CFG_TOKEN, CFG_URL};
+use crate::importers::{
+    config::{Field, Fields},
+    CFG_TOKEN, CFG_URL,
+};
 
 use super::{config::Dataset, rest::create_url_from_dataset, YouTrackImporter};
 
@@ -19,7 +22,11 @@ fn test_create_url_from_dataset1() {
         resource: Some("Gold".to_string()),
         query: None,
         sub_resource: None,
-        fields: "claim".to_string(),
+        fields: Fields {
+            fields: vec![Field {
+                id: "claim".to_string(),
+            }],
+        },
     };
 
     assert_eq!(
@@ -35,7 +42,11 @@ fn test_create_url_from_dataset2() {
         resource: None,
         query: None,
         sub_resource: None,
-        fields: "claim".to_string(),
+        fields: Fields {
+            fields: vec![Field {
+                id: "claim".to_string(),
+            }],
+        },
     };
 
     assert_eq!(
@@ -51,7 +62,11 @@ fn test_create_url_from_dataset3() {
         resource: None,
         query: Some("length: 73".to_string()),
         sub_resource: None,
-        fields: "claim".to_string(),
+        fields: Fields {
+            fields: vec![Field {
+                id: "claim".to_string(),
+            }],
+        },
     };
 
     assert_eq!(

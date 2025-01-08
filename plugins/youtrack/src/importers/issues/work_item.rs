@@ -1,12 +1,13 @@
 use model::{field::Field, record::Record};
 
-use crate::importers::youtrack::work_item::IssueWorkItem;
+use crate::importers::{config::RiteYoutrackImport, youtrack::work_item::IssueWorkItem};
 
 /// Processs all the IssueWorkItems
 ///
 /// See https://www.jetbrains.com/help/youtrack/devportal/resource-api-issues-issueID-timeTracking.html
 /// and https://www.jetbrains.com/help/youtrack/devportal/api-entity-IssueWorkItem.html
 pub(crate) fn handle_response_time_tracking_workitem(
+    _config: &RiteYoutrackImport,
     callback: import::RecordCallback,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>> {

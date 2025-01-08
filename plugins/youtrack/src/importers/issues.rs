@@ -1,4 +1,7 @@
-use model::{field::Field, record::Record};
+use model::{
+    field::{add_field, add_optional_field},
+    record::Record,
+};
 
 use super::{config::RiteYoutrackImport, rest::make_request, youtrack::issue::Issue};
 
@@ -39,6 +42,7 @@ pub(crate) fn handle_issues_path(
 /// See: https://www.jetbrains.com/help/youtrack/devportal/resource-api-issues.html
 #[allow(unused_variables)]
 fn handle_issues(
+    config: &RiteYoutrackImport,
     callback: import::RecordCallback,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -48,7 +52,7 @@ fn handle_issues(
                 for element in array {
                     match serde_json::from_value::<Issue>(element.clone()) {
                         Ok(issue) => {
-                            handle_issue(callback, issue);
+                            handle_issue(config, callback, issue);
                         }
                         Err(e) => return Err(e.into()),
                     }
@@ -65,19 +69,46 @@ fn handle_issues(
 
 /// Processes an Issue
 /// See https://www.jetbrains.com/help/youtrack/devportal/resource-api-issues.html
-fn handle_issue(callback: import::RecordCallback, issue: Issue) {
+fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, issue: Issue) {
     let mut record = Record::new();
     let fields = record.fields_as_mut();
-    fields.push(Field::new_value(
-        "id".to_string(),
-        model::value::Value::String(issue.id),
-    ));
-    if let Some(summary) = issue.summary {
-        fields.push(Field::new_value(
-            "summary".to_string(),
-            model::value::Value::String(summary),
-        ));
-    }
+
+    config
+        .dataset
+        .fields
+        .contains("id")
+        .then(|| add_field(fields, "id", issue.id.into()));
+    config
+        .dataset
+        .fields
+        .contains("idReadable")
+        .then(|| add_optional_field(fields, "idReadable", issue.id_readable));
+    config
+        .dataset
+        .fields
+        .contains("summary")
+        .then(|| add_optional_field(fields, "summary", issue.summary));
+    config
+        .dataset
+        .fields
+        .contains("commentsCount")
+        .then(|| add_optional_field(fields, "commentsCount", issue.comments_count));
+    config
+        .dataset
+        .fields
+        .contains("description")
+        .then(|| add_optional_field(fields, "description", issue.description));
+    config.dataset.fields.contains("draftOwner").then(|| {
+        if let Some(draft_owner) = issue.draft_owner {
+            add_field(fields, "draftOwner.id", draft_owner.id.into());
+            add_field(fields, "draftOwner.name", draft_owner.name.into())
+        }
+    });
+    config
+        .dataset
+        .fields
+        .contains("isDraft")
+        .then(|| add_optional_field(fields, "isDraft", issue.is_draft));
 
     callback(&record);
 }

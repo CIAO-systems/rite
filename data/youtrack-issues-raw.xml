@@ -1,8 +1,16 @@
 <rite-youtrack-import>
-    <dataset 
-        path="issues" 
-        Xquery="summary: ciao export"
-        query="for: me"
-        fields="id,idReadable,numberInProject,project(id,name),commentsCount,created,summary"
-    />
+    <dataset path="issues"> 
+        <query>for: me</query>
+        <fields>
+            <field id="id" />
+            <field id="idReadable" />
+            <field id="numberInProject" />
+            <field id="project(id,name)" />
+            <field id="commentsCount" />
+            <field id="created" />
+            <field id="summary" />
+            <field id="draftOwner(id,name)" />
+            <field id="isDraft" />
+        </fields>
+    </dataset>
 </rite-youtrack-import>

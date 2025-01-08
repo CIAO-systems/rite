@@ -381,7 +381,7 @@ dependencies = [
  "export",
  "gag",
  "helper",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
 ]
 
 [[package]]
@@ -390,7 +390,7 @@ version = "0.1.1"
 dependencies = [
  "helper",
  "import",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
 ]
 
 [[package]]
@@ -398,7 +398,7 @@ name = "example_transform"
 version = "0.1.1"
 dependencies = [
  "helper",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "transform",
 ]
 
@@ -406,7 +406,7 @@ dependencies = [
 name = "export"
 version = "0.1.1"
 dependencies = [
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
 ]
 
 [[package]]
@@ -892,7 +892,7 @@ dependencies = [
 name = "import"
 version = "0.1.0"
 dependencies = [
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
 ]
 
 [[package]]
@@ -1071,18 +1071,6 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
-dependencies = [
- "serde",
- "serde-xml-rs",
- "subst",
- "xml-rs",
-]
-
-[[package]]
-name = "model"
-version = "0.1.0"
-source = "sparse+https://crates.ciao-systems.tech/api/v1/crates/"
-checksum = "2e4c70cf42a59b432613c495ad339c3b0583118c292f41390d9287a6b547de8b"
 dependencies = [
  "serde",
  "serde-xml-rs",
@@ -1485,7 +1473,7 @@ dependencies = [
  "import",
  "log",
  "log4rs",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "moka",
  "plugin",
  "transform",
@@ -1498,7 +1486,7 @@ dependencies = [
  "chrono",
  "export",
  "gag",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "transform",
  "uuid",
 ]
@@ -1514,7 +1502,7 @@ dependencies = [
  "import",
  "log",
  "log4rs",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "postgres",
  "serde",
  "serde-xml-rs",
@@ -1527,7 +1515,7 @@ dependencies = [
  "import",
  "json_dotpath",
  "log",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "reqwest",
  "serde_json",
 ]
@@ -1539,7 +1527,7 @@ dependencies = [
  "chrono",
  "import",
  "log",
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
  "reqwest",
  "serde",
  "serde-xml-rs",
@@ -2075,7 +2063,7 @@ dependencies = [
 name = "transform"
 version = "0.1.0"
 dependencies = [
- "model 0.1.0 (sparse+https://crates.ciao-systems.tech/api/v1/crates/)",
+ "model",
 ]
 
 [[package]]
