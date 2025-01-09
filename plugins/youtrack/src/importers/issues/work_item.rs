@@ -44,7 +44,7 @@ fn handle_work_item(callback: import::RecordCallback, work_item: IssueWorkItem) 
     add_field(fields, "work_item_id", work_item.id.into());
     if let Some(author) = work_item.author {
         add_field(fields, "user.id", author.id.into());
-        add_optional_field(fields, "user.name", author.name);
+        add_optional_field(fields, "user.name", author.full_name);
     }
     if let Some(duration) = work_item.duration {
         add_field(fields, "duration_minutes", duration.minutes.into());

@@ -96,7 +96,7 @@ fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, i
     config.dataset.fields.contains("draftOwner").then(|| {
         if let Some(draft_owner) = issue.draft_owner {
             add_field(fields, "draftOwner.id", draft_owner.id.into());
-            add_optional_field(fields, "draftOwner.name", draft_owner.name)
+            add_optional_field(fields, "draftOwner.name", draft_owner.full_name)
         }
     });
     config
@@ -133,7 +133,7 @@ fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, i
     config.dataset.fields.contains("updater").then(|| {
         if let Some(updater) = issue.updater {
             add_field(fields, "updater.id", updater.id.into());
-            add_optional_field(fields, "updater.name", updater.name)
+            add_optional_field(fields, "updater.name", updater.full_name)
         }
     });
     config

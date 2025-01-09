@@ -1,7 +1,8 @@
 use chrono::DateTime;
+use model::record::Record;
 use serde::{Deserialize, Serialize};
 
-use super::common;
+use super::{common, factory};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct IssueWorkItem {
@@ -9,10 +10,10 @@ pub struct IssueWorkItem {
     #[serde(default)]
     pub object_type: String,
     pub id: String,
-    pub author: Option<common::User>,
+    pub author: Option<common::user::User>,
     pub created: Option<i64>,
     pub date: Option<i64>,
-    pub duration: Option<common::DurationValue>,
+    pub duration: Option<common::duration::DurationValue>,
     #[serde(rename = "type")]
     #[serde(default)]
     work_item_type: Option<String>,
@@ -27,6 +28,12 @@ impl IssueWorkItem {
             }
         }
         None
+    }
+}
+
+impl From<IssueWorkItem> for Record {
+    fn from(value: IssueWorkItem) -> Self {
+        factory::json_to_record(value)
     }
 }
 
@@ -77,7 +84,7 @@ mod tests {
         if let Some(author) = work_item.author {
             assert_eq!("User", author.object_type);
             assert_eq!("1-2", author.id);
-            assert_eq!(Some("Chuck Norris".to_string()), author.name);
+            assert_eq!(Some("Chuck Norris".to_string()), author.full_name);
         }
 
         assert!(work_item.duration.is_some());

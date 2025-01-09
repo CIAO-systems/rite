@@ -1,6 +1,6 @@
 <rite-youtrack-import>
     <dataset 
-        path="issues" 
+        path="workItems" 
         resource="INTERNAL-32"
         sub-resource="timeTracking/workItems"  
         query="summary: ciao export"

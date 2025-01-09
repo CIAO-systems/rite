@@ -1,6 +1,8 @@
 use config::RiteYoutrackImport;
 use import::Importer;
-use model::{xml::file::load_and_substitute_from_env, Initializable};
+use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
+use rest::make_request;
+use youtrack::factory::YouTrackObject;
 
 static CFG_URL: &str = "url";
 static CFG_TOKEN: &str = "token";
@@ -42,18 +44,48 @@ impl YouTrackImporter {
         if let Some(ref base_url) = self.url {
             if let Some(ref token) = self.token {
                 if let Some(ref xml_config) = self.xml_config {
-                    match xml_config.dataset.path.as_str() {
-                        "issues" => {
-                            issues::handle_issues_path(callback, &xml_config, &base_url, &token)?;
-                        }
-                        _ => {
-                            return Err(format!("Unknown path '{}'", xml_config.dataset.path).into())
-                        }
-                    }
+                    make_request(
+                        callback,
+                        xml_config,
+                        base_url,
+                        token,
+                        YouTrackImporter::handle_response,
+                    )?;
                 }
             }
         }
 
+        Ok(())
+    }
+
+    /// A generic response handler for YouTrack datasets
+    pub fn handle_response(
+        _config: &RiteYoutrackImport,
+        callback: import::RecordCallback,
+        response: reqwest::blocking::Response,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let json = response.json::<serde_json::Value>()?;
+        if let Some(array) = json.as_array() {
+            for element in array {
+                let object = YouTrackObject::from_type(element)?;
+                match object {
+                    YouTrackObject::Issue(issue) => {
+                        let record: Record = issue.into();
+                        callback(&record);
+                    }
+                    YouTrackObject::User(user) => {
+                        let record: Record = user.into();
+                        callback(&record);
+                    }
+
+                    // TODO implement
+                    // YouTrackObject::IssueWorkItem(issue_work_item) => todo!(),
+                    // YouTrackObject::DurationValue(duration_value) => todo!(),
+                    // YouTrackObject::Project(project) => todo!(),
+                    _ => {} // ignore,
+                }
+            }
+        }
         Ok(())
     }
 }
