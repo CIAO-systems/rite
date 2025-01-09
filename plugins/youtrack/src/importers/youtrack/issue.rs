@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::common::User;
+use super::common::{Project, User};
 
 /// rust struct for youTrack Issue JSON
 /// See https://www.jetbrains.com/help/youtrack/devportal/resource-api-issues.html
@@ -12,7 +12,6 @@ pub struct Issue {
     pub id: String,
     #[serde(rename = "idReadable")]
     pub id_readable: Option<String>,
-    pub summary: Option<String>,
     #[serde(rename = "commentsCount")]
     pub comments_count: Option<i32>,
     pub description: Option<String>,
@@ -21,4 +20,17 @@ pub struct Issue {
     pub draft_owner: Option<User>,
     #[serde(rename = "isDraft")]
     pub is_draft: Option<bool>,
+    #[serde(rename = "numberInProject")]
+    pub number_in_project: Option<i32>,
+    pub project: Option<Project>,
+    /// The timestamp in milliseconds indicating the moment when the issue 
+    /// was assigned a state that is considered to be resolved
+    pub resolved: Option<i64>,
+    pub summary: Option<String>,
+    /// The timestamp in milliseconds indicating the last update of the issue
+    pub updated: Option<i64>,
+    pub updater: Option<User>,
+    pub votes: Option<i16>,
+    #[serde(rename = "wikifiedDescription")]
+    pub wikified_description: Option<String>,
 }

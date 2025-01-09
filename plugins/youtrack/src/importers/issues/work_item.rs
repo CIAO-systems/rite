@@ -1,4 +1,7 @@
-use model::{field::Field, record::Record};
+use model::{
+    field::{add_field, add_optional_field},
+    record::Record,
+};
 
 use crate::importers::{config::RiteYoutrackImport, youtrack::work_item::IssueWorkItem};
 
@@ -35,29 +38,17 @@ pub(crate) fn handle_response_time_tracking_workitem(
 fn handle_work_item(callback: import::RecordCallback, work_item: IssueWorkItem) {
     let mut record = Record::new();
     let fields = record.fields_as_mut();
-    fields.push(Field::new_value(
-        "created".to_string(),
-        model::value::Value::I64(work_item.created),
-    ));
-    fields.push(Field::new_value(
-        "date".to_string(),
-        model::value::Value::I64(work_item.date),
-    ));
-    fields.push(Field::new_value(
-        "work_item_id".to_string(),
-        model::value::Value::String(work_item.id),
-    ));
-    fields.push(Field::new_value(
-        "user_id".to_string(),
-        model::value::Value::String(work_item.author.id),
-    ));
-    fields.push(Field::new_value(
-        "user_name".to_string(),
-        model::value::Value::String(work_item.author.name),
-    ));
-    fields.push(Field::new_value(
-        "duration_minutes".to_string(),
-        model::value::Value::I32(work_item.duration.minutes),
-    ));
+
+    add_optional_field(fields, "created", work_item.created);
+    add_optional_field(fields, "date", work_item.date);
+    add_field(fields, "work_item_id", work_item.id.into());
+    if let Some(author) = work_item.author {
+        add_field(fields, "user.id", author.id.into());
+        add_optional_field(fields, "user.name", author.name);
+    }
+    if let Some(duration) = work_item.duration {
+        add_field(fields, "duration_minutes", duration.minutes.into());
+    }
+
     callback(&record);
 }

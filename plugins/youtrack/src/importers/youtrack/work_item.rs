@@ -8,11 +8,11 @@ pub struct IssueWorkItem {
     #[serde(rename = "$type")]
     #[serde(default)]
     pub object_type: String,
-    pub author: common::User,
-    pub created: i64,
-    pub date: i64,
-    pub duration: common::DurationValue,
     pub id: String,
+    pub author: Option<common::User>,
+    pub created: Option<i64>,
+    pub date: Option<i64>,
+    pub duration: Option<common::DurationValue>,
     #[serde(rename = "type")]
     #[serde(default)]
     work_item_type: Option<String>,
@@ -21,11 +21,12 @@ pub struct IssueWorkItem {
 impl IssueWorkItem {
     #[allow(dead_code)]
     pub fn date(&self) -> Option<chrono::NaiveDate> {
-        if let Some(date_time) = DateTime::from_timestamp(self.date / 1000, 0) {
-            Some(date_time.date_naive())
-        } else {
-            None
+        if let Some(date) = self.date {
+            if let Some(date_time) = DateTime::from_timestamp(date / 1000, 0) {
+                return Some(date_time.date_naive());
+            }
         }
+        None
     }
 }
 #[cfg(test)]
@@ -64,22 +65,27 @@ mod tests {
     #[test]
     fn test() -> Result<(), serde_json::Error> {
         let work_item: IssueWorkItem = serde_json::from_str(TEST_DATA)?;
+        println!("{:#?}", work_item);
 
         assert_eq!("IssueWorkItem", work_item.object_type);
-        assert_eq!(1723075200000, work_item.date);
+        assert_eq!(Some(1723075200000), work_item.date);
         assert_eq!("168-70", work_item.id);
         assert_eq!(None, work_item.work_item_type);
 
-        assert_eq!("User", work_item.author.object_type);
-        assert_eq!("1-2", work_item.author.id);
-        assert_eq!("Chuck Norris", work_item.author.name);
+        assert!(work_item.author.is_some());
+        if let Some(author) = work_item.author {
+            assert_eq!("User", author.object_type);
+            assert_eq!("1-2", author.id);
+            assert_eq!(Some("Chuck Norris".to_string()), author.name);
+        }
 
-        assert_eq!("DurationValue", work_item.duration.object_type);
-        assert_eq!("240", work_item.duration.id);
-        assert_eq!(240, work_item.duration.minutes);
-        assert_eq!("4h", work_item.duration.presentation);
-
-        println!("{:#?}", work_item);
+        assert!(work_item.duration.is_some());
+        if let Some(duration) = work_item.duration {
+            assert_eq!("DurationValue", duration.object_type);
+            assert_eq!("240", duration.id);
+            assert_eq!(240, duration.minutes);
+            assert_eq!("4h", duration.presentation);
+        }
 
         Ok(())
     }

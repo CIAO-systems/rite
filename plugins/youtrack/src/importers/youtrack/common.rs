@@ -6,7 +6,7 @@ pub struct User {
     #[serde(default)]
     pub object_type: String,
     pub id: String,
-    pub name: String,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -17,4 +17,13 @@ pub struct DurationValue {
     pub id: String,
     pub minutes: i32,
     pub presentation: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Project {
+    #[serde(rename = "$type")]
+    #[serde(default)]
+    pub object_type: String,
+    pub id: String,
+    pub name: Option<String>,
 }

@@ -156,7 +156,7 @@ fn test_add_field_f64() {
 #[test]
 fn test_add_field_i64() {
     let mut fields: Vec<Field> = Vec::new();
-    add_field(&mut fields, "i64_field", 42.into());
+    add_field(&mut fields, "i64_field", (42 as i64).into());
 
     assert_eq!(fields.len(), 1);
     assert_eq!(fields[0].name, "i64_field");
@@ -176,7 +176,7 @@ fn test_add_optional_field_f64() {
 #[test]
 fn test_add_optional_field_i64() {
     let mut fields: Vec<Field> = Vec::new();
-    add_optional_field(&mut fields, "i64_field", Some(42));
+    add_optional_field(&mut fields, "i64_field", Some(42 as i64));
 
     assert_eq!(fields.len(), 1);
     assert_eq!(fields[0].name, "i64_field");

@@ -86,11 +86,6 @@ fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, i
     config
         .dataset
         .fields
-        .contains("summary")
-        .then(|| add_optional_field(fields, "summary", issue.summary));
-    config
-        .dataset
-        .fields
         .contains("commentsCount")
         .then(|| add_optional_field(fields, "commentsCount", issue.comments_count));
     config
@@ -101,7 +96,7 @@ fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, i
     config.dataset.fields.contains("draftOwner").then(|| {
         if let Some(draft_owner) = issue.draft_owner {
             add_field(fields, "draftOwner.id", draft_owner.id.into());
-            add_field(fields, "draftOwner.name", draft_owner.name.into())
+            add_optional_field(fields, "draftOwner.name", draft_owner.name)
         }
     });
     config
@@ -109,6 +104,48 @@ fn handle_issue(config: &RiteYoutrackImport, callback: import::RecordCallback, i
         .fields
         .contains("isDraft")
         .then(|| add_optional_field(fields, "isDraft", issue.is_draft));
+    config
+        .dataset
+        .fields
+        .contains("numberInProject")
+        .then(|| add_optional_field(fields, "numberInProject", issue.number_in_project));
+    config.dataset.fields.contains("project").then(|| {
+        if let Some(project) = issue.project {
+            add_field(fields, "project.id", project.id.into());
+            add_optional_field(fields, "project.name", project.name)
+        }
+    });
+    config
+        .dataset
+        .fields
+        .contains("resolved")
+        .then(|| add_optional_field(fields, "resolved", issue.resolved));
+    config
+        .dataset
+        .fields
+        .contains("summary")
+        .then(|| add_optional_field(fields, "summary", issue.summary));
+    config
+        .dataset
+        .fields
+        .contains("updated")
+        .then(|| add_optional_field(fields, "updated", issue.updated));
+    config.dataset.fields.contains("updater").then(|| {
+        if let Some(updater) = issue.updater {
+            add_field(fields, "updater.id", updater.id.into());
+            add_optional_field(fields, "updater.name", updater.name)
+        }
+    });
+    config
+        .dataset
+        .fields
+        .contains("votes")
+        .then(|| add_optional_field(fields, "votes", issue.votes));
+    config
+        .dataset
+        .fields
+        .contains("wikifiedDescription")
+        .then(|| add_optional_field(fields, "wikifiedDescription", issue.wikified_description));
 
     callback(&record);
 }
