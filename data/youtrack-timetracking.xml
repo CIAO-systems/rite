@@ -1,9 +1,14 @@
 <rite-youtrack-import>
     <dataset 
-        path="workItems" 
-        resource="INTERNAL-32"
-        sub-resource="timeTracking/workItems"  
-        query="summary: ciao export"
-        fields="author(id,name),date,created,duration(id,minutes,presentation),id,name,type(id,name)"
-    />
+        path="workItems"> 
+        <fields>
+            <field id="id" />
+            <field id="date" />
+            <field id="created" />
+            <field id="author(id,login,email)" />
+            <!-- <field id="duration(id,minutes)" />
+            <field id="text" />
+            <field id="type(id,name,autoAttached)" /> -->
+        </fields>
+    </dataset>
 </rite-youtrack-import>

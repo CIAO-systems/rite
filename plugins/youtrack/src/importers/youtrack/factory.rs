@@ -1,13 +1,15 @@
+use std::collections::HashMap;
+
 use model::{field::Field, record::Record, value::Value};
 use serde::Serialize;
 
 #[derive(Debug)]
 pub enum YouTrackObject {
     Issue(super::issue::Issue),
-    IssueWorkItem(super::work_item::IssueWorkItem),
+    IssueWorkItem(super::issue_work_item::IssueWorkItem),
     User(super::common::user::User),
-    DurationValue(super::common::duration::DurationValue),
-    Project(super::common::project::Project),
+    // DurationValue(super::common::duration::DurationValue),
+    // Project(super::common::project::Project),
     None,
 }
 
@@ -34,7 +36,10 @@ fn create_object<T: serde::de::DeserializeOwned>(
 ) -> Result<T, Box<dyn std::error::Error>> {
     match serde_json::from_value::<T>(element.clone()) {
         Ok(object) => Ok(object),
-        Err(e) => Err(e.into()),
+        Err(e) => {
+            log::debug!("create_object: {:?}", element);
+            Err(e.into())
+        }
     }
 }
 
@@ -44,28 +49,58 @@ pub fn json_to_record<T: Serialize>(value: T) -> Record {
         if let Some(object) = json.as_object() {
             for (name, json_value) in object {
                 let value = match json_value {
-                    serde_json::Value::Null => Value::None,
-                    serde_json::Value::Bool(b) => Value::Bool(*b),
-                    serde_json::Value::Number(number) => {
-                        match (number.as_f64(), number.as_i64(), number.as_u64()) {
-                            (Some(n), None, None) => Value::F64(n),
-                            (None, Some(n), None) => Value::I64(n),
-                            (None, None, Some(n)) => Value::U64(n),
-                            _ => Value::None,
+                    serde_json::Value::Object(_) => {
+                        // add all composite fields with prefix
+                        let fields = json_object_to_value_map(name, json_value);
+                        for (name_as_prefix, value) in fields {
+                            add_field_value(&mut record, &name_as_prefix, value);
                         }
+                        Value::None
                     }
-                    serde_json::Value::String(s) => Value::String(s.to_string()),
-                    serde_json::Value::Array(_) => Value::None, // TODO maybe implement this some day
-                    serde_json::Value::Object(_) => Value::None, // TODO maybe implement this some day
+                    _ => json2model(json_value),
                 };
 
-                if !name.starts_with('$') && value != Value::None {
-                    record
-                        .fields_as_mut()
-                        .push(Field::new_value(name.to_string(), value));
-                }
+                add_field_value(&mut record, name, value);
             }
         }
     }
     record
+}
+
+fn json2model(json_value: &serde_json::Value) -> Value {
+    match json_value {
+        serde_json::Value::Null => Value::None,
+        serde_json::Value::Bool(b) => Value::Bool(*b),
+        serde_json::Value::Number(number) => {
+            match (number.as_f64(), number.as_i64(), number.as_u64()) {
+                (Some(n), None, None) => Value::F64(n),
+                (None, Some(n), None) => Value::I64(n),
+                (None, None, Some(n)) => Value::U64(n),
+                _ => Value::None,
+            }
+        }
+        serde_json::Value::String(s) => Value::String(s.to_string()),
+        serde_json::Value::Array(_) => Value::None,
+        serde_json::Value::Object(_) => Value::None,
+    }
+}
+
+fn add_field_value(record: &mut Record, name: &str, value: Value) {
+    if !name.starts_with('$') && value != Value::None {
+        record
+            .fields_as_mut()
+            .push(Field::new_value(name.to_string(), value));
+    }
+}
+
+pub fn json_object_to_value_map(prefix: &str, value: &serde_json::Value) -> HashMap<String, Value> {
+    let mut result = HashMap::new();
+    if let Some(object) = value.as_object() {
+        for (name, json_value) in object {
+            if !name.starts_with('$') {
+                result.insert(format!("{prefix}.{name}"), json2model(json_value));
+            }
+        }
+    }
+    result
 }

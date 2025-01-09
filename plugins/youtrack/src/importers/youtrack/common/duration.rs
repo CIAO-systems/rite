@@ -8,9 +8,9 @@ pub struct DurationValue {
     #[serde(rename = "$type")]
     #[serde(default)]
     pub object_type: String,
-    pub id: String,
-    pub minutes: i32,
-    pub presentation: String,
+    pub id: Option<String>,
+    pub minutes: Option<i32>,
+    pub presentation: Option<String>,
 }
 
 impl From<DurationValue> for Record {

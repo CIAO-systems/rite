@@ -68,21 +68,29 @@ impl YouTrackImporter {
         if let Some(array) = json.as_array() {
             for element in array {
                 let object = YouTrackObject::from_type(element)?;
-                match object {
+                let record = match object {
                     YouTrackObject::Issue(issue) => {
                         let record: Record = issue.into();
-                        callback(&record);
+                        Some(record)
                     }
                     YouTrackObject::User(user) => {
                         let record: Record = user.into();
-                        callback(&record);
+                        Some(record)
+                    }
+                    YouTrackObject::IssueWorkItem(issue_work_item) => {
+                        let record: Record = issue_work_item.into();
+                        Some(record)
                     }
 
                     // TODO implement
                     // YouTrackObject::IssueWorkItem(issue_work_item) => todo!(),
                     // YouTrackObject::DurationValue(duration_value) => todo!(),
                     // YouTrackObject::Project(project) => todo!(),
-                    _ => {} // ignore,
+                    _ => None, // ignore,
+                };
+
+                if let Some(record) = record {
+                    callback(&record);
                 }
             }
         }
@@ -141,7 +149,6 @@ impl Initializable for YouTrackImporter {
 }
 
 mod config;
-mod issues;
 mod rest;
 mod youtrack;
 

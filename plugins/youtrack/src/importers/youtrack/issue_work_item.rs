@@ -11,12 +11,28 @@ pub struct IssueWorkItem {
     pub object_type: String,
     pub id: String,
     pub author: Option<common::user::User>,
+    pub creator: Option<common::user::User>,
     pub created: Option<i64>,
+    pub updated: Option<i64>,
     pub date: Option<i64>,
     pub duration: Option<common::duration::DurationValue>,
     #[serde(rename = "type")]
     #[serde(default)]
-    work_item_type: Option<String>,
+    work_item_type: Option<WorkItemType>,
+    text: Option<String>,
+    #[serde(rename = "textPreview")]
+    text_preview: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
+pub struct WorkItemType {
+    #[serde(rename = "$type")]
+    #[serde(default)]
+    pub object_type: String,
+    pub id: String,
+    pub name: Option<String>,
+    #[serde(rename = "autoAttached")]
+    pub auto_attached: Option<bool>,
 }
 
 impl IssueWorkItem {
@@ -33,13 +49,14 @@ impl IssueWorkItem {
 
 impl From<IssueWorkItem> for Record {
     fn from(value: IssueWorkItem) -> Self {
+        log::debug!("From<IssueWorkItem> {:#?}", value);
         factory::json_to_record(value)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::importers::youtrack::work_item::IssueWorkItem;
+    use crate::importers::youtrack::issue_work_item::IssueWorkItem;
 
     static TEST_DATA: &str = r#"{
         "$type": "IssueWorkItem",
@@ -90,9 +107,9 @@ mod tests {
         assert!(work_item.duration.is_some());
         if let Some(duration) = work_item.duration {
             assert_eq!("DurationValue", duration.object_type);
-            assert_eq!("240", duration.id);
-            assert_eq!(240, duration.minutes);
-            assert_eq!("4h", duration.presentation);
+            assert_eq!(Some("240".to_string()), duration.id);
+            assert_eq!(Some(240), duration.minutes);
+            assert_eq!(Some("4h".to_string()), duration.presentation);
         }
 
         Ok(())
