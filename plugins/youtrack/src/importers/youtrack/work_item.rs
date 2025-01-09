@@ -29,6 +29,7 @@ impl IssueWorkItem {
         None
     }
 }
+
 #[cfg(test)]
 mod tests {
     use crate::importers::youtrack::work_item::IssueWorkItem;
