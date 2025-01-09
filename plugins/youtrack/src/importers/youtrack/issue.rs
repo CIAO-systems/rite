@@ -39,7 +39,7 @@ pub struct Issue {
 mod tests {
     use serde_json::Value;
 
-    use crate::importers::youtrack::issue::Issue;
+    use crate::importers::youtrack::factory::YouTrackObject;
 
     static TEST_DATA: &str = r#"
 [
@@ -69,7 +69,7 @@ mod tests {
     "#;
 
     #[test]
-    fn test_automatic_type_creation() -> Result<(), serde_json::Error> {
+    fn test_automatic_type_creation() -> Result<(), Box<dyn std::error::Error>> {
         let json: Value = serde_json::from_str(TEST_DATA)?;
         // println!("{:#?}", json);
 
@@ -79,30 +79,11 @@ mod tests {
             Some(array) => {
                 // Get object type from first element of the array
                 assert!(array.len() > 0);
-                if let Some(first) = array.first() {
-                    assert!(first.is_object());
-                    if let Some(object) = first.as_object() {
-                        let object_type = &object["$type"];
-                        assert_eq!("Issue", object_type);
-
-                        if let Some(object_type) = object_type.as_str() {
-                            // Iterate over the array
-                            for element in array {
-                                // Create a rust object from the JSON, based on $type
-                                match object_type {
-                                    "Issue" => {
-                                        //
-                                        let issue =
-                                            serde_json::from_value::<Issue>(element.clone())?;
-                                        println!("{:#?}", issue);
-                                    }
-                                    _ => panic!("Not an 'Issue' object"),
-                                }
-                            }
-                        }
-                    } else {
-                        panic!("Not an object");
-                    }
+                // Iterate over the array
+                for element in array {
+                    // Create a rust object from the JSON, based on $type
+                    let x = YouTrackObject::from_type(element)?;
+                    println!("{:#?}", x);
                 }
             }
             None => panic!("Not an array"),
