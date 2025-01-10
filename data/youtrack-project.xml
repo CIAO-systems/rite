@@ -1,0 +1,10 @@
+<rite-youtrack-import>
+    <!-- see https://www.jetbrains.com/help/youtrack/devportal/resource-api-admin-projects.html -->
+    <dataset path="admin/projects"> 
+        <fields>
+            <field id="id" />
+            <field id="name" />
+            <field id="shortName" />
+        </fields>
+    </dataset>
+</rite-youtrack-import>

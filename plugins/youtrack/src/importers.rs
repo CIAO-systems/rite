@@ -81,9 +81,12 @@ impl YouTrackImporter {
                         let record: Record = issue_work_item.into();
                         Some(record)
                     }
+                    YouTrackObject::Project(project) => {
+                        let record: Record = project.into();
+                        Some(record)
+                    }
 
                     // TODO implement
-                    // YouTrackObject::IssueWorkItem(issue_work_item) => todo!(),
                     // YouTrackObject::DurationValue(duration_value) => todo!(),
                     // YouTrackObject::Project(project) => todo!(),
                     _ => None, // ignore,
