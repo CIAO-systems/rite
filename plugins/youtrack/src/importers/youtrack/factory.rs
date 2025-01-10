@@ -39,7 +39,9 @@ pub fn fill_record_from_json(record: &mut Record, json: &serde_json::Value) -> b
                     // add all composite fields with prefix
                     let fields = json_object_to_value_map(name, json_value);
                     for (name_as_prefix, value) in fields {
-                        add_field_value(record, &name_as_prefix, value);
+                        if add_field_value(record, &name_as_prefix, value) {
+                            changed = true
+                        }
                     }
                     Value::None
                 }

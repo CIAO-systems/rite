@@ -15,6 +15,8 @@
                 <transformer plugin="common">
                     <configuration>
                         <config key="format_field" value="created:isodatetime" />
+                        <config key="format_field" value="updated:isodatetime" />
+                        <config key="format_field" value="date:isodate" />
                     </configuration>
                 </transformer>
             </transformers>

@@ -1,14 +1,28 @@
 <rite-youtrack-import>
+    <!-- 
+        see
+        https://www.jetbrains.com/help/youtrack/devportal/resource-api-workItems.html
+    -->
     <dataset 
-        path="workItems"> 
+        path="workItems"
+        query="created: {2025-01-01} .. {Today}"
+        > 
         <fields>
             <field id="id" />
-            <field id="date" />
             <field id="created" />
-            <field id="author(id,login,email)" />
-            <!-- <field id="duration(id,minutes)" />
+            <field id="duration(minutes)" />
+            <field id="author(id)" />
+            <!-- 
+            <field id="id" />
+            <field id="updated" />
+            <field id="created" />
+            <field id="author(login,email)" />
+            <field id="creator(login,email)" />
+            <field id="duration(id,minutes)" />
             <field id="text" />
-            <field id="type(id,name,autoAttached)" /> -->
+            <field id="type(id,name,autoAttached)" /> 
+            <field id="issue(idReadable,summary)" />
+            -->
         </fields>
     </dataset>
 </rite-youtrack-import>

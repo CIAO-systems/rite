@@ -1,3 +1,5 @@
+use serde_json::Value;
+
 use super::{
     config::{Dataset, RiteYoutrackImport},
     ResponseHandler,
@@ -30,7 +32,7 @@ pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {
                 "{}/api/{}?query={}&fields={}",
                 base_url,
                 dataset.path,
-                query,
+                urlencoding::encode(query),
                 dataset.fields.to_string()
             )
         } else {
@@ -56,14 +58,11 @@ pub fn make_request(
     let url = create_url_from_dataset(&xml_config.dataset, base_url);
 
     let response = client.get(url).bearer_auth(token).send()?;
-    let status = response.status();
-    if status.is_success() {
-        response_handler(xml_config, callback, response)?;
+    if !response.status().is_success() {
+        let body: Value = response.json()?;
+        return Err(format!("{}: {}", body["error"], body["error_description"]).into());
     } else {
-        let error_for_status_ref = response.error_for_status_ref();
-        if let Err(e) = error_for_status_ref {
-            return Err(e.into());
-        }
+        response_handler(xml_config, callback, response)?;
     }
 
     Ok(())
