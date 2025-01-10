@@ -15,6 +15,6 @@ pub struct DurationValue {
 
 impl From<DurationValue> for Record {
     fn from(value: DurationValue) -> Self {
-        factory::json_to_record(value)
+        factory::serialize_to_record(value)
     }
 }

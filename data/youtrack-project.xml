@@ -5,6 +5,8 @@
             <field id="id" />
             <field id="name" />
             <field id="shortName" />
+            <field id="template" />
+            <field id="team(id,name)" />
         </fields>
     </dataset>
 </rite-youtrack-import>

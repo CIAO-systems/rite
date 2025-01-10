@@ -1,0 +1,16 @@
+<rite-youtrack-import>
+    <!--
+        This only seems to work on-premises 
+        see 
+        https://www.jetbrains.com/help/youtrack/devportal/resource-api-admin-telemetry.html
+     -->
+    <dataset path="admin/telemetry"> 
+        <fields>
+            <field id="id" />
+            <field id="installationFolder" />
+            <field id="databaseLocation" />
+            <field id="logsLocation" />
+            <field id="availableProcessors" />
+        </fields>
+    </dataset>
+</rite-youtrack-import>

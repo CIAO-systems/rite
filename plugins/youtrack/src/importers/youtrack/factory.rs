@@ -3,91 +3,62 @@ use std::collections::HashMap;
 use model::{field::Field, record::Record, value::Value};
 use serde::Serialize;
 
-#[derive(Debug)]
-pub enum YouTrackObject {
-    Issue(super::issue::Issue),
-    IssueWorkItem(super::issue_work_item::IssueWorkItem),
-    User(super::common::user::User),
-    Project(super::common::project::Project),
-    // DurationValue(super::common::duration::DurationValue),
-    None,
-}
+#[allow(dead_code)]
+mod serialize;
 
-impl YouTrackObject {
-    /// Create a rust object from a JSON Value, based on the YouTrack $type
-    /// 
-    pub fn from_type(element: &serde_json::Value) -> Result<Self, Box<dyn std::error::Error>> {
-        if let Some(object) = element.as_object() {
-            let object_type = &object["$type"];
 
-            if let Some(object_type) = object_type.as_str() {
-                return match object_type {
-                    "Issue" => Ok(YouTrackObject::Issue(create_object(element)?)),
-                    "IssueWorkItem" => Ok(YouTrackObject::IssueWorkItem(create_object(element)?)),
-                    "User" => Ok(YouTrackObject::User(create_object(element)?)),
-                    "Project" => Ok(YouTrackObject::Project(create_object(element)?)),
-                    _ => Ok(YouTrackObject::None),
-                };
-            }
-        }
-        Ok(YouTrackObject::None)
-    }
-}
-
-/// Creates a rust object from a JSON Value
-/// 
-/// # Arguments
-/// * `element`: The JSON Value to deserialize
-/// 
-fn create_object<T: serde::de::DeserializeOwned>(
-    element: &serde_json::Value,
-) -> Result<T, Box<dyn std::error::Error>> {
-    match serde_json::from_value::<T>(element.clone()) {
-        Ok(object) => Ok(object),
-        Err(e) => {
-            log::debug!("create_object: {:?}", element);
-            Err(e.into())
-        }
-    }
-}
-
-/// Creates a [Record] from a JSON object
-/// 
-/// This functions takes any object, that implements the trait [Serialize], 
+/// Creates a [Record] from a [Serialize] object
+///
+/// This functions takes any object, that implements the trait [Serialize],
 /// converts it to a raw JSON object and then adds all fields to a new [Record]
-/// 
+///
 /// # Arguments
 /// * `value`: A serde::Serialize object that will be converted to a JSON object
-/// 
-pub fn json_to_record<T: Serialize>(value: T) -> Record {
+///
+pub fn serialize_to_record<T: Serialize>(value: T) -> Record {
     let mut record = Record::new();
     if let Ok(json) = serde_json::to_value(value) {
-        if let Some(object) = json.as_object() {
-            for (name, json_value) in object {
-                let value = match json_value {
-                    serde_json::Value::Object(_) => {
-                        // add all composite fields with prefix
-                        let fields = json_object_to_value_map(name, json_value);
-                        for (name_as_prefix, value) in fields {
-                            add_field_value(&mut record, &name_as_prefix, value);
-                        }
-                        Value::None
-                    }
-                    _ => json2model(json_value),
-                };
-
-                add_field_value(&mut record, name, value);
-            }
-        }
+        fill_record_from_json(&mut record, &json);
     }
     record
 }
 
+/// Fills a [Record] from a JSON [Value] object
+///
+/// # Arguments
+/// * `record`: The record, that will be filled with values from the JSON object
+/// * `json`: The JSON Value. Only if it is an object, attributes will be added
+///     as fields to the record
+///
+pub fn fill_record_from_json(record: &mut Record, json: &serde_json::Value) -> bool {
+    let mut changed = false;
+    if let Some(object) = json.as_object() {
+        for (name, json_value) in object {
+            let value = match json_value {
+                serde_json::Value::Object(_) => {
+                    // add all composite fields with prefix
+                    let fields = json_object_to_value_map(name, json_value);
+                    for (name_as_prefix, value) in fields {
+                        add_field_value(record, &name_as_prefix, value);
+                    }
+                    Value::None
+                }
+                _ => json2model(json_value),
+            };
+
+            if add_field_value(record, name, value) {
+                changed = true
+            }
+        }
+    }
+    changed
+}
+
 /// Converts a JSON Value to a model Value
-/// 
+///
 /// # Arguments
 /// * `json_value`: The JSON value to be converted to a `model::Value`
-/// 
+///
 fn json2model(json_value: &serde_json::Value) -> Value {
     match json_value {
         serde_json::Value::Null => Value::None,
@@ -110,34 +81,40 @@ fn json2model(json_value: &serde_json::Value) -> Value {
 }
 
 /// Adds a field to the record with given name and value
-/// 
-/// The field is only added, it its name does not start with `$` and its value 
+///
+/// The field is only added, it its name does not start with `$` and its value
 /// is not Value::None
-/// 
+///
 /// # Arguments
 /// * `record`: The record to add the field to
 /// * `name`: Name of the new field
 /// * `value`: [Value] of the new field
-fn add_field_value(record: &mut Record, name: &str, value: Value) {
+fn add_field_value(record: &mut Record, name: &str, value: Value) -> bool {
+    let mut changed = false;
     if !name.starts_with('$') && value != Value::None {
+        changed = true;
         record
             .fields_as_mut()
             .push(Field::new_value(name.to_string(), value));
     }
+    changed
 }
 
 /// Creates multiple fields (a hashmap of name and value) for a JSON Object value
-/// 
+///
 /// Only if the `object` actually is an Object, the fields will be added. If it is not an
 /// object, an empty maps will be returned.
 /// The attributes of the JSON object will be added only, if the name does not start with `$`.
 /// The resulting map key will be prefixed with `prefix.`
-/// 
+///
 /// # Arguments
-/// * `prefix`: The name for every field in the JSON object will prefixed with, 
+/// * `prefix`: The name for every field in the JSON object will prefixed with,
 ///        separated by a dot
-/// * `object`: The JSON object. 
-pub fn json_object_to_value_map(prefix: &str, object: &serde_json::Value) -> HashMap<String, Value> {
+/// * `object`: The JSON object.
+pub fn json_object_to_value_map(
+    prefix: &str,
+    object: &serde_json::Value,
+) -> HashMap<String, Value> {
     let mut result = HashMap::new();
     if let Some(object) = object.as_object() {
         for (name, json_value) in object {

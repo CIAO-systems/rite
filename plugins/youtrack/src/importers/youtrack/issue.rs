@@ -38,64 +38,6 @@ pub struct Issue {
 
 impl From<Issue> for Record {
     fn from(value: Issue) -> Self {
-        factory::json_to_record(value)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use serde_json::Value;
-
-    use crate::importers::youtrack::factory::YouTrackObject;
-
-    static TEST_DATA: &str = r#"
-[
-  {
-    "description": null,
-    "summary": "Sprint 3. Task 2",
-    "reporter": {
-      "login": "root",
-      "$type": "User"
-    },
-    "idReadable": "SP-38",
-    "id": "2-42",
-    "$type": "Issue"
-  },
-  {
-    "description": "Let's create new issue from REST API",
-    "summary": "Issue from REST #1",
-    "reporter": {
-      "login": "root",
-      "$type": "User"
-    },
-    "idReadable": "SP-7",
-    "id": "2-6",
-    "$type": "Issue"
-  }
-]    
-    "#;
-
-    #[test]
-    fn test_automatic_type_creation() -> Result<(), Box<dyn std::error::Error>> {
-        let json: Value = serde_json::from_str(TEST_DATA)?;
-        // println!("{:#?}", json);
-
-        assert!(json.is_array());
-
-        match json.as_array() {
-            Some(array) => {
-                // Get object type from first element of the array
-                assert!(array.len() > 0);
-                // Iterate over the array
-                for element in array {
-                    // Create a rust object from the JSON, based on $type
-                    let x = YouTrackObject::from_type(element)?;
-                    println!("{:#?}", x);
-                }
-            }
-            None => panic!("Not an array"),
-        }
-
-        Ok(())
+        factory::serialize_to_record(value)
     }
 }

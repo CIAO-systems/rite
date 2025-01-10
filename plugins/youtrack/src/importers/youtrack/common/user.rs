@@ -17,6 +17,6 @@ pub struct User {
 
 impl From<User> for Record {
     fn from(value: User) -> Self {
-        factory::json_to_record(value)
+        factory::serialize_to_record(value)
     }
 }

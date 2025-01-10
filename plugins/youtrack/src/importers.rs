@@ -2,7 +2,7 @@ use config::RiteYoutrackImport;
 use import::Importer;
 use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
 use rest::make_request;
-use youtrack::factory::YouTrackObject;
+use youtrack::factory::fill_record_from_json;
 
 static CFG_URL: &str = "url";
 static CFG_TOKEN: &str = "token";
@@ -67,34 +67,15 @@ impl YouTrackImporter {
         let json = response.json::<serde_json::Value>()?;
         if let Some(array) = json.as_array() {
             for element in array {
-                let object = YouTrackObject::from_type(element)?;
-                let record = match object {
-                    YouTrackObject::Issue(issue) => {
-                        let record: Record = issue.into();
-                        Some(record)
-                    }
-                    YouTrackObject::User(user) => {
-                        let record: Record = user.into();
-                        Some(record)
-                    }
-                    YouTrackObject::IssueWorkItem(issue_work_item) => {
-                        let record: Record = issue_work_item.into();
-                        Some(record)
-                    }
-                    YouTrackObject::Project(project) => {
-                        let record: Record = project.into();
-                        Some(record)
-                    }
-
-                    // TODO implement
-                    // YouTrackObject::DurationValue(duration_value) => todo!(),
-                    // YouTrackObject::Project(project) => todo!(),
-                    _ => None, // ignore,
-                };
-
-                if let Some(record) = record {
+                let mut record = Record::new();
+                if fill_record_from_json(&mut record, element) {
                     callback(&record);
                 }
+            }
+        } else if json.is_object() {
+            let mut record = Record::new();
+            if fill_record_from_json(&mut record, &json) {
+                callback(&record);
             }
         }
         Ok(())

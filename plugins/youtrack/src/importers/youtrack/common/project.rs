@@ -14,6 +14,6 @@ pub struct Project {
 
 impl From<Project> for Record {
     fn from(value: Project) -> Self {
-        factory::json_to_record(value)
+        factory::serialize_to_record(value)
     }
 }

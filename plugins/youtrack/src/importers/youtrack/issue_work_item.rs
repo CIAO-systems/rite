@@ -50,7 +50,7 @@ impl IssueWorkItem {
 impl From<IssueWorkItem> for Record {
     fn from(value: IssueWorkItem) -> Self {
         log::debug!("From<IssueWorkItem> {:#?}", value);
-        factory::json_to_record(value)
+        factory::serialize_to_record(value)
     }
 }
 
