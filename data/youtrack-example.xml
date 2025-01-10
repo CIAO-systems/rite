@@ -6,7 +6,7 @@
     <processes>
         <process id="read-timetracking-from-issues">
             <importer plugin="youtrack">
-                <configuration xml="$RITE_CONFIG_PATH/youtrack-$YOUTRACK_ISSUES_CONFIG.xml">
+                <configuration xml="$RITE_CONFIG_PATH/youtrack-$YOUTRACK_CONFIG.xml">
                     <config key="url" value="https://ciao-systems.youtrack.cloud" />
                     <config key="token" value="$YOUTRACK_TOKEN" />
                 </configuration>
