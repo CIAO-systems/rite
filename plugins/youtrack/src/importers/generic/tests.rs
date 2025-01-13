@@ -1,6 +1,6 @@
 use model::xml::config::Configuration;
 
-use crate::importers::config::{Dataset, Field, Fields};
+use crate::importers::generic::config::{Dataset, Field, Fields};
 use crate::importers::connection::{YouTrackConnection, CFG_TOKEN, CFG_URL};
 
 use crate::importers::generic::rest::create_url_from_dataset;

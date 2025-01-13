@@ -31,6 +31,10 @@ impl ToSql for ValueWrapper {
             Value::F64(v) => v.to_sql(ty, out),
             Value::String(v) => v.to_sql(ty, out),
             Value::Blob(v) => v.to_sql(ty, out),
+            Value::Date(v) => {
+                let date_str = v.format("%Y-%m-%d").to_string();
+                date_str.to_sql(ty, out)
+            }
             Value::None => Ok(IsNull::Yes),
         }
     }
@@ -78,6 +82,7 @@ pub fn _get_sql_type(value: &Value) -> &'static str {
         Value::F64(_) => "DOUBLE PRECISION",
         Value::String(_) => "TEXT",
         Value::Blob(_) => "BYTEA",
+        Value::Date(_) => "DATE",
         Value::None => "TEXT", // Default for nullable column
     }
 }

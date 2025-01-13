@@ -48,7 +48,7 @@ impl Fields {
 
 #[cfg(test)]
 mod tests {
-    use crate::importers::config::RiteYoutrackImport;
+    use crate::importers::generic::config::RiteYoutrackImport;
     use serde_xml_rs::from_str;
 
     #[test]

@@ -1,6 +1,8 @@
 //! Module for the Value
 //!
 use std::fmt::Display;
+
+use chrono::NaiveDate;
 /// An enum for all known field values.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Value {
@@ -22,6 +24,7 @@ pub enum Value {
     F64(f64),
     String(String),
     Blob(Vec<u8>),
+    Date(NaiveDate),
     None,
 }
 
@@ -46,6 +49,7 @@ impl Display for Value {
             Value::F32(val) => write!(f, "{}", val),
             Value::F64(val) => write!(f, "{}", val),
             Value::String(val) => write!(f, "{}", val),
+            Value::Date(val) => write!(f, "{}", val),
             Value::Blob(vec) => {
                 // Displaying bytes as hexadecimal
                 let hex: Vec<String> = vec.iter().map(|b| format!("{:02x}", b)).collect();
@@ -171,3 +175,8 @@ impl From<Vec<u8>> for Value {
     }
 }
 
+impl From<NaiveDate> for Value {
+    fn from(value: NaiveDate) -> Self {
+        Value::Date(value)
+    }
+}

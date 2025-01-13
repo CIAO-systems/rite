@@ -4,7 +4,7 @@
         <plugin id="youtrack" path="target/debug" name="rite_youtrack"/>
     </plugins>
     <processes>
-        <process id="read-timetracking-from-issues">
+        <process id="Generic example">
             <importer plugin="youtrack">
                 <configuration xml="$RITE_CONFIG_PATH/youtrack-$YOUTRACK_CONFIG.xml">
                     <config key="url" value="https://ciao-systems.youtrack.cloud" />

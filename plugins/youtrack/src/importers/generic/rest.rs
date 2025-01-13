@@ -1,7 +1,6 @@
 use serde_json::Value;
 
-use crate::importers::config::{Dataset, RiteYoutrackImport};
-
+use crate::importers::generic::config::{Dataset, RiteYoutrackImport};
 
 // Define the type alias for the response handler function signature
 type ResponseHandler = fn(

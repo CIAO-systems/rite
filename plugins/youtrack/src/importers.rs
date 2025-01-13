@@ -1,7 +1,6 @@
 pub mod time;
-
-mod config;
-mod connection;
 pub mod generic;
+
+mod connection;
 mod youtrack;
 

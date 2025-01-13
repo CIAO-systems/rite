@@ -43,7 +43,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "YouTrack example",
+            "name": "YouTrack Generic example",
             "cargo": {
                 "args": [
                     "build",
@@ -55,8 +55,26 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/youtrack-example.xml"],
+            "args": ["-f", "data/youtrack/generic/youtrack-example.xml"],
             "cwd": "${workspaceFolder}"
         },
-   ]
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "YouTrack Time example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": ["-f", "data/youtrack/time/youtrack-example.xml"],
+            "cwd": "${workspaceFolder}"
+        },
+  ]
 }

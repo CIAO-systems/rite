@@ -1,4 +1,4 @@
-use super::config::RiteYoutrackImport;
+use config::RiteYoutrackImport;
 use super::youtrack::factory::fill_record_from_json;
 use crate::importers::connection::YouTrackConnection;
 use import::Importer;
@@ -6,6 +6,8 @@ use model::{record::Record, xml::file::load_and_substitute_from_env, Initializab
 use rest::make_request;
 
 mod rest;
+mod config;
+
 
 pub struct YouTrackImporter {
     connection: Option<YouTrackConnection>,
@@ -114,7 +116,7 @@ impl Initializable for YouTrackImporter {
             if let Some(ref xml) = config.xml {
                 match load_and_substitute_from_env(xml, &std::collections::HashMap::new()) {
                     Ok(xml_contents) => {
-                        let xml_config: super::config::RiteYoutrackImport =
+                        let xml_config: config::RiteYoutrackImport =
                             serde_xml_rs::from_str(&xml_contents)?;
                         self.xml_config = Some(xml_config);
                     }
