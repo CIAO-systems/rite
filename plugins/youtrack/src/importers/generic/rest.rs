@@ -1,9 +1,14 @@
 use serde_json::Value;
 
-use super::{
-    config::{Dataset, RiteYoutrackImport},
-    ResponseHandler,
-};
+use crate::importers::config::{Dataset, RiteYoutrackImport};
+
+
+// Define the type alias for the response handler function signature
+type ResponseHandler = fn(
+    config: &RiteYoutrackImport,
+    callback: import::RecordCallback,
+    response: reqwest::blocking::Response,
+) -> Result<(), Box<dyn std::error::Error>>;
 
 /// Create a URL string from the dataset values
 pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {

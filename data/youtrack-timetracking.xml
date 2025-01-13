@@ -12,6 +12,7 @@
             <field id="created" />
             <field id="duration(minutes)" />
             <field id="author(email)" />
+            <field id="creator(email)" />
             <!-- 
             <field id="id" />
             <field id="updated" />

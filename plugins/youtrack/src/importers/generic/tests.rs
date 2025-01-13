@@ -1,17 +1,26 @@
-use crate::importers::{
-    config::{Field, Fields},
-    CFG_TOKEN, CFG_URL,
-};
+use model::xml::config::Configuration;
 
-use super::{config::Dataset, rest::create_url_from_dataset, YouTrackImporter};
+use crate::importers::config::{Dataset, Field, Fields};
+use crate::importers::connection::{YouTrackConnection, CFG_TOKEN, CFG_URL};
+
+use crate::importers::generic::rest::create_url_from_dataset;
+use crate::YouTrackImporter;
 
 #[test]
 fn test_check_config() {
     let mut yti = YouTrackImporter::new();
-    assert_eq!(yti.check_config(), Some(CFG_URL));
-    yti.url = Some("demo-url".to_string());
-    assert_eq!(yti.check_config(), Some(CFG_TOKEN));
-    yti.token = Some("token".to_string());
+    assert_eq!(
+        yti.check_config(),
+        Some(YouTrackConnection::all_variables().to_string())
+    );
+    let mut config = Configuration::new();
+
+    config.insert(CFG_URL.to_string(), "demo-url".to_string());
+    yti.set_connection(&config);
+    assert_eq!(yti.check_config(), Some(CFG_TOKEN.to_string()));
+
+    config.insert(CFG_TOKEN.to_string(), "token".to_string());
+    yti.set_connection(&config);
     assert_eq!(yti.check_config(), None);
 }
 
@@ -70,7 +79,7 @@ fn test_create_url_from_dataset3() {
     };
 
     assert_eq!(
-        "base_url/api/Pacific Crest Trail?query=length: 73&fields=claim",
+        "base_url/api/Pacific Crest Trail?query=length%3A%2073&fields=claim",
         create_url_from_dataset(&dataset, "base_url")
     );
 }

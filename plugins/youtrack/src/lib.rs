@@ -1,4 +1,4 @@
-use importers::YouTrackImporter;
+use importers::{generic::YouTrackImporter, time::YouTrackImporterTime};
 
 pub mod importers;
 
@@ -9,7 +9,7 @@ pub fn create_importer(
     name: &str,
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
-        // TODO add specific named importers here
+        "time" => Ok(Box::new(YouTrackImporterTime::new())),
         _ => Ok(Box::new(YouTrackImporter::new())),
     }
 }

@@ -63,7 +63,7 @@ mod tests {
         "author": {
             "$type": "User",
             "id": "1-2",
-            "name": "Chuck Norris"
+            "fullName": "Chuck Norris"
         },
         "date": 1723075200000,
         "duration": {
