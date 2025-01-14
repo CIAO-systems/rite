@@ -11,6 +11,13 @@
                     <config key="token" value="$YOUTRACK_TOKEN" />
                 </configuration>
             </importer>
+            <transformers>
+                <transformer plugin="common">
+                    <configuration>
+                        <config key="format_field" value="created:isodate" />
+                    </configuration>
+                </transformer>
+            </transformers>
             <exporters>
                 <exporter plugin="common" name="console" />
             </exporters>

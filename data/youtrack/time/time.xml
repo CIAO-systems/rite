@@ -2,5 +2,5 @@
     <!-- Dates in format YYYY-MM-DD, empty for open interval -->
     <time-tracking
         start-date="2025-01-01"
-        end-date=""/>
+        end-date="2025-01-08"/>
 </rite-youtrack-import-time>

@@ -11,6 +11,14 @@ pub fn handle(
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let json = response.json::<serde_json::Value>()?;
+    handle_json_response(callback, json)
+}
+
+// Extracted, to be testable
+fn handle_json_response(
+    callback: &mut dyn FnMut(&Record),
+    json: serde_json::Value,
+) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(array) = json.as_array() {
         for element in array {
             let data = YouTrackObject::from_type(element)?;
@@ -111,121 +119,4 @@ fn add_duration(record: &mut Record, issue_work_item: &IssueWorkItem) {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::importers::youtrack::{common::project::Project, issue::Issue};
-
-    fn create_project(id: &str, name: Option<&str>) -> Project {
-        Project {
-            object_type: "Project".to_string(),
-            id: id.to_string(),
-            name: name.map(|s| s.to_string()),
-        }
-    }
-
-    fn create_issue(project: Option<Project>) -> Issue {
-        Issue {
-            object_type: "Issue".to_string(),
-            project: project,
-            id: "issue-id".to_string(),
-            id_readable: None,
-            comments_count: None,
-            description: None,
-            created: None,
-            draft_owner: None,
-            is_draft: None,
-            number_in_project: None,
-            resolved: None,
-            summary: None,
-            updated: None,
-            updater: None,
-            votes: None,
-            wikified_description: None,
-        }
-    }
-
-    fn create_issue_item(issue: Option<Issue>) -> IssueWorkItem {
-        IssueWorkItem {
-            issue: issue,
-            object_type: "IssueWorkItem".to_string(),
-            id: "id".to_string(),
-            author: None,
-            creator: None,
-            created: None,
-            updated: None,
-            date: None,
-            duration: None,
-            work_item_type: None,
-            text: None,
-            text_preview: None,
-        }
-    }
-
-    #[test]
-    fn test_add_project_with_complete_data() {
-        // Arrange
-        let mut record = Record::new();
-        let project = create_project("proj-123", Some("Test Project"));
-        let issue = create_issue(Some(project));
-        let issue_work_item = create_issue_item(Some(issue));
-
-        // Act
-        add_project(&mut record, &issue_work_item);
-
-        // Assert
-        let fields = record.fields();
-        assert_eq!(fields.len(), 2);
-
-        assert_eq!(fields[0].name(), "project");
-        assert_eq!(fields[0].value(), Value::String("proj-123".to_string()));
-
-        assert_eq!(fields[1].name(), "project.name");
-        assert_eq!(fields[1].value(), Value::String("Test Project".to_string()));
-    }
-
-    #[test]
-    fn test_add_project_without_name() {
-        // Arrange
-        let mut record = Record::new();
-        let project = create_project("proj-123", None);
-        let issue = create_issue(Some(project));
-        let issue_work_item = create_issue_item(Some(issue));
-
-        // Act
-        add_project(&mut record, &issue_work_item);
-
-        // Assert
-        let fields = record.fields();
-        assert_eq!(fields.len(), 1);
-        assert_eq!(fields[0].name(), "project");
-        assert_eq!(fields[0].value(), Value::String("proj-123".to_string()));
-    }
-
-    #[test]
-    fn test_add_project_without_project() {
-        // Arrange
-        let mut record = Record::new();
-        let issue = create_issue(None);
-        let issue_work_item = create_issue_item(Some(issue));
-
-        // Act
-        add_project(&mut record, &issue_work_item);
-
-        // Assert
-        let fields = record.fields();
-        assert_eq!(fields.len(), 0);
-    }
-
-    #[test]
-    fn test_add_project_without_issue() {
-        // Arrange
-        let mut record = Record::new();
-        let issue_work_item = create_issue_item(None);
-        // Act
-        add_project(&mut record, &issue_work_item);
-
-        // Assert
-        let fields = record.fields();
-        assert_eq!(fields.len(), 0);
-    }
-}
+mod tests;
