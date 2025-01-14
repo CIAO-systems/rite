@@ -1,12 +1,14 @@
 use chrono::{Datelike, NaiveDate};
 use serde::Deserialize;
 
+/// RITE YouTrack time tracking import configuration
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct RiteYoutrackImportTime {
     pub time_tracking: TimeTracking,
 }
 
+/// Query Parameters for the time tracking request
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct TimeTracking {
@@ -17,6 +19,7 @@ pub struct TimeTracking {
 }
 
 impl RiteYoutrackImportTime {
+    /// Load a RiteYoutrackImportTime from a file with the path `xml_file`
     pub fn from(xml_file: &String) -> Result<Self, Box<dyn std::error::Error>> {
         let content = std::fs::read_to_string(xml_file)?;
 
@@ -44,10 +47,12 @@ impl TimeTracking {
         }
     }
 
+    /// Formats the start date as a query parameter
     pub fn start_date_as_param(&self) -> Option<String> {
         TimeTracking::format_date_opt(self.start_date)
     }
 
+    /// Formats the end date as a query parameter
     pub fn end_date_as_param(&self) -> Option<String> {
         TimeTracking::format_date_opt(self.end_date)
     }

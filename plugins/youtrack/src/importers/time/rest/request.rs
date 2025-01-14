@@ -18,12 +18,20 @@ pub fn create_url(time_tracking: &TimeTracking, base_url: &str) -> String {
     format!("{base_url}/api/workItems?{query}")
 }
 
-// Define the type alias for the response handler function signature
+/// Type alias for the response handler function signature
 pub type TimeResponseHandler = fn(
     callback: import::RecordCallback,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>>;
 
+/// Calls the REST server for YouTrack work items
+///
+/// # Arguments
+/// * `callback`: The callback for imported records
+/// * `time_tracking_config`: The configuration for filtering the request
+/// * `base_url`: The base URL of the YouTrack installation
+/// * `token`: The bearer token for authenticating with YouTrack. See https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
+/// * `response_handler`: The function that processes the request response
 pub fn make_request(
     callback: import::RecordCallback,
     time_tracking_config: &TimeTracking,

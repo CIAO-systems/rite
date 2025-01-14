@@ -6,6 +6,9 @@ use crate::importers::youtrack::{
 
 /// A response handler for YouTrack work items
 /// See https://www.jetbrains.com/help/youtrack/devportal/resource-api-workItems.html
+/// # Arguments
+/// * `callback`: The callback for imported records
+/// * `response`: The response from the request. It will be processed as JSON body
 pub fn handle(
     callback: import::RecordCallback,
     response: reqwest::blocking::Response,
