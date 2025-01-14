@@ -56,7 +56,6 @@ fn create_object<T: serde::de::DeserializeOwned>(
 
 /// Creates a record via rust objects from the JSON value and call the callback
 ///
-/// TODO: Not efficient, should be removed
 fn derserialize_and_add(
     callback: &mut dyn FnMut(&Record),
     element: &serde_json::Value,

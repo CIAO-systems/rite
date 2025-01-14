@@ -2,7 +2,7 @@ use chrono::DateTime;
 use model::record::Record;
 use serde::{Deserialize, Serialize};
 
-use super::{common, factory};
+use super::{common, factory, issue::Issue};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct IssueWorkItem {
@@ -18,10 +18,11 @@ pub struct IssueWorkItem {
     pub duration: Option<common::duration::DurationValue>,
     #[serde(rename = "type")]
     #[serde(default)]
-    work_item_type: Option<WorkItemType>,
-    text: Option<String>,
+    pub work_item_type: Option<WorkItemType>,
+    pub text: Option<String>,
     #[serde(rename = "textPreview")]
-    text_preview: Option<String>,
+    pub text_preview: Option<String>,
+    pub issue: Option<Issue>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]

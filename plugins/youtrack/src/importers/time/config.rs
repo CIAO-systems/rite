@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -24,6 +24,32 @@ impl RiteYoutrackImportTime {
             Ok(o) => Ok(o),
             Err(e) => Err(e.into()),
         }
+    }
+}
+
+impl TimeTracking {
+    fn format_date_opt(date: Option<NaiveDate>) -> Option<String> {
+        if let Some(date) = date {
+            Some(
+                format!(
+                    "{:04}-{:02}-{:02}",
+                    date.year(),
+                    date.month0() + 1,
+                    date.day0() + 1
+                )
+                .to_string(),
+            )
+        } else {
+            None
+        }
+    }
+
+    pub fn start_date_as_param(&self) -> Option<String> {
+        TimeTracking::format_date_opt(self.start_date)
+    }
+
+    pub fn end_date_as_param(&self) -> Option<String> {
+        TimeTracking::format_date_opt(self.end_date)
     }
 }
 

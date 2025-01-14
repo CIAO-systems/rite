@@ -4,7 +4,7 @@ use model::{field::Field, record::Record, value::Value};
 use serde::Serialize;
 
 #[allow(dead_code)]
-mod serialize;
+pub mod serialize;
 
 
 /// Creates a [Record] from a [Serialize] object
