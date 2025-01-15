@@ -1,9 +1,8 @@
 <rite>
     <plugins>
         <plugin id="postgres" name="rite_postgres"/>
-        <plugin id="console" name="example_export"/>
+        <plugin id="common" name="rite_common"/>
         <plugin id="star-wars" name="rite_rest"/>
-        <plugin id="common-transformers" name="rite_common_transformers"/>
     </plugins>
     <processes>
         <process id="read-from-star-wars-api-write-2-postgres">
@@ -15,7 +14,7 @@
                 </configuration>
             </importer>
             <transformers>
-                <transformer plugin="common-transformers">
+                <transformer plugin="common">
                     <configuration>
                         <config key="add_field" value="id:uuid" />
                         <config key="add_field" value="number:autoinc" />
@@ -26,7 +25,7 @@
                 </transformer>
             </transformers>
             <exporters>
-                <exporter plugin="console" name="console" />
+                <exporter plugin="common" name="console" />
                 <exporter plugin="postgres">
                     <configuration xml="$RITE_CONFIG_PATH/star-wars-postgres.xml" />
                 </exporter>

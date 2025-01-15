@@ -10,7 +10,7 @@ publish = ["kellnr"]
 
 [dependencies]
 gag = "1.0.0"
-model = { version="0.1", registry="kellnr" }
+model = { version="0.1", registry="kellnr", path="../../model" }
 
 export = { version="0.1", registry="kellnr", path="../../export" }
 helper = { version="0.1", registry="kellnr", path="../../helper" }

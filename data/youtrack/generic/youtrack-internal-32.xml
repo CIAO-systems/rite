@@ -1,0 +1,9 @@
+<rite-youtrack-import>
+    <dataset 
+        path="issues/INTERNAL-32/timeTracking/workItems"> 
+        <fields>
+            <!-- <field id="id" /> -->
+            <field id="duration(presentation)" />
+        </fields>
+    </dataset>
+</rite-youtrack-import>

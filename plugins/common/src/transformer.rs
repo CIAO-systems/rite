@@ -2,6 +2,7 @@ use model::{field::Field, record::Record, xml::config::Configuration, Initializa
 use operations::{
     adder::Adder,
     filter::{Ignorer, Includer},
+    formatter::Formatter,
     renamer::Renamer,
 };
 use transform::Transformer;
@@ -12,6 +13,7 @@ pub struct CommonTransformer {
     renamers: Vec<Renamer>,
     ignorers: Vec<Ignorer>,
     includers: Vec<Includer>,
+    formatters: Vec<Formatter>,
 }
 
 impl CommonTransformer {
@@ -22,6 +24,7 @@ impl CommonTransformer {
             renamers: Vec::new(),
             ignorers: Vec::new(),
             includers: Vec::new(),
+            formatters: Vec::new(),
         }
     }
 }
@@ -48,6 +51,7 @@ impl Initializable for CommonTransformer {
                         "include_field" => {
                             self.includers.push(Includer::new(&item.value)?);
                         }
+                        "format_field" => self.formatters.push(Formatter::new(&item.value)?),
                         _ => continue,
                     }
                 }
@@ -66,6 +70,7 @@ impl Transformer for CommonTransformer {
 
         for field in record.fields() {
             let mut name: &str = field.name();
+            let mut value = field.value();
 
             if self.includers.iter().any(|includer| !includer.apply(name)) {
                 // field should not be included
@@ -85,9 +90,18 @@ impl Transformer for CommonTransformer {
                 }
             }
 
+            // apply formatter
+            for formatter in &self.formatters {
+                if let Some(new_value) = formatter.apply(&field) {
+                    // Take the formatted value instead of the original
+                    value = new_value;
+                    break;
+                }
+            }
+
             transformed
                 .fields_as_mut()
-                .push(Field::new_value(name.to_string(), field.value()));
+                .push(Field::new_value(name.to_string(), value));
         }
 
         // apply adder

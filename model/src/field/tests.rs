@@ -1,4 +1,5 @@
 use super::*;
+
 #[test]
 fn test_new_bool() {
     let field = Field::new_bool("active".to_string(), true);
@@ -111,4 +112,81 @@ fn test_value_getter_bool_as_ref() {
 fn test_value_getter_null() {
     let field = Field::new("optional".to_string());
     assert!(matches!(field.value(), Value::None));
+}
+
+#[test]
+fn test_add_str() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_field(&mut fields, "name", "value".into());
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "name");
+    assert_eq!(fields[0].value, Value::String("value".to_string()));
+}
+
+#[test]
+fn test_add_optional_str_some() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_optional_field::<&str>(&mut fields, "name", Some("value".into()));
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "name");
+    assert_eq!(fields[0].value, Value::String("value".to_string()));
+}
+
+#[test]
+fn test_add_optional_str_none() {
+    let mut fields: Vec<Field> = Vec::new();
+    let value: Option<&str> = None;
+    add_optional_field(&mut fields, "name", value);
+
+    assert_eq!(fields.len(), 0);
+}
+
+#[test]
+fn test_add_field_f64() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_field(&mut fields, "f64_field", 3.14.into());
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "f64_field");
+    assert_eq!(fields[0].value, Value::F64(3.14));
+}
+
+#[test]
+fn test_add_field_i64() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_field(&mut fields, "i64_field", (42 as i64).into());
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "i64_field");
+    assert_eq!(fields[0].value, Value::I64(42));
+}
+
+#[test]
+fn test_add_optional_field_f64() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_optional_field(&mut fields, "f64_field", Some(3.14));
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "f64_field");
+    assert_eq!(fields[0].value, Value::F64(3.14));
+}
+
+#[test]
+fn test_add_optional_field_i64() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_optional_field(&mut fields, "i64_field", Some(42 as i64));
+
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "i64_field");
+    assert_eq!(fields[0].value, Value::I64(42));
+}
+
+#[test]
+fn test_add_optional_field_none() {
+    let mut fields: Vec<Field> = Vec::new();
+    add_optional_field(&mut fields, "missing_field", None::<f64>);
+
+    assert_eq!(fields.len(), 0);
 }

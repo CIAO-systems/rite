@@ -10,4 +10,5 @@ publish = ["kellnr"]
 
 
 [dependencies]
-model = { version="0.1.0", registry="kellnr" }
+model = { version="0.1.0", registry="kellnr", path="../model" }
+
