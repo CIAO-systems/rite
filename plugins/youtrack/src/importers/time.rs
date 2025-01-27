@@ -1,5 +1,5 @@
 use config::{RiteYoutrackImportTime, TimeTracking};
-use import::Importer;
+use import::{Importer, RecordHandler};
 use model::Initializable;
 
 use crate::importers::connection::YouTrackConnection;
@@ -45,13 +45,13 @@ impl Initializable for YouTrackImporterTime {
 }
 
 impl Importer for YouTrackImporterTime {
-    fn read(&mut self, callback: import::RecordCallback) -> Result<(), Box<dyn std::error::Error>> {
+    fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref time_tracking) = self.time_tracking {
             if let Some(ref connection) = self.connection {
                 if let Some(ref url) = connection.url {
                     if let Some(ref token) = connection.token {
                         rest::request::make_request(
-                            callback,
+                            handler,
                             time_tracking,
                             &url,
                             &token,

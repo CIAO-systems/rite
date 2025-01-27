@@ -1,5 +1,9 @@
-use import::Importer;
-use model::{record::Record, value::Value, xml, Initializable};
+use import::{handlers::ClosureRecordHandler, Importer};
+use model::{
+    record::Record,
+    value::Value,
+    xml, Initializable,
+};
 
 use super::TextFileImporter;
 
@@ -134,10 +138,12 @@ fn test_next_first_three_with_reset() {
 fn test_read() {
     match create_test_importer_configuration() {
         Ok(mut importer) => {
-            let _ = importer.read(&mut |record| {
+            let mut handler = ClosureRecordHandler::new(|record| {
                 print_record(&record);
-                check_correct_values(record);
+                check_correct_values(record)
             });
+
+            let _ = importer.read(&mut handler);
         }
         Err(e) => panic!("{}", e),
     }

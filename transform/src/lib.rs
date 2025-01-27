@@ -1,9 +1,7 @@
-use std::error::Error;
-
-use model::{record::Record, Initializable};
+use model::{record::Record, BoxedError, Initializable};
 
 pub trait Transformer: Initializable {
     /// Transforms the `record` and returns a new [Record]
-    /// 
-    fn process(&self, record: &Record) -> Result<Record, Box<dyn Error>>;
+    ///
+    fn process(&self, record: &Record) -> Result<Record, BoxedError>;
 }

@@ -1,3 +1,4 @@
+use import::RecordHandler;
 use model::{field::Field, record::Record, value::Value};
 
 use crate::importers::youtrack::{
@@ -10,16 +11,16 @@ use crate::importers::youtrack::{
 /// * `callback`: The callback for imported records
 /// * `response`: The response from the request. It will be processed as JSON body
 pub fn handle(
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let json = response.json::<serde_json::Value>()?;
-    handle_json_response(callback, json)
+    handle_json_response(handler, json)
 }
 
 // Extracted, to be testable
 fn handle_json_response(
-    callback: &mut dyn FnMut(&Record),
+    handler: &mut dyn RecordHandler,
     json: serde_json::Value,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(array) = json.as_array() {
@@ -27,7 +28,7 @@ fn handle_json_response(
             let data = YouTrackObject::from_type(element)?;
             match data {
                 YouTrackObject::IssueWorkItem(issue_work_item) => {
-                    handle_issue_work_item(issue_work_item, callback)?;
+                    handle_issue_work_item(issue_work_item, handler)?;
                 }
                 _ => {
                     // Ignore
@@ -41,7 +42,7 @@ fn handle_json_response(
 
 fn handle_issue_work_item(
     issue_work_item: IssueWorkItem,
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut record = Record::new();
 
@@ -51,7 +52,7 @@ fn handle_issue_work_item(
     add_issue(&mut record, &issue_work_item);
     add_project(&mut record, &issue_work_item);
 
-    callback(&record);
+    handler.handle_record(&mut record)?;
 
     Ok(())
 }

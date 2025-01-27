@@ -1,5 +1,5 @@
 use config::RitePostgresImport;
-use import::Importer;
+use import::{Importer, RecordHandler};
 use model::{
     field::Field,
     record::Record,
@@ -52,10 +52,7 @@ impl Initializable for PostgresImporter {
 }
 
 impl Importer for PostgresImporter {
-    fn read(
-        &mut self,
-        callback: &mut dyn for<'a> FnMut(&'a model::record::Record),
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref postgres) = self.postgres {
             // connect to database
             // execute query
@@ -74,8 +71,8 @@ impl Importer for PostgresImporter {
 
             // convert each row to a Record and send it to the callback
             for row in rows {
-                let record = handle_row(row)?;
-                callback(&record);
+                let mut record = handle_row(row)?;
+                handler.handle_record(&mut record)?;
             }
         }
 
@@ -143,7 +140,7 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
 #[cfg(test)]
 mod tests {
 
-    use import::Importer;
+    use import::{handlers::ClosureRecordHandler, Importer};
     use model::{xml, Initializable};
 
     use super::PostgresImporter;
@@ -156,9 +153,10 @@ mod tests {
         importer.init(Some(config))?;
 
         let mut count = 0;
-        importer.read(&mut |_record| {
+        let mut handler = ClosureRecordHandler::new(|_record| {
             count = count + 1;
-        })?;
+        });
+        importer.read(&mut handler)?;
 
         assert!(count > 0);
         Ok(())

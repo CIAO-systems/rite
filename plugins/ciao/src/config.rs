@@ -1,5 +1,8 @@
-use ciao_rs::{ciao::{interceptor::APIKeyClientInterceptor, ClientManager}, interceptors};
-use model::{to_boxed_error, BoxedError};
+use ciao_rs::{
+    ciao::{interceptor::APIKeyClientInterceptor, ClientManager},
+    interceptors,
+};
+use model::BoxedError;
 
 const CFG_URL: &str = "url";
 const CFG_API_KEY: &str = "api-key";
@@ -38,13 +41,12 @@ impl CiaoConnection {
                     url,
                     interceptors!(APIKeyClientInterceptor::new(api_key.to_string())),
                 )
-                .await
-                .map_err(to_boxed_error)?)
+                .await?)
             } else {
-                Err(to_boxed_error(ERR_NO_API_KEY))
+                Err(ERR_NO_API_KEY.into())
             }
         } else {
-            Err(to_boxed_error(ERR_NO_URL))
+            Err(ERR_NO_URL.into())
         }
     }
 }

@@ -6,11 +6,11 @@ use std::{
     path::Path,
 };
 
-use import::{Importer, RecordCallback};
-use model::{field::Field, record::Record, xml::config::Configuration, Initializable};
+use import::{handlers::CollectingRecordHandler, Importer, RecordHandler};
+use model::{field::Field, record::Record, xml::config::Configuration, BoxedError, Initializable};
 
 /// An [Importer] that reads lines from a text file
-/// 
+///
 /// The text file to read must be configured in a configuration key named `file_name`
 #[derive(Debug)]
 pub struct TextFileImporter {
@@ -32,14 +32,14 @@ impl TextFileImporter {
     /// Reads the (optional) next n lines from the text file and creates [Record]s.
     /// For every [Record], the callback is called
     /// # Arguments
-    /// * `n` - an (optional) amount of how many lines should be read. 
+    /// * `n` - an (optional) amount of how many lines should be read.
     ///     If it is [None], all remaining lines will be read
-    /// * `callback` - The [Record] that is created for each line will be given 
+    /// * `callback` - The [Record] that is created for each line will be given
     ///     to the `callback`
     fn read_lines(
         &mut self,
         n: Option<usize>,
-        callback: RecordCallback,
+        handler: &mut dyn RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let mut index: usize = 0;
 
@@ -61,7 +61,7 @@ impl TextFileImporter {
                             self.next_line + index,
                         ));
 
-                        callback(&record);
+                        handler.handle_record(&mut record)?;
 
                         if let Some(n) = n {
                             if index == n {
@@ -81,7 +81,7 @@ impl TextFileImporter {
     }
 
     /// Reads the nex `n` lines, creates a [Record] and returns a vector with all records
-    /// 
+    ///
     /// # Arguments
     /// * `n` - If `n` is [None], all lines a read into [Record]s, otherwise the next n records will be read
     pub fn next(
@@ -89,9 +89,8 @@ impl TextFileImporter {
         n: Option<usize>,
     ) -> Result<Option<Vec<model::record::Record>>, Box<dyn std::error::Error>> {
         let mut records: Vec<Record> = Vec::new();
-        self.read_lines(n, &mut |record| {
-            records.push(Record::copy(record));
-        })?;
+        let mut handler = CollectingRecordHandler::new(&mut records);
+        self.read_lines(n, &mut handler)?;
         Ok(Some(records))
     }
 }
@@ -109,11 +108,8 @@ impl Importer for TextFileImporter {
     /// Reads the lines of the configured text file and calls the `callback` for each created [Record]
     /// # Arguments
     /// * `callback` - Function that will be called with the constructed [Record]
-    fn read(
-        &mut self,
-        callback: &mut dyn FnMut(&Record),
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        self.read_lines(None, callback)?;
+    fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), BoxedError> {
+        self.read_lines(None, handler)?;
         Ok(())
     }
 }
@@ -122,10 +118,7 @@ impl Initializable for TextFileImporter {
     /// Initializes the importer from the [Configuration]
     /// # Configuration
     /// * `file_name` - The name of the text file to read from
-    fn init(
-        &mut self,
-        config: Option<Configuration>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    fn init(&mut self, config: Option<Configuration>) -> Result<(), Box<dyn std::error::Error>> {
         // take ownership for `config`
         self.config = config;
 

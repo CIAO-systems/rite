@@ -1,3 +1,5 @@
+use import::RecordHandler;
+
 use crate::importers::time::config::TimeTracking;
 
 /// Create a URL string from the time tracking values
@@ -20,7 +22,7 @@ pub fn create_url(time_tracking: &TimeTracking, base_url: &str) -> String {
 
 /// Type alias for the response handler function signature
 pub type TimeResponseHandler = fn(
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>>;
 
@@ -33,7 +35,7 @@ pub type TimeResponseHandler = fn(
 /// * `token`: The bearer token for authenticating with YouTrack. See https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
 /// * `response_handler`: The function that processes the request response
 pub fn make_request(
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
     time_tracking_config: &TimeTracking,
     base_url: &str,
     token: &str,
@@ -48,7 +50,7 @@ pub fn make_request(
         return Err(format!("{}: {}", body["error"], body["error_description"]).into());
     } else {
         // call the response handler
-        response_handler(callback, response)?;
+        response_handler(handler, response)?;
     }
 
     Ok(())
