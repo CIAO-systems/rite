@@ -1,4 +1,4 @@
-use ciao_rs::ciao::{devices::DeviceConfigurationResponse, ClientManager};
+use ciao_rs::ciao::devices::DeviceConfigurationResponse;
 use import::{Importer, RecordHandler};
 use model::{BoxedError, Initializable};
 use tokio::runtime::Runtime;

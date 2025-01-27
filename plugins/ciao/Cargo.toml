@@ -12,6 +12,7 @@ log = "0.4"
 prost = "0.13"
 tonic = "0.12"
 tokio = { version = "1", features = ["full"] }
+futures = "0.3.31"
 
 [lib]
 name = "rite_ciao"

@@ -10,6 +10,7 @@ const CFG_API_KEY: &str = "api-key";
 const ERR_NO_URL: &str = "URL not configured";
 const ERR_NO_API_KEY: &str = "API key not configured";
 
+#[derive(Debug)]
 pub struct ConnectionConfiguration {
     url: Option<String>,
     api_key: Option<String>,

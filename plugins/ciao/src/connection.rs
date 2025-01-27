@@ -4,6 +4,7 @@ use tokio::runtime::Runtime;
 
 use crate::config::ConnectionConfiguration;
 
+#[derive(Debug)]
 pub struct CiaoConnection {
     pub connection_config: Option<ConnectionConfiguration>,
     pub client: Option<ClientManager>,
@@ -15,12 +16,16 @@ impl CiaoConnection {
         if let Some(config) = config {
             let rt = Runtime::new()?;
             let result: Result<Self, BoxedError> = rt.block_on(async {
-                let (connection, client) = CiaoConnection::_connect(config).await?;
-
-                Ok(CiaoConnection {
-                    connection_config: Some(connection),
-                    client: Some(client),
-                })
+                match CiaoConnection::_connect(config).await {
+                    Ok((connection, client)) => Ok(CiaoConnection {
+                        connection_config: Some(connection),
+                        client: Some(client),
+                    }),
+                    Err(e) => {
+                        log::error!("Error on connect: {e}");
+                        Err(e)
+                    }
+                }
             });
             result
         } else {
@@ -50,5 +55,58 @@ impl CiaoConnection {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use ciao_rs::ciao::time_tracking::project::GetRequest;
+    use model::{
+        xml::config::{ConfigItem, Configuration},
+        BoxedError,
+    };
+    use tokio::runtime::Runtime;
+
+    use super::CiaoConnection;
+
+    #[test]
+    #[ignore = "for manual testing"]
+    fn manual_connection() -> Result<(), BoxedError> {
+        let config = Some(Configuration {
+            xml: None,
+            config: Some(vec![
+                ConfigItem {
+                    key: String::from("url"),
+                    value: String::from("https://backend-api.ciao.software:443"),
+                },
+                ConfigItem {
+                    key: String::from("api-key"),
+                    value: String::from(""),
+                },
+            ]),
+        });
+
+        if let Ok(connection) = CiaoConnection::connect(config) {
+            let mut connection_opt = Some(connection);
+            let mut client_ref = CiaoConnection::client(&mut connection_opt);
+            let future = if let Some(ref mut client) = client_ref {
+                let pc = &mut client.project_client;
+                Some(pc.inner_mut().get(GetRequest { id: "".to_string() }))
+            } else {
+                None
+            };
+
+            if let Some(future) = future {
+                let rt = Runtime::new()?;
+                rt.block_on(async {
+                    match future.await {
+                        Ok(r) => println!("{:?}", r),
+                        Err(e) => println!("Error: {e}"),
+                    }
+                });
+            }
+        }
+
+        Ok(())
     }
 }
