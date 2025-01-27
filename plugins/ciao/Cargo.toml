@@ -1,0 +1,18 @@
+[package]
+name = "rite_ciao"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { version="0.1", registry="kellnr", path="../../model" }
+import = { version="0.1.0", registry="kellnr", path="../../import" }
+ciao-rs = {version = "0.1", path = "ciao-rs"}
+
+log = "0.4"
+prost = "0.13"
+tonic = "0.12"
+tokio = { version = "1", features = ["full"] }
+
+[lib]
+name = "rite_ciao"
+crate-type = ["dylib"]
