@@ -1,5 +1,6 @@
-use importers::devices::CiaoDevices;
+use importers::{devices::CiaoDevices, projects::CiaoProjects};
 
+pub mod connection;
 pub mod config;
 pub mod importers;
 
@@ -11,6 +12,7 @@ pub fn create_importer(
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
         "devices" => Ok(Box::new(CiaoDevices::new())),
+        "projects" => Ok(Box::new(CiaoProjects::new())),
         _ => Err("Not implemented".into()),
     }
 }

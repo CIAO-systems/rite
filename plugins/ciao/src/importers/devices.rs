@@ -3,38 +3,16 @@ use import::{Importer, RecordHandler};
 use model::{BoxedError, Initializable};
 use tokio::runtime::Runtime;
 
-use crate::config::CiaoConnection;
+use crate::connection::CiaoConnection;
 
 pub struct CiaoDevices {
     connection: Option<CiaoConnection>,
-    client: Option<ClientManager>,
 }
 
 impl CiaoDevices {
     pub fn new() -> Self {
-        Self {
-            connection: None,
-            client: None,
-        }
+        Self { connection: None }
     }
-}
-
-async fn __init(
-    config: Option<model::xml::config::Configuration>,
-) -> Result<(CiaoConnection, ClientManager), BoxedError> {
-    if let Some(config) = config {
-        if let Some(connection) = Some(CiaoConnection::from(&config)) {
-            let rt = Runtime::new()?;
-            let client = rt.block_on(async {
-                match connection.connect().await {
-                    Ok(client) => Ok(client),
-                    Err(e) => Err(e),
-                }
-            })?;
-            return Ok((connection, client));
-        }
-    }
-    Err("Configuration incomplete".into())
 }
 
 impl Initializable for CiaoDevices {
@@ -42,21 +20,15 @@ impl Initializable for CiaoDevices {
         &mut self,
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), BoxedError> {
-        let rt = Runtime::new()?;
-        let result: Result<(), BoxedError> = rt.block_on(async {
-            let (connection, client) = __init(config).await?;
-            self.connection = Some(connection);
-            self.client = Some(client);
-            Ok(())
-        });
-        result
+        self.connection = Some(CiaoConnection::connect(config)?);
+        Ok(())
     }
 }
 
 impl Importer for CiaoDevices {
     fn read(&mut self, _handler: &mut dyn RecordHandler) -> Result<(), BoxedError> {
         // FIXME implement me
-        if let Some(ref mut client) = self.client {
+        if let Some(ref mut client) = CiaoConnection::client(&mut self.connection) {
             let rt = Runtime::new()?;
             let response: Result<DeviceConfigurationResponse, BoxedError> =
                 rt.block_on(async { client.device_client.get_device_configuration("3387").await });

@@ -10,21 +10,21 @@ const CFG_API_KEY: &str = "api-key";
 const ERR_NO_URL: &str = "URL not configured";
 const ERR_NO_API_KEY: &str = "API key not configured";
 
-pub struct CiaoConnection {
+pub struct ConnectionConfiguration {
     url: Option<String>,
     api_key: Option<String>,
 }
 
-impl CiaoConnection {
+impl ConnectionConfiguration {
     pub fn new() -> Self {
-        CiaoConnection {
+        ConnectionConfiguration {
             url: None,
             api_key: None,
         }
     }
 
     pub fn from(config: &model::xml::config::Configuration) -> Self {
-        let mut result = CiaoConnection::new();
+        let mut result = ConnectionConfiguration::new();
         if let Some(url) = config.get(CFG_URL) {
             result.url = Some(String::from(url));
         }
