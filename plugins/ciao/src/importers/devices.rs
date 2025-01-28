@@ -1,17 +1,14 @@
-use ciao_rs::ciao::devices::DeviceConfigurationResponse;
 use import::{Importer, RecordHandler};
 use model::{BoxedError, Initializable};
-use tokio::runtime::Runtime;
 
-use crate::connection::CiaoConnection;
 
 pub struct CiaoDevices {
-    connection: Option<CiaoConnection>,
+    config: Option<model::xml::config::Configuration>,
 }
 
 impl CiaoDevices {
     pub fn new() -> Self {
-        Self { connection: None }
+        Self { config: None }
     }
 }
 
@@ -20,7 +17,7 @@ impl Initializable for CiaoDevices {
         &mut self,
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), BoxedError> {
-        self.connection = Some(CiaoConnection::connect(config)?);
+        self.config = config;
         Ok(())
     }
 }
@@ -28,12 +25,12 @@ impl Initializable for CiaoDevices {
 impl Importer for CiaoDevices {
     fn read(&mut self, _handler: &mut dyn RecordHandler) -> Result<(), BoxedError> {
         // FIXME implement me
-        if let Some(ref mut client) = CiaoConnection::client(&mut self.connection) {
-            let rt = Runtime::new()?;
-            let response: Result<DeviceConfigurationResponse, BoxedError> =
-                rt.block_on(async { client.device_client.get_device_configuration("3387").await });
-            println!("{:#?}", response?);
-        }
+        // if let Some(ref mut client) = CiaoConnection::client(&mut self.connection) {
+        //     let rt = Runtime::new()?;
+        //     let response: Result<DeviceConfigurationResponse, BoxedError> =
+        //         rt.block_on(async { client.device_client.get_device_configuration("3387").await });
+        //     println!("{:#?}", response?);
+        // }
 
         Ok(())
     }

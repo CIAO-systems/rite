@@ -1,18 +1,25 @@
-use ciao_rs::ciao::time_tracking::project::ListRequest;
+use ciao_rs::ciao::{
+    clients::time_tracking::projects::ProjectClient,
+    time_tracking::project::{ListRequest, Project},
+};
 use futures::StreamExt;
 use import::{Importer, RecordHandler};
-use model::{field::Field, record::Record, BoxedError, Initializable};
-use tokio::runtime::Runtime;
+use model::{
+    field::{add_field, add_optional_field},
+    record::Record,
+    value::Value,
+    BoxedError, Initializable,
+};
 
 use crate::connection::CiaoConnection;
 
 pub struct CiaoProjects {
-    connection: Option<CiaoConnection>,
+    config: Option<model::xml::config::Configuration>,
 }
 
 impl CiaoProjects {
     pub fn new() -> Self {
-        Self { connection: None }
+        Self { config: None }
     }
 }
 
@@ -21,49 +28,28 @@ impl Initializable for CiaoProjects {
         &mut self,
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), BoxedError> {
-        self.connection = Some(CiaoConnection::connect(config)?);
+        self.config = config;
         Ok(())
     }
 }
 
 impl Importer for CiaoProjects {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
-        if let Some(ref mut client) = CiaoConnection::client(&mut self.connection) {
-            let rt = Runtime::new()?;
-            rt.block_on(async {
-                let request = ListRequest { active_at: None };
-                match client.project_client.inner_mut().list(request).await {
-                    Ok(response) => {
-                        let mut stream = response.into_inner();
-                        while let Some(response) = stream.next().await {
-                            match response {
-                                Ok(response) => {
-                                    //
-                                    for project in response.projects {
-                                        let s = format!("{:#?}", project);
-                                        let mut record = Record::new();
-                                        record.fields_as_mut().push(Field::new_string(
-                                            "debug".to_string(),
-                                            s.clone(),
-                                        ));
-                                        println!("{s}");
-
-                                        if let Err(e) = handler.handle_record(&mut record) {
-                                            log::error!("Error while handling record: {}", e);
-                                        }
-                                    }
-                                }
-                                Err(e) => {
-                                    log::error!("{}", e);
-                                }
-                            }
-                        }
-                        Ok(())
-                    }
-                    Err(e) => Err(e),
-                }
-            })?;
+        // 1. Establich connection to gRPC server
+        let connection = CiaoConnection::connect(&self.config)?;
+        if let Some(client) = connection.client {
+            // 2. Retrieve the client that fits the need
+            let service_client = client.project_client;
+            if let Some(runtime) = connection.runtime {
+                // 3. Use the connection tokio runtime to call a service
+                let result: Result<(), Box<dyn std::error::Error>> = runtime.block_on(async {
+                    list_projects(service_client, handler).await?;
+                    Ok(())
+                });
+                result?
+            }
         }
+
         Ok(())
     }
 
@@ -71,4 +57,44 @@ impl Importer for CiaoProjects {
         // Not supported
         Ok(())
     }
+}
+
+async fn list_projects(
+    mut pc: ProjectClient,
+    handler: &mut dyn RecordHandler,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut stream = pc
+        .inner_mut()
+        .list(ListRequest { active_at: None })
+        .await?
+        .into_inner();
+    while let Some(response) = stream.next().await {
+        match response {
+            Ok(r) => {
+                for project in r.projects {
+                    handle_project(&project, handler)?;
+                }
+            }
+            Err(e) => {
+                log::error!("Error processing project stream: {e}");
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn handle_project(
+    project: &Project,
+    handler: &mut dyn RecordHandler,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut record = Record::new();
+    let fields = record.fields_as_mut();
+    add_field(fields, "id", Value::String(project.id.clone()));
+    add_field(fields, "name", Value::String(project.name.clone()));
+    add_optional_field(fields, "external_id", project.external_id.clone());
+
+    handler.handle_record(&mut record)?;
+
+    Ok(())
 }

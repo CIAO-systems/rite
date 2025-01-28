@@ -1,3 +1,5 @@
+use std::future::Future;
+
 use ciao_rs::ciao::ClientManager;
 use model::BoxedError;
 use tokio::runtime::Runtime;
@@ -6,18 +8,20 @@ use crate::config::ConnectionConfiguration;
 
 #[derive(Debug)]
 pub struct CiaoConnection {
+    pub runtime: Option<Runtime>,
     pub connection_config: Option<ConnectionConfiguration>,
     pub client: Option<ClientManager>,
 }
 
 impl CiaoConnection {
     /// Connect to the gRPC services
-    pub fn connect(config: Option<model::xml::config::Configuration>) -> Result<Self, BoxedError> {
+    pub fn connect(config: &Option<model::xml::config::Configuration>) -> Result<Self, BoxedError> {
         if let Some(config) = config {
             let rt = Runtime::new()?;
-            let result: Result<Self, BoxedError> = rt.block_on(async {
+            let mut result: Result<Self, BoxedError> = rt.block_on(async {
                 match CiaoConnection::_connect(config).await {
                     Ok((connection, client)) => Ok(CiaoConnection {
+                        runtime: None,
                         connection_config: Some(connection),
                         client: Some(client),
                     }),
@@ -27,6 +31,9 @@ impl CiaoConnection {
                     }
                 }
             });
+            if let Ok(connection) = &mut result {
+                connection.runtime = Some(rt);
+            }
             result
         } else {
             Err("Configuration incomplete".into())
@@ -35,7 +42,7 @@ impl CiaoConnection {
 
     /// Async function to connect to gRPC services
     async fn _connect(
-        config: model::xml::config::Configuration,
+        config: &model::xml::config::Configuration,
     ) -> Result<(ConnectionConfiguration, ClientManager), BoxedError> {
         if let Some(connection) = Some(ConnectionConfiguration::from(&config)) {
             let client = match connection.connect().await {
@@ -49,64 +56,18 @@ impl CiaoConnection {
     }
 
     /// Helper function to get the ClientManager
-    pub fn client(connection: &mut Option<CiaoConnection>) -> Option<&mut ClientManager> {
-        if let Some(ref mut connection) = connection {
-            connection.client.as_mut()
+    pub fn client(connection: &mut CiaoConnection) -> Option<&mut ClientManager> {
+        connection.client.as_mut()
+    }
+
+    pub fn block_on<F: Future>(&mut self, future: F) -> F::Output {
+        if let Some(ref rt) = self.runtime {
+            rt.block_on(future)
         } else {
-            None
+            panic!("Argh")
         }
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use ciao_rs::ciao::time_tracking::project::GetRequest;
-    use model::{
-        xml::config::{ConfigItem, Configuration},
-        BoxedError,
-    };
-    use tokio::runtime::Runtime;
-
-    use super::CiaoConnection;
-
-    #[test]
-    #[ignore = "for manual testing"]
-    fn manual_connection() -> Result<(), BoxedError> {
-        let config = Some(Configuration {
-            xml: None,
-            config: Some(vec![
-                ConfigItem {
-                    key: String::from("url"),
-                    value: String::from("https://backend-api.ciao.software:443"),
-                },
-                ConfigItem {
-                    key: String::from("api-key"),
-                    value: String::from(""),
-                },
-            ]),
-        });
-
-        if let Ok(connection) = CiaoConnection::connect(config) {
-            let mut connection_opt = Some(connection);
-            let mut client_ref = CiaoConnection::client(&mut connection_opt);
-            let future = if let Some(ref mut client) = client_ref {
-                let pc = &mut client.project_client;
-                Some(pc.inner_mut().get(GetRequest { id: "".to_string() }))
-            } else {
-                None
-            };
-
-            if let Some(future) = future {
-                let rt = Runtime::new()?;
-                rt.block_on(async {
-                    match future.await {
-                        Ok(r) => println!("{:?}", r),
-                        Err(e) => println!("Error: {e}"),
-                    }
-                });
-            }
-        }
-
-        Ok(())
-    }
-}
+mod tests;
