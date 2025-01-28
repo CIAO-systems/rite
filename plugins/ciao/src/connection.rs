@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use ciao_rs::ciao::ClientManager;
 use model::BoxedError;
 use tokio::runtime::Runtime;
@@ -20,9 +18,9 @@ impl CiaoConnection {
             let rt = Runtime::new()?;
             let mut result: Result<Self, BoxedError> = rt.block_on(async {
                 match CiaoConnection::_connect(config).await {
-                    Ok((connection, client)) => Ok(CiaoConnection {
+                    Ok((connection_config, client)) => Ok(CiaoConnection {
                         runtime: None,
-                        connection_config: Some(connection),
+                        connection_config: Some(connection_config),
                         client: Some(client),
                     }),
                     Err(e) => {
@@ -52,19 +50,6 @@ impl CiaoConnection {
             return Ok((connection, client));
         } else {
             Err("Could not read configuration".into())
-        }
-    }
-
-    /// Helper function to get the ClientManager
-    pub fn client(connection: &mut CiaoConnection) -> Option<&mut ClientManager> {
-        connection.client.as_mut()
-    }
-
-    pub fn block_on<F: Future>(&mut self, future: F) -> F::Output {
-        if let Some(ref rt) = self.runtime {
-            rt.block_on(future)
-        } else {
-            panic!("Argh")
         }
     }
 }
