@@ -1,12 +1,12 @@
 use exporter::Exporter;
 use importer::Importer;
-use log::{debug, info};
 use transformer::Transformer;
 
 pub mod exporter;
 pub mod importer;
 pub mod transformer;
 use super::rite::Rite;
+use colored::*;
 
 pub struct Process {
     pub id: String,
@@ -31,19 +31,19 @@ impl Process {
         rite: &Rite,
         process_desc: &model::xml::process::Process,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        debug!("Init process {}", process_desc.id);
+        log::debug!("Init process {}", process_desc.id);
         self.id = process_desc.id.clone();
         // fill importer
         self.fill_importer(rite, process_desc)?;
-        debug!("Filled importer {}", process_desc.id);
+        log::debug!("Filled importer {}", process_desc.id);
 
         // fill transformers
         self.fill_transformers(rite, process_desc)?;
-        debug!("Filled transformers {}", process_desc.id);
+        log::debug!("Filled transformers {}", process_desc.id);
 
         // fill exporters
         self.fill_exporters(rite, process_desc)?;
-        debug!("Filled exporters {}", process_desc.id);
+        log::debug!("Filled exporters {}", process_desc.id);
 
         Ok(())
     }
@@ -56,7 +56,7 @@ impl Process {
         Ok(
             if let Some(plugin_desc) = rite.get_plugin_desc(&process_desc.importer.plugin.as_str())
             {
-                debug!("Importer plugin: {:#?}", plugin_desc);
+                log::debug!("Importer plugin: {:#?}", plugin_desc);
 
                 let plugin = rite.load_plugin(plugin_desc)?;
                 let mut importer = plugin.create_importer(process_desc.importer.name.as_deref())?;
@@ -80,7 +80,7 @@ impl Process {
         {
             for transformer_desc in transformers_desc {
                 if let Some(plugin_desc) = rite.get_plugin_desc(&transformer_desc.plugin.as_str()) {
-                    debug!("Transformer plugin: {:#?}", plugin_desc);
+                    log::debug!("Transformer plugin: {:#?}", plugin_desc);
 
                     let plugin = rite.load_plugin(plugin_desc)?;
                     let mut transformer =
@@ -104,13 +104,32 @@ impl Process {
         process_desc: &model::xml::process::Process,
     ) -> Result<(), Box<dyn std::error::Error>> {
         for exporter_desc in &process_desc.exporters.exporters {
+            log::debug!(
+                "Add exporter: plugin({}), name({})",
+                exporter_desc.plugin,
+                exporter_desc
+                    .name
+                    .clone()
+                    .unwrap_or(String::from("<no name>"))
+            );
+
             if let Some(plugin_desc) = rite.get_plugin_desc(&exporter_desc.plugin.as_str()) {
-                debug!("Exporter plugin: {:#?}", plugin_desc);
+                log::debug!(
+                    "Exporter plugin: id({}), name({}), path({})",
+                    plugin_desc.id,
+                    plugin_desc.name,
+                    plugin_desc.path.clone().unwrap_or("<default>".to_string())
+                );
 
                 let plugin = rite.load_plugin(plugin_desc)?;
                 let mut exporter = plugin.create_exporter(exporter_desc.name.as_deref())?;
                 let _ = exporter.init(exporter_desc.configuration.clone())?;
                 self.exporters.get_or_insert_with(Vec::new).push(exporter);
+            } else {
+                log::error!(
+                    "Exporter plugin {} not found",
+                    exporter_desc.plugin.yellow().bold()
+                );
             }
         }
 
@@ -136,21 +155,21 @@ impl Process {
         Option<Exporter<'_>>,
     ) {
         let i = if let Some(ref mut importer) = self.importer {
-            info!("Create importer");
+            log::info!("Create importer");
             Some(Importer::new(importer))
         } else {
             None
         };
 
         let t = if let Some(ref transformers) = self.transformers {
-            info!("Create transformers");
+            log::info!("Create transformers");
             Some(Transformer::new(&transformers))
         } else {
             None
         };
 
         let e = if let Some(ref mut exporters) = self.exporters {
-            info!("Create exporters");
+            log::info!("Create exporters");
             Some(Exporter::new(exporters))
         } else {
             None

@@ -2,6 +2,7 @@
     <plugins>
         <plugin id="common" path="target/debug" name="rite_common"/>
         <plugin id="ciao" path="target/debug" name="rite_ciao"/>
+        <plugin id="postgres" path="target/debug" name="rite_postgres"/>
     </plugins>
     <processes>
         <process id="Project example">
@@ -13,6 +14,9 @@
             </importer>
             <exporters>
                 <exporter plugin="common" name="console" />
+                <exporter plugin="postgres">
+                    <configuration xml="$RITE_CONFIG_PATH/postgres-export-config.xml" />
+                </exporter>
             </exporters>
         </process>
     </processes>
