@@ -1,3 +1,5 @@
+use std::sync::Once;
+
 use ciao_rs::{
     ciao::{
         interceptor::APIKeyClientInterceptor,
@@ -6,6 +8,7 @@ use ciao_rs::{
     },
     interceptors,
 };
+use dotenv::dotenv;
 use futures::StreamExt;
 use import::{handlers::CollectingRecordHandler, RecordHandler};
 use model::{
@@ -18,9 +21,27 @@ use tokio::runtime::Runtime;
 
 use super::CiaoConnection;
 
-const REMOTE_BACKEND_URL: &str = "https://backend-api.ciao.software:443";
-const REMOTE_API_KEY: &str = "c776ba7c-e1ac-43f6-8c25-91fc993afad0";
-const REMOTE_PROJECT_ID: &str = "2fae3e46-f4d2-4300-9e36-5159f9de9c9f";
+static INIT: Once = Once::new();
+
+fn setup() {
+    INIT.call_once(|| {
+        dotenv().ok();
+    });
+}
+
+fn remote_backend_url() -> String {
+    dotenv().ok();
+    std::env::var("REMOTE_BACKEND_URL").unwrap_or("".to_string())
+}
+
+fn remote_api_key() -> String {
+    dotenv().ok();
+    std::env::var("REMOTE_API_KEY").unwrap_or("".to_string())
+}
+fn remote_project_id() -> String {
+    dotenv().ok();
+    std::env::var("REMOTE_PROJECT_ID").unwrap_or("".to_string())
+}
 
 fn get_remote_config() -> Option<Configuration> {
     Some(Configuration {
@@ -28,19 +49,22 @@ fn get_remote_config() -> Option<Configuration> {
         config: Some(vec![
             ConfigItem {
                 key: String::from("url"),
-                value: String::from(REMOTE_BACKEND_URL),
+                value: remote_backend_url(),
             },
             ConfigItem {
                 key: String::from("api-key"),
-                value: String::from(REMOTE_API_KEY),
+                value: remote_api_key(),
             },
         ]),
     })
 }
 
+
 #[test]
 #[ignore = "for manual testing"]
 fn manual_connection() -> Result<(), BoxedError> {
+    setup();
+
     let config = get_remote_config();
 
     let connection = CiaoConnection::connect(&config)?;
@@ -51,7 +75,7 @@ fn manual_connection() -> Result<(), BoxedError> {
                 let r = pc
                     .inner_mut()
                     .get(GetRequest {
-                        id: REMOTE_PROJECT_ID.to_string(),
+                        id: remote_project_id(),
                     })
                     .await;
                 println!("{:?}", r);

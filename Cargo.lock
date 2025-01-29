@@ -1865,6 +1865,7 @@ name = "rite_ciao"
 version = "0.1.0"
 dependencies = [
  "ciao-rs",
+ "dotenv",
  "futures",
  "import",
  "log",
