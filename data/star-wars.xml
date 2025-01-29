@@ -1,8 +1,8 @@
 <rite>
     <plugins>
-        <plugin id="postgres" path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
-        <plugin id="common" path="$RITE_CONFIG_PATH/../target/debug" name="rite_common"/>
-        <plugin id="star-wars" path="$RITE_CONFIG_PATH/../target/debug" name="rite_rest"/>
+        <plugin id="postgres" _path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
+        <plugin id="common" _path="$RITE_CONFIG_PATH/../target/debug" name="rite_common"/>
+        <plugin id="star-wars" _path="$RITE_CONFIG_PATH/../target/debug" name="rite_rest"/>
     </plugins>
     <processes>
         <process id="read-from-star-wars-api-write-2-postgres">

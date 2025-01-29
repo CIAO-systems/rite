@@ -1,7 +1,7 @@
 use std::{env, path::Path};
 
 /// INFO logs the current working directory
-/// 
+///
 /// # Example
 /// ```
 /// helper::pwd();
@@ -50,7 +50,7 @@ pub fn get_full_path(filename: &str) -> std::io::Result<std::path::PathBuf> {
 ///
 /// # Arguments
 /// * `path` - The path to normalize
-/// 
+///
 /// # Example
 /// ```
 /// let path = std::path::Path::new("/home/user/../user/data/./filename.txt");
@@ -123,7 +123,9 @@ mod tests {
                     absolute_path.to_str().unwrap()
                 )
             }
-            Err(e) => eprintln!("Error: {}", e),
+            Err(e) => {
+                log::error!("Error: {}", e);
+            }
         }
     }
 

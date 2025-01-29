@@ -45,7 +45,6 @@ LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
 # Create a non-root user for security
 RUN groupadd -r rite && useradd -r -g rite rite
 
-
 # Setup the application directory
 WORKDIR /app
 
@@ -58,19 +57,11 @@ ENV LD_LIBRARY_PATH=/lib:/lib64:/app
 
 # Create mount point for input files
 RUN mkdir /data 
-## && chown rite:rite /data
 
 COPY --from=builder /build/log4rs.yaml /data
 RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
 
 RUN mkdir /logs 
-## && chown -R rite:rite /logs && chmod -R g+w /logs
-
-VOLUME ["/logs"]
-
-
-# Switch to non-root user
-# USER rite
 
 # Command to run the binary
 ENTRYPOINT ["/app/rite", "-f"]
