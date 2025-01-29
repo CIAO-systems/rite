@@ -59,7 +59,6 @@ fn get_remote_config() -> Option<Configuration> {
     })
 }
 
-
 #[test]
 #[ignore = "for manual testing"]
 fn manual_connection() -> Result<(), BoxedError> {
@@ -133,10 +132,8 @@ fn manual_connection_projects() -> Result<(), BoxedError> {
     let rt = Runtime::new()?;
     let result: Result<(), BoxedError> = rt.block_on(async {
         let mut manager = ClientManager::new(
-            "https://backend-api.ciao.software:443",
-            interceptors!(APIKeyClientInterceptor::new(
-                "c776ba7c-e1ac-43f6-8c25-91fc993afad0".to_string(),
-            )),
+            &remote_backend_url(),
+            interceptors!(APIKeyClientInterceptor::new(remote_api_key(),)),
         )
         .await?;
 
