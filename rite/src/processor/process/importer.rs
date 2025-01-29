@@ -1,6 +1,8 @@
-use model::record::Record;
+use handlers::TransformAndExportRecordHandler;
 
 use super::{Exporter, Transformer};
+
+mod handlers;
 
 pub struct Importer<'a> {
     importer: &'a mut Box<dyn import::Importer>,
@@ -13,48 +15,16 @@ impl<'a> Importer<'a> {
 
     pub fn import(
         &'a mut self,
-        transformer: &Option<Transformer<'a>>,
-        exporter: &mut Option<Exporter<'a>>,
+        transformer: &'a Option<Transformer<'a>>,
+        exporter: &'a mut Option<Exporter<'a>>,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        if let Err(e) = self.importer.read(&mut |record| {
-            import_read_callback(&transformer, exporter, record);
-        }) {
+        let mut record_handler = TransformAndExportRecordHandler::new(transformer, exporter);
+
+        if let Err(e) = self.importer.read(&mut record_handler) {
             log::error!("Error while importing records: {}", e);
             Err(e)
         } else {
             Ok(())
-        }
-    }
-}
-
-fn import_read_callback<'a>(
-    transformer: &Option<Transformer<'a>>,
-    exporter: &mut Option<Exporter<'a>>,
-    record: &Record,
-) {
-    let modified_record; // for it to life past the if/match blocks
-    let transformed_record: &Record = if let Some(ref transformer) = transformer {
-        match transformer.transform(record) {
-            Ok(transformed_record) => {
-                if let Some(transformed_record) = transformed_record {
-                    modified_record = transformed_record;
-                    &modified_record
-                } else {
-                    record
-                }
-            }
-            Err(e) => {
-                log::error!("Error while transforming records: {}", e);
-                record
-            }
-        }
-    } else {
-        record
-    };
-
-    if let Some(ref mut exporter) = exporter {
-        if let Err(e) = exporter.export(transformed_record) {
-            log::error!("Error while exporting records: {}", e);
         }
     }
 }

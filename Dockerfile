@@ -6,6 +6,7 @@ FROM rust:slim AS builder
 # See https://stackoverflow.com/questions/65538591/run-protoc-command-into-docker-container
 RUN apt-get update && \
     apt-get install -y bash && \
+    apt-get install -y protobuf-compiler && \
     apt-get install -y libssl-dev && \
     apt-get install -y pkg-config && \
     update-ca-certificates

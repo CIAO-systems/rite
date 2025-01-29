@@ -1,6 +1,6 @@
 use std::fs;
 
-use import::Importer;
+use import::{handlers::CollectingRecordHandler, Importer};
 use model::{
     field::Field, record::Record, value::Value, xml::config::Configuration, Initializable,
 };
@@ -119,10 +119,9 @@ fn test_importer_in_results() -> Result<(), Box<dyn std::error::Error>> {
     for index in 1..=2 {
         println!("Testing SWAPI {}: {}...", index, SWAPI[index].0);
         let mut records = Vec::new();
+        let mut handler = CollectingRecordHandler::new(&mut records);
         let mut importer = create_importer(index)?;
-        importer.read(&mut |record| {
-            records.push(Record::copy(&record));
-        })?;
+        importer.read(&mut handler)?;
 
         assert_result_records(EXPECTED, &records);
     }

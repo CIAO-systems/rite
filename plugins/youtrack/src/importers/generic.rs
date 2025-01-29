@@ -1,13 +1,12 @@
-use config::RiteYoutrackImport;
 use super::youtrack::factory::fill_record_from_json;
 use crate::importers::connection::YouTrackConnection;
-use import::Importer;
+use config::RiteYoutrackImport;
+use import::{Importer, RecordHandler};
 use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
 use rest::make_request;
 
-mod rest;
 mod config;
-
+mod rest;
 
 pub struct YouTrackImporter {
     connection: Option<YouTrackConnection>,
@@ -38,7 +37,7 @@ impl YouTrackImporter {
 
     fn read_from_youtrack(
         &mut self,
-        callback: import::RecordCallback,
+        handler: &mut dyn RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref connection) = self.connection {
             if let (Some(ref base_url), Some(ref token)) =
@@ -46,7 +45,7 @@ impl YouTrackImporter {
             {
                 if let Some(ref xml_config) = self.xml_config {
                     make_request(
-                        callback,
+                        handler,
                         xml_config,
                         base_url,
                         token,
@@ -62,7 +61,7 @@ impl YouTrackImporter {
     /// A generic response handler for YouTrack datasets
     pub fn handle_response(
         _config: &RiteYoutrackImport,
-        callback: import::RecordCallback,
+        handler: &mut dyn RecordHandler,
         response: reqwest::blocking::Response,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let json = response.json::<serde_json::Value>()?;
@@ -70,13 +69,13 @@ impl YouTrackImporter {
             for element in array {
                 let mut record = Record::new();
                 if fill_record_from_json(&mut record, element) {
-                    callback(&record);
+                    handler.handle_record(&mut record)?;
                 }
             }
         } else if json.is_object() {
             let mut record = Record::new();
             if fill_record_from_json(&mut record, &json) {
-                callback(&record);
+                handler.handle_record(&mut record)?;
             }
         }
         Ok(())
@@ -84,7 +83,7 @@ impl YouTrackImporter {
 }
 
 impl Importer for YouTrackImporter {
-    fn read(&mut self, callback: import::RecordCallback) -> Result<(), Box<dyn std::error::Error>> {
+    fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         match self.check_config() {
             Some(variable) => {
                 // Some configuration variable is missing
@@ -92,7 +91,7 @@ impl Importer for YouTrackImporter {
             }
             None => {
                 // Everything is ok
-                self.read_from_youtrack(callback)?;
+                self.read_from_youtrack(handler)?;
             }
         }
 

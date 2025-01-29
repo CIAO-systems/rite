@@ -1,3 +1,4 @@
+use import::RecordHandler;
 use serde_json::Value;
 
 use crate::importers::generic::config::{Dataset, RiteYoutrackImport};
@@ -5,7 +6,7 @@ use crate::importers::generic::config::{Dataset, RiteYoutrackImport};
 // Define the type alias for the response handler function signature
 type ResponseHandler = fn(
     config: &RiteYoutrackImport,
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>>;
 
@@ -52,7 +53,7 @@ pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {
 }
 
 pub fn make_request(
-    callback: import::RecordCallback,
+    handler: &mut dyn RecordHandler,
     xml_config: &RiteYoutrackImport,
     base_url: &str,
     token: &str,
@@ -66,7 +67,7 @@ pub fn make_request(
         let body: Value = response.json()?;
         return Err(format!("{}: {}", body["error"], body["error_description"]).into());
     } else {
-        response_handler(xml_config, callback, response)?;
+        response_handler(xml_config, handler, response)?;
     }
 
     Ok(())

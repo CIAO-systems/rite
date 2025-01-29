@@ -24,8 +24,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        submodules: true
+        submodules: recursive
         token: ${{ secrets.ORG_GITHUB_PAT }}
+        
         
     - name: Login container registry
       uses: docker/login-action@v3

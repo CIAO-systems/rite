@@ -1,6 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use import::RecordCallback;
+use import::handlers::{ClosureRecordHandler, CollectingRecordHandler};
 use model::record::Record;
 
 use super::*;
@@ -321,12 +321,12 @@ fn test_handle_issue_work_item() {
     issue_work_item.duration = Some(create_duration(Some(8472)));
 
     let mut captured_record: Option<Record> = None;
-    let callback: RecordCallback = &mut |record: &Record| {
+    let mut handler = ClosureRecordHandler::new(|record| {
         captured_record = Some(Record::copy(&record));
-    };
+    });
 
     // Act
-    let result = handle_issue_work_item(issue_work_item, callback);
+    let result = handle_issue_work_item(issue_work_item, &mut handler);
 
     // Assert
     assert!(result.is_ok());
@@ -364,15 +364,13 @@ fn test_handle_issue_work_item() {
 fn test_handle_json_response() -> Result<(), Box<dyn std::error::Error>> {
     // Arrange
     let mut records = Vec::new();
-    let callback: RecordCallback = &mut |record: &Record| {
-        records.push(Record::copy(&record));
-    };
+    let mut handler = CollectingRecordHandler::new(&mut records);
 
     let content = std::fs::read_to_string("../../data/test/time/tracking.json")?;
     let json: serde_json::Value = serde_json::from_str(&content)?;
 
     // Act
-    handle_json_response(callback, json)?;
+    handle_json_response(&mut handler, json)?;
 
     // Assert
     assert_eq!(3, records.len());
@@ -390,7 +388,11 @@ fn test_handle_json_response() -> Result<(), Box<dyn std::error::Error>> {
         Value::String("chuck.norris@ciao-systems.com".to_string())
     );
     assert_eq!(
-        record.unwrap().field_by_name("issue.summary").unwrap().value(),
+        record
+            .unwrap()
+            .field_by_name("issue.summary")
+            .unwrap()
+            .value(),
         Value::String("YouTrack import plugin".to_string())
     );
     assert_eq!(
@@ -398,7 +400,11 @@ fn test_handle_json_response() -> Result<(), Box<dyn std::error::Error>> {
         Value::String("0-11".to_string())
     );
     assert_eq!(
-        record.unwrap().field_by_name("project.name").unwrap().value(),
+        record
+            .unwrap()
+            .field_by_name("project.name")
+            .unwrap()
+            .value(),
         Value::String("Rust Import/Transform/Export".to_string())
     );
     assert_eq!(

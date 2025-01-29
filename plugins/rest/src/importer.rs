@@ -1,4 +1,4 @@
-use import::Importer;
+use import::{Importer, RecordHandler};
 use json_dotpath::DotPaths;
 use model::{field::Field, record::Record, Initializable};
 
@@ -38,7 +38,7 @@ impl Initializable for RESTImporter {
 }
 
 impl Importer for RESTImporter {
-    fn read(&mut self, callback: import::RecordCallback) -> Result<(), Box<dyn std::error::Error>> {
+    fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref url) = self.url {
             let client = reqwest::blocking::Client::new();
             let response = client.get(url).send()?;
@@ -56,8 +56,8 @@ impl Importer for RESTImporter {
 
                 if let serde_json::Value::Array(array) = records_array {
                     for json_record in array {
-                        let record = record_from_json(json_record, &self.fields_path);
-                        callback(&record);
+                        let mut record = record_from_json(json_record, &self.fields_path);
+                        handler.handle_record(&mut record)?;
                     }
                 }
             } else {
