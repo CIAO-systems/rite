@@ -1,5 +1,5 @@
 use console::ConsoleExporter;
-use transformer::CommonTransformer;
+use transformer::{common::CommonTransformer, mapper::MapperTransformer};
 
 pub mod console;
 pub mod transformer;
@@ -7,9 +7,12 @@ pub mod transformer;
 /// Plugin entry function to create an instance of an [Transformer]
 #[no_mangle]
 pub fn create_transformer(
-    _name: &str,
+    name: &str,
 ) -> Result<Box<dyn transform::Transformer>, Box<dyn std::error::Error>> {
-    Ok(Box::new(CommonTransformer::new()))
+    match name {
+        "mapper" => Ok(Box::new(MapperTransformer::new())),
+        _ => Ok(Box::new(CommonTransformer::new()))
+    }
 }
 
 /// Plugin entry function to create an instance of an [Exporter]
