@@ -1,71 +1,34 @@
-use std::{collections::HashMap, sync::OnceLock};
-
 use serde::{Deserialize, Serialize};
-use serde_xml_rs::from_str;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Field<'a> {
-    name: Name,
+pub mod mapper;
+pub mod values;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Field {
+    pub name: Name,
     #[serde(rename = "type")]
-    field_type: Type,
-    values: Values<'a>,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Name {
-    source: String,
-    target: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Type {
-    source: String,
-    target: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Values<'a> {
-    value: Vec<Value>,
-
-    #[serde(skip)]
-    map: OnceLock<HashMap<&'a String, &'a Value>>,
-}
-
-impl<'a> Values<'a> {
-    #[allow(unused)]
-    pub fn get(&'a self, key: String) -> Option<&'a Value> {
-        let map = self.map.get_or_init(|| {
-            let mut map = HashMap::new();
-            for v in &self.value {
-                map.insert(&v.source, v);
-            }
-            map
-        });
-
-        map.get(&key).copied()
-    }
+    pub field_type: Type,
+    pub values: values::Values,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-struct Value {
-    source: String,
-    target: String,
+pub struct Name {
+    pub source: String,
+    pub target: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Mapper<'a> {
-    #[serde(rename = "field")]
-    fields: Vec<Field<'a>>,
-}
-
-#[allow(dead_code)]
-fn read_from_xml(xml_data: &str) -> Result<Mapper, serde_xml_rs::Error> {
-    from_str(xml_data)
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Type {
+    pub source: String,
+    pub target: String,
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::transformer::mapper::config::values::Value;
+    use serde_xml_rs::from_str;
+
+    use super::{mapper::Mapper, *};
 
     static XML_DATA1: &str = r#"
     <mapper>
@@ -103,14 +66,19 @@ mod tests {
     </mapper>
     "#;
 
+    #[allow(dead_code)]
+    fn read_from_xml(xml_data: &str) -> Result<Mapper, serde_xml_rs::Error> {
+        from_str(xml_data)
+    }
+
     #[test]
     fn test_xml_parsing1() {
         let parsed = read_from_xml(XML_DATA1).expect("Failed to parse XML");
 
-        assert_eq!(parsed.fields.len(), 2);
-
         // Check the first field
-        let field1 = &parsed.fields[0];
+        let field1 = &parsed.get("key".to_string());
+        assert!(field1.is_none());
+        let field1 = &parsed.get("timetype".to_string()).unwrap();
         assert_eq!(
             field1.name,
             Name {
@@ -131,7 +99,7 @@ mod tests {
             field1
                 .values
                 .get("1ced5054-b109-4b9b-aab1-72e1ace3ef54".to_string()),
-            Some(&Value {
+            Some(Value {
                 source: String::from("1ced5054-b109-4b9b-aab1-72e1ace3ef54"),
                 target: String::from("2"),
             })
@@ -153,7 +121,7 @@ mod tests {
         );
 
         // Check the second field
-        let field2 = &parsed.fields[1];
+        let field2 = &parsed.get("name".to_string()).unwrap();
         assert_eq!(
             field2.name,
             Name {
@@ -186,7 +154,7 @@ mod tests {
 
         assert_eq!(
             field2.values.get("Farrokh Bulsara".to_string()),
-            Some(&Value {
+            Some(Value {
                 source: "Farrokh Bulsara".to_string(),
                 target: "Freddy Mercury".to_string()
             })
@@ -194,7 +162,7 @@ mod tests {
 
         assert_eq!(
             field2.values.get("Cassius Clay".to_string()),
-            Some(&Value {
+            Some(Value {
                 source: "Cassius Clay".to_string(),
                 target: "Muhammad Ali".to_string()
             })
@@ -204,17 +172,16 @@ mod tests {
     #[test]
     fn test_xml_parsing2() {
         let parsed = read_from_xml(XML_DATA2).expect("Failed to parse XML");
+
+        let field = parsed.get("ns1".to_string()).unwrap();
         assert_eq!(
-            parsed.fields[0].values.get("vs1".to_string()),
-            Some(&Value {
+            field.values.get("vs1".to_string()),
+            Some(Value {
                 source: "vs1".to_string(),
                 target: "vt1".to_string()
             })
         );
 
-        assert_eq!(
-            parsed.fields[0].values.get("unknown value".to_string()),
-            None
-        );
+        assert_eq!(field.values.get("unknown value".to_string()), None);
     }
 }
