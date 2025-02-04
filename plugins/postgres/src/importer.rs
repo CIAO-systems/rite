@@ -78,10 +78,6 @@ impl Importer for PostgresImporter {
 
         Ok(())
     }
-
-    fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        panic!("Not implemented");
-    }
 }
 
 fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> {

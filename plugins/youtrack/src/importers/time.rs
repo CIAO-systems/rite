@@ -64,8 +64,4 @@ impl Importer for YouTrackImporterTime {
 
         Ok(())
     }
-
-    fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        Ok(())
-    }
 }

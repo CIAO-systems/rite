@@ -34,10 +34,6 @@ impl Importer for CiaoDevices {
 
         Ok(())
     }
-
-    fn reset(&mut self) -> Result<(), BoxedError> {
-        Ok(())
-    }
 }
 
 #[cfg(test)]

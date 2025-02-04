@@ -19,12 +19,10 @@ impl<'a> Importer<'a> {
         exporter: &'a mut Option<Exporter<'a>>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let mut record_handler = TransformAndExportRecordHandler::new(transformer, exporter);
-
         if let Err(e) = self.importer.read(&mut record_handler) {
             log::error!("Error while importing records: {}", e);
-            Err(e)
-        } else {
-            Ok(())
+            return Err(e);
         }
+        Ok(())
     }
 }

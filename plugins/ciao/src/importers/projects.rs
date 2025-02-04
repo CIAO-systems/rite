@@ -52,11 +52,6 @@ impl Importer for CiaoProjects {
 
         Ok(())
     }
-
-    fn reset(&mut self) -> Result<(), BoxedError> {
-        // Not supported
-        Ok(())
-    }
 }
 
 async fn list_projects(
