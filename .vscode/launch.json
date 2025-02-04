@@ -19,7 +19,10 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/postgres.xml"],
+            "args": [
+                "-f",
+                "data/postgres.xml"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -37,7 +40,10 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/star-wars.xml"],
+            "args": [
+                "-f",
+                "data/star-wars.xml"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -55,7 +61,10 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/youtrack/generic/youtrack-example.xml"],
+            "args": [
+                "-f",
+                "data/youtrack/generic/youtrack-example.xml"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -73,7 +82,10 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/youtrack/time/youtrack-example.xml"],
+            "args": [
+                "-f",
+                "data/youtrack/time/youtrack-example.xml"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -91,7 +103,10 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "data/ciao/projects.xml"],
+            "args": [
+                "-f",
+                "data/ciao/projects.xml"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -109,8 +124,32 @@
                     "kind": "bin"
                 }
             },
-            "args": ["-f", "/this/path/does/not/exist"],
+            "args": [
+                "-f",
+                "/this/path/does/not/exist"
+            ],
             "cwd": "${workspaceFolder}"
         },
-  ]
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Star-Wars/Mapper example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/star-wars-mapper.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+    ]
 }
