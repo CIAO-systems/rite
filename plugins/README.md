@@ -1,14 +1,9 @@
 # Plugins for RITE
 ## Common
-### Transformers
-* add_field
-* rename_field
-* ignore_field
-* include_field
-### Exporter
-* console
+See the [documentation](common/README.md)
 ## Postgres
-### Exporter
-### Importer
+See the [documentation](postgres/README.md)
 ## REST
-### Importer
+See the [documentation](rest/README.md)
+## YouTrack
+See the [documentation](youtrack/README.md)

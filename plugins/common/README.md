@@ -1,4 +1,4 @@
-# Common transformers for [RITE](../../README.md)
+# Common functionality for [RITE](../../README.md)
 This plugin contains some common transformers and exporters. To use them, 
 include the plugin in the rite-XML:
 ```xml
@@ -109,3 +109,16 @@ Here is a detailed documentation of the [Mapper transformer](mapper.md)
 
 ## Exporter
 ### Console
+The `console` exporter prints the record on standard output. 
+```xml
+    <exporters>
+        <exporter plugin="common" name="console">
+            <configuration>
+                <config key="prefix" value="<prefix-to-print-before-record>" />
+            </configuration>
+        </exporter>    
+    </exporters>
+```
+The optional configuration `prefix` can be used, to print a leading text. 
+Every record will then be printed on its own line, with the fields separated by comma:
+`<prefix>record.field1=record.value1,record.field2=record.value2`
