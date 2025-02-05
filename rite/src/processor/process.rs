@@ -142,6 +142,8 @@ impl Process {
 
         if let Some(ref mut importer) = importer {
             importer.import(&transformer, &mut exporter)?;
+            // FIXME in a separate branch
+            // exporter.as_ref().map(|e| e.event(Signal::End));
         }
 
         Ok(())

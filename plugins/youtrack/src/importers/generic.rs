@@ -97,11 +97,6 @@ impl Importer for YouTrackImporter {
 
         Ok(())
     }
-
-    /// Reset is currently not supported
-    fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        Ok(())
-    }
 }
 
 impl Initializable for YouTrackImporter {

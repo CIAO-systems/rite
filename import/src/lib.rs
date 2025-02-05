@@ -9,7 +9,10 @@ pub trait Importer: Initializable {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>>;
 
     /// Resets the importer, so that `next` and `read` start from the beginning again
-    fn reset(&mut self) -> Result<(), BoxedError>;
+    /// With default implementation, since most importers will not support it
+    fn reset(&mut self) -> Result<(), BoxedError> {
+        Ok(())
+    }
 }
 
 /// Common record handlers
@@ -35,10 +38,6 @@ mod tests {
                 handler.handle_record(&mut record)?;
             }
 
-            Ok(())
-        }
-
-        fn reset(&mut self) -> Result<(), BoxedError> {
             Ok(())
         }
     }

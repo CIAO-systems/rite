@@ -1,6 +1,6 @@
 # YouTrack RITE plugin
 A plugin with importers for [YouTrack](https://www.jetbrains.com/youtrack/).
-To use on of the importers, include the plugin in the rite-XML:
+To use one of the importers, include the plugin in the rite-XML:
 ```xml
 <rite>
     <plugins>

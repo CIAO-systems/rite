@@ -19,4 +19,14 @@ impl<'a> Exporter<'a> {
 
         Ok(())
     }
+
+    /// Signal event to all exporters
+    #[allow(dead_code)]
+    pub fn event(&self, signal: export::Signal) -> Result<(), Box<dyn std::error::Error>> {
+        for exporter in self.exporters.iter() {
+            exporter.event(signal.clone())?;
+        }
+
+        Ok(())
+    }
 }
