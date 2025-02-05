@@ -13,17 +13,17 @@ use model::{
 
 use crate::connection::CiaoConnection;
 
-pub struct CiaoProjects {
+pub struct Projects {
     config: Option<model::xml::config::Configuration>,
 }
 
-impl CiaoProjects {
+impl Projects {
     pub fn new() -> Self {
         Self { config: None }
     }
 }
 
-impl Initializable for CiaoProjects {
+impl Initializable for Projects {
     fn init(
         &mut self,
         config: Option<model::xml::config::Configuration>,
@@ -33,7 +33,7 @@ impl Initializable for CiaoProjects {
     }
 }
 
-impl Importer for CiaoProjects {
+impl Importer for Projects {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establich connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;
