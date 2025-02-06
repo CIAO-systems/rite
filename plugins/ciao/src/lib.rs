@@ -1,7 +1,9 @@
-use importers::{devices::Devices, projects::Projects, time_types::TimeTypes};
+use importers::{
+    clock_entries::ClockEntries, devices::Devices, projects::Projects, time_types::TimeTypes,
+};
 
-pub mod connection;
 pub mod config;
+pub mod connection;
 pub mod importers;
 
 /// This functions create an importer for CIAO data
@@ -14,6 +16,7 @@ pub fn create_importer(
         "devices" => Ok(Box::new(Devices::new())),
         "projects" => Ok(Box::new(Projects::new())),
         "time_types" => Ok(Box::new(TimeTypes::new())),
+        "clock_entries" => Ok(Box::new(ClockEntries::new())),
         _ => Err("Not implemented".into()),
     }
 }
