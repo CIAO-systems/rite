@@ -2,17 +2,17 @@ use import::{Importer, RecordHandler};
 use model::{BoxedError, Initializable};
 
 
-pub struct CiaoDevices {
+pub struct Devices {
     config: Option<model::xml::config::Configuration>,
 }
 
-impl CiaoDevices {
+impl Devices {
     pub fn new() -> Self {
         Self { config: None }
     }
 }
 
-impl Initializable for CiaoDevices {
+impl Initializable for Devices {
     fn init(
         &mut self,
         config: Option<model::xml::config::Configuration>,
@@ -22,7 +22,7 @@ impl Initializable for CiaoDevices {
     }
 }
 
-impl Importer for CiaoDevices {
+impl Importer for Devices {
     fn read(&mut self, _handler: &mut dyn RecordHandler) -> Result<(), BoxedError> {
         // FIXME implement me
         // if let Some(ref mut client) = CiaoConnection::client(&mut self.connection) {
