@@ -78,7 +78,7 @@ async fn list_clock_entries(
                 }
             }
             Err(e) => {
-                log::error!("Error processing project stream: {e}");
+                log::error!("Error processing clock entries stream: {e}");
             }
         }
     }
