@@ -73,7 +73,7 @@ async fn list_clock_entries(
     while let Some(response) = stream.next().await {
         match response {
             Ok(r) => {
-                for clock_entry in r.record {
+                for clock_entry in r.records {
                     handle_clock_entry(&clock_entry, handler)?;
                 }
             }
@@ -103,7 +103,7 @@ fn handle_clock_entry(
         add_field(fields, &format!("identitiy.{}", name), value);
     }
 
-    if let Some(timestamp) = clock_entry.timestamp {
+    if let Some(ref timestamp) = clock_entry.timestamp {
         if let Some(proto_timestamp) = timestamp.time_utc {
             let millis: i64 =
                 proto_timestamp.seconds * 1000 + (proto_timestamp.nanos as i64) / 1000000;
