@@ -1,0 +1,21 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="ciao" path="target/debug" name="rite_ciao"/>
+    </plugins>
+    <processes>
+        <process id="Time types example">
+            <importer plugin="ciao" name="clock_entries">
+                <configuration>
+                    <config key="url" value="$CIAO_URL" />
+                    <config key="api-key" value="$CIAO_API_KEY" />
+                    <!-- Filter parameter
+                    -->
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

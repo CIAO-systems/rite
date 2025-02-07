@@ -1,8 +1,10 @@
-use ciao_rs::ciao::time_tracking::ListRequest;
+use ciao_rs::ciao::time_tracking::{clock_record, ListRequest};
 use futures::StreamExt;
 use import::{Importer, RecordHandler};
 use model::{
+    field::{add_field, add_optional_field},
     record::Record,
+    value::Value,
     xml::config::get_config_value,
     BoxedError, Initializable,
 };
@@ -85,15 +87,44 @@ async fn list_clock_entries(
 }
 
 fn handle_clock_entry(
-    _clock_entry: &ciao_rs::ciao::time_tracking::ClockRecord,
+    clock_entry: &ciao_rs::ciao::time_tracking::ClockRecord,
     handler: &mut dyn RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut record = Record::new();
 
     // FIXME implement
-    // let fields = record.fields_as_mut();
-    // add_field(fields, "id", Value::String(clock_entry.id.clone()));
-    // add_optional_field(fields, "icon", time_type.icon.clone());
+    let fields = record.fields_as_mut();
+    add_field(fields, "id", Value::String(clock_entry.id.clone().unwrap()));
+
+    if let Some(identity) = &clock_entry.identity {
+        let (name, value) = match identity {
+            clock_record::Identity::UserId(id) => ("userId", Value::String(id.clone())),
+            clock_record::Identity::BadgeId(id) => ("badgeId", Value::String(id.clone())),
+        };
+        add_field(fields, &format!("identitiy.{}", name), value);
+    }
+
+    if let Some(timestamp) = clock_entry.timestamp {
+        if let Some(proto_timestamp) = timestamp.time_utc {
+            let millis: i64 =
+                proto_timestamp.seconds * 1000 + (proto_timestamp.nanos as i64) / 1000000;
+
+            add_field(fields, "timestamp.timeUtc", Value::I64(millis));
+
+            // FIXME when https://github.com/CIAO-systems/ciao-backend/issues/320 is done
+            add_field(
+                fields,
+                "timestamp.zoneId",
+                Value::String("Europe/Berlin".to_string()),
+            );
+        }
+    }
+
+    add_optional_field(fields, "deviceId", clock_entry.device_id.clone());
+    add_optional_field(fields, "timeTypeId", clock_entry.time_type_id.clone());
+    add_optional_field(fields, "projectId", clock_entry.project_id.clone());
+    add_optional_field(fields, "projectTaskId", clock_entry.project_task_id.clone());
+    add_optional_field(fields, "costCenterId", clock_entry.cost_center_id.clone());
 
     handler.handle_record(&mut record)?;
 
