@@ -9,7 +9,13 @@
                 <configuration>
                     <config key="url" value="$CIAO_URL" />
                     <config key="api-key" value="$CIAO_API_KEY" />
-                    <!-- Filter parameter
+                    <!-- Filter parameter -->
+                    <config key="filter.timeRange.startTime" value="2024-01-01T00:00:00Z" />
+                    <config key="filter.timeRange.endTime" value="2024-01-02T00:00:00Z" />
+                    <!--
+                    <config key="filter.userId" value="" />
+                    <config key="filter.creatorId" value="" />
+                    <config key="filter.timeTypeId" value="" />
                     -->
                 </configuration>
             </importer>

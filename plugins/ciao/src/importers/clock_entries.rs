@@ -9,7 +9,7 @@ use model::{
     BoxedError, Initializable,
 };
 
-use crate::connection::CiaoConnection;
+use crate::{config::get_config_time_range, connection::CiaoConnection};
 
 pub struct ClockEntries {
     config: Option<model::xml::config::Configuration>,
@@ -63,7 +63,7 @@ async fn list_clock_entries(
     let mut stream = service_client
         .inner_mut()
         .list(ListRequest {
-            time_range: None, // FIXME add function for filter.timeRange
+            time_range: get_config_time_range(config, "filter.timeRange"),
             user_id: get_config_value(config, "filter.userId"),
             creator_id: get_config_value(config, "filter.creatorId"),
             time_type_id: get_config_value(config, "filter.timeTypeId"),
@@ -92,7 +92,6 @@ fn handle_clock_entry(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut record = Record::new();
 
-    // FIXME implement
     let fields = record.fields_as_mut();
     add_field(fields, "id", Value::String(clock_entry.id.clone().unwrap()));
 
