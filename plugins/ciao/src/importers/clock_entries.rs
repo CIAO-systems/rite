@@ -110,11 +110,10 @@ fn handle_clock_entry(
 
             add_field(fields, "timestamp.timeUtc", Value::I64(millis));
 
-            // FIXME when https://github.com/CIAO-systems/ciao-backend/issues/320 is done
             add_field(
                 fields,
                 "timestamp.zoneId",
-                Value::String("Europe/Berlin".to_string()),
+                Value::String(timestamp.time_zone.clone()),
             );
         }
     }

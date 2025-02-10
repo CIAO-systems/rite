@@ -1,5 +1,5 @@
 use importers::{
-    clock_entries::ClockEntries, devices::Devices, projects::Projects, time_types::TimeTypes,
+    clock_entries::ClockEntries, cost_centers::CostCenters, devices::Devices, projects::Projects, time_types::TimeTypes
 };
 
 pub mod config;
@@ -17,6 +17,7 @@ pub fn create_importer(
         "projects" => Ok(Box::new(Projects::new())),
         "time_types" => Ok(Box::new(TimeTypes::new())),
         "clock_entries" => Ok(Box::new(ClockEntries::new())),
+        "cost_centers" => Ok(Box::new(CostCenters::new())),
         _ => Err("Not implemented".into()),
     }
 }
