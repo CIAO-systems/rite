@@ -1,5 +1,6 @@
 use importers::{
-    clock_entries::ClockEntries, devices::Devices, projects::Projects, time_types::TimeTypes,
+    accounts::Accounts, clock_entries::ClockEntries, devices::Devices, projects::Projects,
+    time_types::TimeTypes,
 };
 
 pub mod config;
@@ -13,6 +14,7 @@ pub fn create_importer(
     name: &str,
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
+        "accounts" => Ok(Box::new(Accounts::new())),
         "devices" => Ok(Box::new(Devices::new())),
         "projects" => Ok(Box::new(Projects::new())),
         "time_types" => Ok(Box::new(TimeTypes::new())),
