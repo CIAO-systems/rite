@@ -91,6 +91,48 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Rite execution experiments",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "/this/path/does/not/exist"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Star-Wars/Mapper example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/star-wars-mapper.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "CIAO Projects",
             "cargo": {
                 "args": [
@@ -133,7 +175,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Rite execution experiments",
+            "name": "CIAO clock entries",
             "cargo": {
                 "args": [
                     "build",
@@ -147,28 +189,7 @@
             },
             "args": [
                 "-f",
-                "/this/path/does/not/exist"
-            ],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Star-Wars/Mapper example",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=rite",
-                    "--package=rite"
-                ],
-                "filter": {
-                    "name": "rite",
-                    "kind": "bin"
-                }
-            },
-            "args": [
-                "-f",
-                "data/star-wars-mapper.xml"
+                "data/ciao/clock_entries.xml"
             ],
             "cwd": "${workspaceFolder}"
         },

@@ -29,7 +29,7 @@ All plugins have the following configuration in common:
 *TBD*
 
 ### Projects
-
+This importer reads the projects. 
 To use it, define a process and add the importer with the name `projects` to your project:
 ```xml
 <importer plugin="ciao" name="projects">
@@ -43,6 +43,7 @@ To use it, define a process and add the importer with the name `projects` to you
 Currently, this importer retrieves all projects
 
 ### Time types
+This importer reads the time types. 
 To use it, define a process and add the importer with the name `time_types` to your project:
 ```xml
 <importer plugin="ciao" name="time_types">
@@ -60,5 +61,32 @@ This importer supports the additional filter parameters:
 | --- | --- | --- | --- |
 | `filter.absence` | Only return time types, that match the value given here for the time type option `absence` | bool | \<None> |
 | `filter.bookable`| Only return time types, that match the value given here for the time type option `bookable` | bool | \<None> |
+
+### Clock entries
+This importer reads the clock entries.
+To use it, define a process and add the importer with the name `clock_entries` to your project:
+```xml
+<importer plugin="ciao" name="clock_entries">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+            <!-- Filter parameter 
+            <config key="filter.timeRange.startTime" value="2024-01-01T00:00:00Z" />
+            <config key="filter.timeRange.endTime" value="2024-01-02T00:00:00Z" />
+            <config key="filter.userId" value="<user-id>" />
+            <config key="filter.creatorId" value="<creator-id>" />
+            <config key="filter.timeTypeId" value="<time-type-id" />
+            -->
+    </configuration>
+</importer>
+```
+This importer supports the additional filter parameters:
+| Key | Description | Type | Default |
+| --- | --- | --- | --- |
+| filter.timeRange.startTime | Only return clock entries after this date/time | ISO 8601 | \<None> |
+| filter.timeRange.endTime | Only return clock entries before this date/time | ISO 8601 | \<None> |
+| filter.userId | Only return clock entries for this user id | UUID | \<None> |
+| filter.creatorId | Only return clock entries created by this user | UUID | \<None> |
+| filter.timeTypeId | Only return clock entries for this time type | UUID | \<None> |
 
 

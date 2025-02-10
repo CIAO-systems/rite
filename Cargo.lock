@@ -306,6 +306,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "futures",
+ "iana-time-zone",
  "log",
  "prost",
  "prost-types",
