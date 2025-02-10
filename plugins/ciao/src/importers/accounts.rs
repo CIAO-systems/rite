@@ -86,7 +86,7 @@ fn handle_account(
     }
 
     if let Some(ref address) = account.address {
-        add_field(fields, "address.first", Value::String(address.city.clone()));
+        add_field(fields, "address.city", Value::String(address.city.clone()));
         add_field(
             fields,
             "address.postal_code",
