@@ -25,6 +25,39 @@ All plugins have the following configuration in common:
 
 
 ## Importers
+### Accounts
+This importer reads the accounts. 
+To use it, define a process and add the importer with the name `accounts` to your project:
+```xml
+<importer plugin="ciao" name="accounts">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+        <!-- Filter parameters -->
+    </configuration>
+</importer>
+```
+Currently, this importer retrieves all accounts
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the account |
+| `email` | String | E-Mail address of the account |
+| `name.first` | String | First name of the account |
+| `name.middle` | String | Middle name  of the account |
+| `name.last` | String | Last name of the account |
+| `address.city` | String | City of the account |
+| `address.postal_code` | String | Postal code of the account |
+| `address.address_line_1` | String | Address line one of the account |
+| `address.address_line_2` | String | Address line two of the account |
+| `address.region_code` | String | Region code of the account |
+| `address.state` | String | State of the account |
+| `avatar.id` | String | Avatar id of the account |
+| `avatar.updatedAt.timeUtc` | String | Time (in UTC unix time millis) of the last change for the avatar of the account |
+| `avatar.updatedAt.timeZone` | String | Time zone (IANA time zone id) of the last change for the avatar of the account |
+
+
+
 ### Devices
 *TBD*
 
