@@ -112,7 +112,7 @@ fn handle_clock_entry(
 
             add_field(
                 fields,
-                "timestamp.zoneId",
+                "timestamp.timeZone",
                 Value::String(timestamp.time_zone.clone()),
             );
         }

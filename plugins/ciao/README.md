@@ -25,6 +25,26 @@ All plugins have the following configuration in common:
 
 
 ## Importers
+### Cost centers
+This importer reads the cost centers. 
+To use it, define a process and add the importer with the name `cost_centers` to your project:
+```xml
+<importer plugin="ciao" name="cost_centers">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</importer>
+```
+
+Currently, this importer retrieves all cost centers
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the cost center |
+| `name` | String | Descriptive name of the cost center |
+
+
 ### Devices
 *TBD*
 
@@ -42,6 +62,14 @@ To use it, define a process and add the importer with the name `projects` to you
 
 Currently, this importer retrieves all projects
 
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the project |
+| `external_id` | String | External id of the project |
+| `name` | String | Descriptive name of the project |
+
+
 ### Time types
 This importer reads the time types. 
 To use it, define a process and add the importer with the name `time_types` to your project:
@@ -56,11 +84,27 @@ To use it, define a process and add the importer with the name `time_types` to y
     </configuration>
 </importer>
 ```
+#### Parameters
 This importer supports the additional filter parameters:
 | Key | Description | Type | Default |
 | --- | --- | --- | --- |
 | `filter.absence` | Only return time types, that match the value given here for the time type option `absence` | bool | \<None> |
 | `filter.bookable`| Only return time types, that match the value given here for the time type option `bookable` | bool | \<None> |
+
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the time type |
+| `description` | String | Descriptive name of the time type |
+| `shorthand` | String | Shorthand of the time type |
+| `color.alpha` | i32 | Alpha of the color (if available) forthe time type |
+| `color.red` | i32 | Red of the color (if available) forthe time type |
+| `color.green` | i32 | Green of the color (if available) forthe time type |
+| `color.blue` | i32 | Blue of the color (if available) forthe time type |
+| `icon` | String | The name of the icon for the time type |
+| `options.absence` | bool | If available, it is `true` if the time type is an absence |
+| `options.bookable` | bool | If available, it is `true` if the time type is bookable |
+
 
 ### Clock entries
 This importer reads the clock entries.
@@ -80,6 +124,8 @@ To use it, define a process and add the importer with the name `clock_entries` t
     </configuration>
 </importer>
 ```
+#### Parameters
+
 This importer supports the additional filter parameters:
 | Key | Description | Type | Default |
 | --- | --- | --- | --- |
@@ -89,4 +135,17 @@ This importer supports the additional filter parameters:
 | filter.creatorId | Only return clock entries created by this user | UUID | \<None> |
 | filter.timeTypeId | Only return clock entries for this time type | UUID | \<None> |
 
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the clock entry |
+| `identitiy.userId` | String | User id of the clock entry |
+| `identitiy.badgeId` | String | Badge id of the clock entry |
+| `timestamp.timeUtc` | i64 | Time in millis (UTC) of the clock entry |
+| `timestamp.timeZone` | String | IANA time zone id of the clock entry |
+| `deviceId` | String | Device id of the clock entry |
+| `timeTypeId` | String | Time type id of the clock entry |
+| `projectId` | String | Project id of the clock entry |
+| `projectTaskId` | String | Project task id of the clock entry |
+| `costCenterId` | String | Cost center id of the clock entry |
 

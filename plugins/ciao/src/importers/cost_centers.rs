@@ -88,3 +88,33 @@ fn handle_cost_center(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::{xml::config::Configuration, Initializable};
+
+    use super::CostCenters;
+
+    #[test]
+    #[ignore = "for manual testing"]
+    fn test_cost_center_importer() -> Result<(), Box<dyn std::error::Error>> {
+        let mut importer = CostCenters::new();
+        let mut config = Configuration::new();
+        config.insert_str("url", "http://localhost:50051");
+        config.insert_str("api-key", "top-secret-api-key");
+
+        importer.init(Some(config))?;
+        let mut records = Vec::new();
+        let mut handler = CollectingRecordHandler::new(&mut records);
+        importer.read(&mut handler)?;
+
+        assert!(records.len() > 0);
+        for cc in records {
+            println!("{:?}", cc);
+            assert!(cc.field_by_name("id").is_some());
+            assert!(cc.field_by_name("name").is_some());
+        }
+        Ok(())
+    }
+}

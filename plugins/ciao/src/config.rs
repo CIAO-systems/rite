@@ -11,9 +11,6 @@ use model::{xml::config::get_config_value, BoxedError};
 const CFG_URL: &str = "url";
 const CFG_API_KEY: &str = "api-key";
 
-const ERR_NO_URL: &str = "URL not configured";
-const ERR_NO_API_KEY: &str = "API key not configured";
-
 #[derive(Debug)]
 pub struct ConnectionConfiguration {
     url: Option<String>,
@@ -48,24 +45,24 @@ impl ConnectionConfiguration {
                 )
                 .await?)
             } else {
-                Err(ERR_NO_API_KEY.into())
+                Err(format!("{CFG_API_KEY} not configured").into())
             }
         } else {
-            Err(ERR_NO_URL.into())
+            Err(format!("{CFG_URL} not configured").into())
         }
     }
 }
 
 /// Read a [TimeRange] with prefix `key` from the confiuration `config`.
-/// 
+///
 /// A time range configuration has two keys, the `startTime` and the `endTime`
 /// If any of the parts are missing or can't be parsed, the result will be [None]
 /// The format of the time alues is a ISO 8601 date/time string in UTC
-/// 
+///
 /// # Arguments
 /// * `config`: A reference to a [Configuration]
 /// * `key`: The prefix  for the two range keys: `<key>.startTime` and `<key>.endTime`
-/// 
+///
 pub fn get_config_time_range(
     config: &Option<model::xml::config::Configuration>,
     key: &str,
