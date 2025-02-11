@@ -13,8 +13,8 @@ fn test_record_field_by_name() {
     let mut record = Record::new();
     record
         .fields
-        .push(Field::new_string("name".to_string(), "Alice".to_string()));
-    record.fields.push(Field::new_i32("age".to_string(), 30));
+        .push(Field::new_value("name", Value::String("Alice".to_string())));
+    record.fields.push(Field::new_value("age", Value::I32(30)));
 
     assert!(record.field_by_name("unkown").is_none());
     assert!(record.field_by_name("name").is_some());
@@ -33,8 +33,8 @@ fn test_record_fields() {
     let mut record = Record::new();
     record
         .fields
-        .push(Field::new_string("name".to_string(), "Alice".to_string()));
-    record.fields.push(Field::new_i32("age".to_string(), 30));
+        .push(Field::new_value("name", Value::String("Alice".to_string())));
+    record.fields.push(Field::new_value("age", Value::I32(30)));
 
     let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 2);
@@ -47,7 +47,7 @@ fn test_record_fields_immutability() {
     let mut record = Record::new();
     record
         .fields
-        .push(Field::new_bool("active".to_string(), true));
+        .push(Field::new_value("active", Value::Bool(true)));
 
     let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 1);
@@ -60,13 +60,14 @@ fn test_record_fields_immutability() {
 #[test]
 fn test_record_multiple_fields() {
     let mut record = Record::new();
+    record.fields.push(Field::new_value(
+        "name",
+        Value::String("Charlie".to_string()),
+    ));
+    record.fields.push(Field::new_value("age", Value::I32(25)));
     record
         .fields
-        .push(Field::new_string("name".to_string(), "Charlie".to_string()));
-    record.fields.push(Field::new_i32("age".to_string(), 25));
-    record
-        .fields
-        .push(Field::new_bool("student".to_string(), false));
+        .push(Field::new_value("student", Value::Bool(false)));
 
     let fields = record.fields_as_mut();
     assert_eq!(fields.len(), 3);
@@ -87,7 +88,7 @@ fn test_record_copy() {
     let mut original = Record::new();
     original
         .fields_as_mut()
-        .push(Field::new_i32("value".to_string(), 42));
+        .push(Field::new_value("value", Value::I32(42)));
     let copyied = Record::copy(&original);
     assert_eq!(original.fields().len(), copyied.fields().len());
     for field in original.fields() {

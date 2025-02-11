@@ -97,7 +97,7 @@ fn add_field_value(record: &mut Record, name: &str, value: Value) -> bool {
         changed = true;
         record
             .fields_as_mut()
-            .push(Field::new_value(name.to_string(), value));
+            .push(Field::new_value(name, value));
     }
     changed
 }

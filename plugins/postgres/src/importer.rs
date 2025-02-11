@@ -88,42 +88,42 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
             "int4" => {
                 let value: i32 = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::I32(value),
                 ));
             }
             "int8" => {
                 let value: i64 = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::I64(value),
                 ));
             }
             "text" | "varchar" => {
                 let value: String = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::String(value),
                 ));
             }
             "bool" => {
                 let value: bool = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::Bool(value),
                 ));
             }
             "float4" => {
                 let value: f32 = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::F32(value),
                 ));
             }
             "float8" => {
                 let value: f64 = row.get(idx);
                 record.fields_as_mut().push(Field::new_value(
-                    column.name().to_string(),
+                    column.name(),
                     Value::F64(value),
                 ));
             }

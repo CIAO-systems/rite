@@ -9,7 +9,7 @@ fn test_to_upper_case() {
     let mut record = Record::new();
     record
         .fields_as_mut()
-        .push(Field::new_string("name".to_string(), "alice".to_string()));
+        .push(Field::new_value("name", Value::String("alice".to_string())));
     match transfomer.process(&record) {
         Ok(result) => {
             if let Some(field) = result.field_by_name("name") {
@@ -31,7 +31,7 @@ fn test_to_lower_case() {
     let mut record = Record::new();
     record
         .fields_as_mut()
-        .push(Field::new_string("name".to_string(), "BOB".to_string()));
+        .push(Field::new_value("name", Value::String("BOB".to_string())));
     match transfomer.process(&record) {
         Ok(result) => {
             if let Some(field) = result.field_by_name("name") {

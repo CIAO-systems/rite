@@ -12,8 +12,8 @@ fn test_write() {
     let mut exporter = ConsoleExporter::new();
 
     let mut record = Record::new();
-    let f1 = Field::new_string("string".to_string(), "value".to_string());
-    let f2 = Field::new_i32("int".to_string(), 73);
+    let f1 = Field::new_value("string", model::value::Value::String("value".to_string()));
+    let f2 = Field::new_value("int", model::value::Value::I32(73));
     record.fields_as_mut().push(f1);
     record.fields_as_mut().push(f2);
     let _ = exporter.write(&record);

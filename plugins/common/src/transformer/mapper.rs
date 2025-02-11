@@ -86,7 +86,7 @@ fn map_field(mapping_field: &config::Field, field: &Field) -> Option<Field> {
         // the target type and create a new field with the target name
         let target_name = mapping_field.name.target.clone();
         let target_value: Value = convert_value(mapping_field, mapping_value);
-        let mapped_field = Field::new_value(target_name, target_value);
+        let mapped_field = Field::new_value(&target_name, target_value);
 
         Some(mapped_field)
     } else {

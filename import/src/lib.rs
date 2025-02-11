@@ -33,7 +33,7 @@ mod tests {
             for i in 1..=5 {
                 record
                     .fields_as_mut()
-                    .push(Field::new_value("index".to_string(), Value::U16(i)));
+                    .push(Field::new_value("index", Value::U16(i)));
 
                 handler.handle_record(&mut record)?;
             }

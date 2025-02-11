@@ -1966,11 +1966,13 @@ version = "0.1.0"
 dependencies = [
  "ciao-rs",
  "dotenv",
+ "export",
  "futures",
  "import",
  "log",
  "model",
  "prost",
+ "prost-types",
  "tokio",
  "tonic",
 ]

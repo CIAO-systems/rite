@@ -49,15 +49,16 @@ impl Transformer for StringFieldConverter {
                         StringFieldConversion::UpperCase => value.to_uppercase(),
                         StringFieldConversion::LowerCase => value.to_lowercase(),
                     };
-                    result
-                        .fields_as_mut()
-                        .push(Field::new_string(field.name().to_string(), converted));
+                    result.fields_as_mut().push(Field::new_value(
+                        field.name(),
+                        model::value::Value::String(converted),
+                    ));
                 }
                 _ => {
                     // clone the field into the result record
                     result
                         .fields_as_mut()
-                        .push(Field::new_value(field.name().to_string(), field.value()));
+                        .push(Field::new_value(field.name(), field.value()));
                 }
             }
         }

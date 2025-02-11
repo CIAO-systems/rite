@@ -38,7 +38,7 @@ impl Record {
     /// let mut original = Record::new();
     /// original
     ///     .fields_as_mut()
-    ///     .push(model::field::Field::new_i32("value".to_string(), 42));
+    ///     .push(model::field::Field::new_value("value", model::value::Value::I32(42)));
     /// let copyied = Record::copy(&original);
     /// if let Some(field) = copyied.field_by_name("value") {
     ///     println!("{} = {}", field.name(), field.value());

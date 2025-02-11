@@ -7,7 +7,10 @@ use std::{
 };
 
 use import::{handlers::CollectingRecordHandler, Importer, RecordHandler};
-use model::{field::Field, record::Record, xml::config::Configuration, BoxedError, Initializable};
+use model::{
+    field::Field, record::Record, value::Value, xml::config::Configuration, BoxedError,
+    Initializable,
+};
 
 /// An [Importer] that reads lines from a text file
 ///
@@ -55,10 +58,10 @@ impl TextFileImporter {
                         let mut record = Record::new();
                         record
                             .fields_as_mut()
-                            .push(Field::new_string("line".to_string(), line));
-                        record.fields_as_mut().push(Field::new_usize(
-                            "index".to_string(),
-                            self.next_line + index,
+                            .push(Field::new_value("line", Value::String(line)));
+                        record.fields_as_mut().push(Field::new_value(
+                            "index",
+                            Value::USize(self.next_line + index),
                         ));
 
                         handler.handle_record(&mut record)?;
