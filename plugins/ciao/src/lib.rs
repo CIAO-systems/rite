@@ -1,7 +1,6 @@
 use importers::{
-    clock_entries::ClockEntries, cost_centers::CostCenters, devices::Devices, projects::Projects, time_types::TimeTypes
-    accounts::Accounts, clock_entries::ClockEntries, devices::Devices, projects::Projects,
-    time_types::TimeTypes,
+    accounts::Accounts, clock_entries::ClockEntries, cost_centers::CostCenters, devices::Devices,
+    projects::Projects, time_types::TimeTypes,
 };
 
 pub mod config;
