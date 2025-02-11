@@ -76,7 +76,43 @@ Currently, this importer retrieves all accounts
 | `avatar.updatedAt.timeZone` | String | Time zone (IANA time zone id) of the last change for the avatar of the account |
 
 ### Devices
-*TBD*
+This importer reads the devices. 
+To use it, define a process and add the importer with the name `devices` to your project:
+```xml
+<importer plugin="ciao" name="devices">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+        <!-- Filter parameters -->
+    </configuration>
+</importer>
+```
+Currently, this importer retrieves all devices
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the device |
+| `externalId` | String | External id of the device |
+| `description` | String | Description of the device |
+| `type` | String | Type of the device, can be one of |
+| | | - UNKNOWN |
+| | | - DATAFOX |
+| | | - MOBILE |
+| `timeZone` | String | IANA Timezone id of the device |
+##### Device action fields
+For every device action associated with the device, fields with the name prefix `action[<index>]` will be added. For example, the `id` of first device action would be `action[0].id`
+| Field | Type | Description |
+| --- | --- | --- |
+| `action[<index>].id` | i32 | Id of the action |
+| `action[<index>].deviceActionId` | i32 | Device specific id of the action, usually an index of the position of the button or similar |
+| `action[<index>].icon` | String | Name of the icon of the action |
+| `action[<index>].description` | String | Description of the action |
+| `action[<index>].type` | String | Type of the action, can be CLOCK or CUSTOM. Fields for the configuration are appended by either `clock` or `custom`, depending on the value of this field |
+| `action[<index>].configuration.clock.timeTypeId` | String | Time type id for the clock action |
+| `action[<index>].configuration.clock.costCenterId` | String | Costcenter id for the clock action |
+| `action[<index>].configuration.clock.projectId` | String | Project id for the clock action |
+| `action[<index>].configuration.clock.projectTaskId` | String | Project task id for the clock action |
+| `action[<index>].configuration.custom.operation` | String | Operation of the custom action (device interprets the `operation` to perform specific operations)|
 
 ### Projects
 This importer reads the projects. 
