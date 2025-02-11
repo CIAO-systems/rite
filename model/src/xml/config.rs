@@ -85,6 +85,14 @@ impl Configuration {
             config.push(ConfigItem::new(key, value));
         }
     }
+
+    /// Adds a new key to the map with the given value. &str variant
+    ///
+    pub fn insert_str(&mut self, key: &str, value: &str) {
+        if let Some(ref mut config) = self.config {
+            config.push(ConfigItem::new(key.to_string(), value.to_string()));
+        }
+    }
 }
 
 /// Get a config value of type T or None, if not found or not parseable
@@ -101,7 +109,6 @@ pub fn get_config_value<T: std::str::FromStr>(
         .and_then(|c| c.get(key))
         .and_then(|v| v.parse::<T>().ok())
 }
-
 
 #[cfg(test)]
 mod tests {
