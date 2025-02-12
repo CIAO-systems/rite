@@ -1,0 +1,15 @@
+<rite-random-import>
+  <generator number="10">
+     <field name="timestamp.timeUtc" function="milliseconds" />
+     <field name="timestamp.timeZone" function="timezone" />
+     <!-- either on of the two -->
+     <field name="identity.userId" function="uuid" optional="true" />
+     <field name="identity.badgeId" function="uuid" optional="true" />
+
+     <field name="deviceId" function="uuid" />
+     <field name="timeTypeId" function="uuid" />
+     <field name="projectId" function="uuid" />
+     <field name="projectTaskId" function="uuid" />
+     <field name="costcenterId" function="uuid" />
+  </generator>
+</rite-random-import>
