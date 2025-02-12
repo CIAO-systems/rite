@@ -56,7 +56,7 @@ With the generator element the number of records and its fields are configured.
 The `generator` element can have multiple fields, that have the following attributes:
 | **Attribute** | **Description** |
 |---------------|-----------------|
-| name | The nema of the generated field
+| name | The name of the generated field
 | function | The name of the generating function. See [function list](#generation-function)
 | optional | This boolean attribute controls, if a field is optional. If it is `true`, the importer will eventually add the field. So it can be part of the records sometimes. If it is `false` the field is added for every record.
 
@@ -66,4 +66,7 @@ The `generator` element can have multiple fields, that have the following attrib
 | milliseconds | Creates a 'Value::I64` with the current time in milliseconds|
 | timezone | Creates a random IANA timezone id |
 | uuid | Creates a v4 UUID |
+| i32 | Creates a random i32 |
+| f32 | Creates a random f32 |
+| string | Creates a random string |
 

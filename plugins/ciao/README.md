@@ -215,3 +215,30 @@ This importer supports the additional filter parameters:
 | `projectTaskId` | String | Project task id of the clock entry |
 | `costCenterId` | String | Cost center id of the clock entry |
 
+## Exporter
+### Clock entries
+This exporter creates a clock entry on the CIAO backend using the `TimeTrackingService.clock` gRPC service.
+To use it, define a process and add the exporter with the name `clock_entries` to your project:
+```xml
+<exporter plugin="ciao" name="clock_entries">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+
+#### Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `timestamp.timeUtc` | String | The timestamp of the clock record in millis since Unix epoch |
+| `timestamp.timeZone` | String | IANA time zone id of the timestamp |
+| `identity.userId` | String | The user-id of the person clocking. If not given, a `identity.badgeId` must be provided |
+| `identity.badgeId` | String | The badge-id of the person clocking. If not given, a `identity.userId` must be provided |
+| `deviceId` | String | (optional) The device id of the clock record |
+| `timeTypeId` | String | (optional) The time type id of the clock record |
+| `projectId` | String | (optional) The project id of the clock record |
+| `projectTaskId` | String | (optional) The project task id of the clock record |
+| `costcenterId` | String | (optional) The cost center id of the clock record |

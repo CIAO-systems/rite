@@ -1,5 +1,5 @@
 use model::value::Value;
-use rand::seq::IndexedMutRandom;
+use rand::{seq::IndexedMutRandom, Rng};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait RandomFunction {
@@ -33,6 +33,40 @@ pub struct Uuid;
 impl RandomFunction for Uuid {
     fn generate(&self) -> Value {
         Value::String(uuid::Uuid::new_v4().to_string())
+    }
+}
+
+pub struct RandomInteger;
+impl RandomFunction for RandomInteger {
+    fn generate(&self) -> Value {
+        let v: i32 = rand::rng().random();
+        Value::I32(v)
+    }
+}
+
+pub struct RandomFloat;
+impl RandomFunction for RandomFloat {
+    fn generate(&self) -> Value {
+        let v: f32 = rand::rng().random();
+        Value::F32(v)
+    }
+}
+
+pub struct RandomString;
+impl RandomFunction for RandomString {
+    fn generate(&self) -> Value {
+        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                             abcdefghijklmnopqrstuvwxyz\
+                             0123456789";
+        let mut rng = rand::rng();
+        let length = rng.random_range(1..32);
+        let random_string: String = (0..length)
+            .map(|_| {
+                let idx = (rng.random_range(0..CHARSET.len())) as usize;
+                CHARSET[idx] as char
+            })
+            .collect();
+        Value::String(random_string)
     }
 }
 
