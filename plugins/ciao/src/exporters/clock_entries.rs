@@ -106,7 +106,7 @@ fn get_timestamp(
     if let Value::I64(time_utc_millis) = time_utc.value() {
         let ts = prost_types::Timestamp {
             seconds: time_utc_millis / 1000,
-            nanos: (time_utc_millis as i32 % 1000) * 1_000_000, // Convert remaining milliseconds to nanoseconds
+            nanos: ((time_utc_millis as i64 % 1000) * 1_000_000) as i32, // Convert remaining milliseconds to nanoseconds
         };
 
         Ok(ciao_rs::ciao::common::Timestamp {
@@ -131,7 +131,8 @@ fn get_field<'a>(
 
 #[cfg(test)]
 mod tests {
-    use model::record::Record;
+    use chrono::NaiveDateTime;
+    use model::{field::add_field, record::Record};
 
     use super::*;
 
@@ -162,5 +163,30 @@ mod tests {
             result.unwrap_err().to_string(),
             "Field 'missing_field' missing in record"
         );
+    }
+
+    #[test]
+    fn test_get_timestamp() -> Result<(), BoxedError> {
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        let naive = NaiveDateTime::parse_from_str("2025-02-12 08:00", "%Y-%m-%d %H:%M")?;
+        add_field(
+            fields,
+            "timestamp.timeUtc",
+            Value::I64(naive.and_utc().timestamp_millis()),
+        );
+        add_field(
+            fields,
+            "timestamp.timeZone",
+            Value::String("Europe/Berlin".to_string()),
+        );
+        let ts = get_timestamp(&record)?;
+        println!("{:?}", ts);
+
+        assert_eq!(ts.time_utc.unwrap().seconds, 1739347200);
+        assert_eq!(ts.time_utc.unwrap().nanos, 0);
+        assert_eq!(ts.time_zone, "Europe/Berlin");
+
+        Ok(())
     }
 }

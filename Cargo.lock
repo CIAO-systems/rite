@@ -1964,6 +1964,7 @@ dependencies = [
 name = "rite_ciao"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "ciao-rs",
  "dotenv",
  "export",
