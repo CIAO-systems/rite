@@ -2,7 +2,7 @@
   <generator number="10">
      <field name="timestamp.timeUtc" function="milliseconds" />
      <field name="timestamp.timeZone" function="timezone" />
-     <!-- either on of the two -->
+     <!-- either one of the two -->
      <field name="identity.userId" function="uuid" optional="true" />
      <field name="identity.badgeId" function="uuid" optional="true" />
 

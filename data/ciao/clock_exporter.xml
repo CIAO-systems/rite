@@ -5,7 +5,7 @@
         <plugin id="ciao" path="target/debug" name="rite_ciao"/>
     </plugins>
     <processes>
-        <process id="Time types example">
+        <process id="Clock exporter with fake data example">
             <importer plugin="faker">
                 <configuration xml="$RITE_CONFIG_PATH/fake-records-generator.xml" />
             </importer>

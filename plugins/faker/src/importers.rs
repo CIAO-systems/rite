@@ -62,7 +62,7 @@ impl Importer for Faker {
                 let fields = record.fields_as_mut();
 
                 for f in &random.generator.fields {
-                    //
+                    // Add field if not optional
                     if f.is_needed() {
                         if let Some(generator) = f.create_generator() {
                             add_field(fields, &f.name, generator.generate());
