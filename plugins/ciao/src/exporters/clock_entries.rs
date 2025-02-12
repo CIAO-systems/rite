@@ -93,7 +93,7 @@ fn get_identity(record: &model::record::Record) -> Result<Identity, BoxedError> 
     } else if let Some(badge_id) = record.field_by_name("identity.badgeId") {
         Ok(Identity::BadgeId(badge_id.value().to_string()))
     } else {
-        Err("Either 'identity.userId' nor 'identity.badgeId' found in record".into())
+        Err("Neither 'identity.userId' nor 'identity.badgeId' found in record".into())
     }
 }
 
@@ -132,7 +132,7 @@ fn get_field<'a>(
 #[cfg(test)]
 mod tests {
     use chrono::NaiveDateTime;
-    use model::{field::add_field, record::Record};
+    use model::{field::add_field, record::Record, xml::config::Configuration};
 
     use super::*;
 
@@ -169,7 +169,19 @@ mod tests {
     fn test_get_timestamp() -> Result<(), BoxedError> {
         let mut record = Record::new();
         let fields = record.fields_as_mut();
-        let naive = NaiveDateTime::parse_from_str("2025-02-12 08:00", "%Y-%m-%d %H:%M")?;
+        add_timestamp(fields, "2025-02-12 08:00")?;
+        let ts = get_timestamp(&record)?;
+        println!("{:?}", ts);
+
+        assert_eq!(ts.time_utc.unwrap().seconds, 1739347200);
+        assert_eq!(ts.time_utc.unwrap().nanos, 0);
+        assert_eq!(ts.time_zone, "Europe/Berlin");
+
+        Ok(())
+    }
+
+    fn add_timestamp(fields: &mut Vec<Field>, date: &str) -> Result<(), BoxedError> {
+        let naive = NaiveDateTime::parse_from_str(date, "%Y-%m-%d %H:%M")?;
         add_field(
             fields,
             "timestamp.timeUtc",
@@ -180,12 +192,70 @@ mod tests {
             "timestamp.timeZone",
             Value::String("Europe/Berlin".to_string()),
         );
-        let ts = get_timestamp(&record)?;
-        println!("{:?}", ts);
+        Ok(())
+    }
 
-        assert_eq!(ts.time_utc.unwrap().seconds, 1739347200);
-        assert_eq!(ts.time_utc.unwrap().nanos, 0);
-        assert_eq!(ts.time_zone, "Europe/Berlin");
+    #[test]
+    fn test_get_identity_user() -> Result<(), BoxedError> {
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        add_field(
+            fields,
+            "identity.userId",
+            Value::String("user-id".to_string()),
+        );
+        let identity = get_identity(&record)?;
+        println!("{:?}", identity);
+        assert_eq!(identity, Identity::UserId("user-id".to_string()));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_get_identity_badge() -> Result<(), BoxedError> {
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        add_field(
+            fields,
+            "identity.badgeId",
+            Value::String("badge-id".to_string()),
+        );
+        let identity = get_identity(&record)?;
+        println!("{:?}", identity);
+        assert_eq!(identity, Identity::BadgeId("badge-id".to_string()));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_get_identity_none() {
+        let record = Record::new();
+        let identity = get_identity(&record);
+        assert!(identity.is_err_and(|e| {
+            e.to_string() == "Neither 'identity.userId' nor 'identity.badgeId' found in record"
+        }));
+    }
+
+    #[test]
+    #[ignore = "for manual testing"]
+    fn test_clock_exporter() -> Result<(), BoxedError> {
+        let mut exporter = ClockEntries::new();
+        let mut config = Configuration::new();
+        config.insert_str("url", "http://localhost:50051");
+        config.insert_str("api-key", "top-secret-api-key");
+
+        exporter.init(Some(config))?;
+
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        add_timestamp(fields, "2025-02-12 08:00")?;
+        add_field(
+            fields,
+            "identity.userId",
+            Value::String("user-id".to_string()),
+        );
+
+        exporter.write(&record)?;
 
         Ok(())
     }
