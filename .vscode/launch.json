@@ -235,5 +235,26 @@
             ],
             "cwd": "${workspaceFolder}"
         },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CSV random data exporter",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/csv/write-csv.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }

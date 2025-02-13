@@ -28,3 +28,20 @@ Currently, the CSV file has to have a header row with the names of the fields as
 | filename | The path to the .csv file
 
 ## Exporter
+The CSV exporter writes a CSV file
+
+To use it, define a process and add the importer (without name) to your project:
+```xml
+<exporter plugin="csv">
+    <configuration>
+        <config key="filename" value="path/to/csv/file" />
+    </configuration>
+</exporter>
+```
+Currently, the CSV file has a header row with the names of the fields as first line and uses `,` as delimiter
+
+### Configuration
+| Key | Description |
+| --- | --- |
+| filename | The path to the .csv file
+| overwrite | A boolean value, that indicates, if the file should be overwritten

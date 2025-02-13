@@ -1,16 +1,19 @@
 use model::Initializable;
 
 const CFG_FILENAME: &str = "filename";
+const CFG_EXPORT_OVERWRITE: &str = "overwrite";
 
 pub struct CSV {
     filename: Option<String>,
     export_header_written: bool,
+    export_override: bool,
 }
 impl CSV {
     pub(crate) fn new() -> Self {
         CSV {
             filename: None,
             export_header_written: false,
+            export_override: false,
         }
     }
 }
@@ -22,6 +25,10 @@ impl Initializable for CSV {
     ) -> Result<(), model::BoxedError> {
         if let Some(config) = config {
             self.filename = config.get(CFG_FILENAME);
+            self.export_override = match config.get(CFG_EXPORT_OVERWRITE) {
+                Some(value) => value.parse::<bool>()?,
+                None => false,
+            };
         }
 
         Ok(())
@@ -29,7 +36,7 @@ impl Initializable for CSV {
 }
 mod exporter {
     use export::Exporter;
-    use std::fs::OpenOptions;
+    use std::fs::{self, OpenOptions};
     use std::io::Write;
 
     use super::CSV;
@@ -37,6 +44,12 @@ mod exporter {
     impl Exporter for CSV {
         fn write(&mut self, record: &model::record::Record) -> Result<(), model::BoxedError> {
             if let Some(ref path) = self.filename {
+                if !self.export_header_written && self.export_override {
+                    // If file should be overwritten, and this is the first time
+                    // the write function is called, delete the file
+                    fs::remove_file(path)?;
+                }
+
                 // Open the file in append mode
                 let mut file = OpenOptions::new()
                     .append(true)
@@ -90,20 +103,21 @@ mod exporter {
             csv.init(Some(config))?;
 
             let mut record = Record::new();
-            for i in 1..=5 {
+            for i in 1..=2 {
                 add_field(
                     record.fields_as_mut(),
                     &format!("field{i}"),
                     Value::String(format!("value{i}")),
                 );
             }
-            csv.write(&record)?;
+            for _ in 1..=2 {
+                csv.write(&record)?;
+            }
 
             let contents = fs::read_to_string(output_file)?;
             fs::remove_file(output_file)?;
 
-            let expected =
-                format!("field1,field2,field3,field4,field5\nvalue1,value2,value3,value4,value5\n");
+            let expected = format!("field1,field2\nvalue1,value2\nvalue1,value2\n");
             assert_eq!(contents, expected);
             Ok(())
         }
