@@ -28,6 +28,7 @@ pub fn create_importer(
 pub fn create_exporter(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
     match name {
         "clock_entries" => Ok(Box::new(exporters::clock_entries::ClockEntries::new())),
+        "cost_centers" => Ok(Box::new(exporters::cost_centers::CostCenters::new())),
         _ => Err(format!("Unknown exporter '{name}'").into()),
     }
 }
