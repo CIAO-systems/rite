@@ -242,3 +242,23 @@ This exporter uses the following fields from the record passed to it
 | `projectId` | String | (optional) The project id of the clock record |
 | `projectTaskId` | String | (optional) The project task id of the clock record |
 | `costcenterId` | String | (optional) The cost center id of the clock record |
+
+### Cost centers
+This exporter creates a cost center on the CIAO backend using the `CostCenterService.create` gRPC service.
+To use it, define a process and add the exporter with the name `cost_centers` to your project:
+```xml
+<exporter plugin="ciao" name="cost_centers">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+
+#### Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | The id of the new cost center |
+| `name` | String | The name of the new cost center |
