@@ -145,7 +145,7 @@ mod tests {
 
     #[test]
     fn test_convert_f64() {
-        let field = Field::new_value("name".to_string(), Value::F64(1672531200123.0));
+        let field = Field::new_value("name", Value::F64(1672531200123.0));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -155,7 +155,7 @@ mod tests {
 
     #[test]
     fn test_convert_i64() {
-        let field = Field::new_value("name".to_string(), Value::I64(1672531200123));
+        let field = Field::new_value("name", Value::I64(1672531200123));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn test_convert_unsupported_type() {
         let field = Field::new_value(
-            "name".to_string(),
+            "name",
             Value::String("not a timestamp".to_string()),
         );
         let result = convert_isodatetime(&field);
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn test_convert_negative_i64() {
-        let field = Field::new_value("name".to_string(), Value::I64(-2208988800000));
+        let field = Field::new_value("name", Value::I64(-2208988800000));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -185,7 +185,7 @@ mod tests {
 
     #[test]
     fn test_convert_invalid_f64() {
-        let field = Field::new_value("name".to_string(), Value::F64(f64::NAN));
+        let field = Field::new_value("name", Value::F64(f64::NAN));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -195,7 +195,7 @@ mod tests {
 
     #[test]
     fn test_convert_u64() {
-        let field = Field::new_value("name".to_string(), Value::U64(1672531200123));
+        let field = Field::new_value("name", Value::U64(1672531200123));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn test_convert_i32() {
-        let field = Field::new_value("name".to_string(), Value::I32(-4273));
+        let field = Field::new_value("name", Value::I32(-4273));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,
@@ -215,7 +215,7 @@ mod tests {
 
     #[test]
     fn test_convert_u32() {
-        let field = Field::new_value("name".to_string(), Value::U32(73));
+        let field = Field::new_value("name", Value::U32(73));
         let result = convert_isodatetime(&field);
         assert_eq!(
             result,

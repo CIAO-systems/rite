@@ -7,10 +7,10 @@ use std::collections::HashMap;
 fn test_generate_insert_statement() {
     let mut record = Record::new();
     let fields = record.fields_as_mut();
-    fields.push(Field::new_i32("index".to_string(), 0));
-    fields.push(Field::new_string(
-        "name".to_string(),
-        "Some name".to_string(),
+    fields.push(Field::new_value("index", Value::I32(0)));
+    fields.push(Field::new_value(
+        "name",
+        Value::String("Some name".to_string()),
     ));
 
     if let Ok(statement) = generate_insert_statement("tablename", &record) {
@@ -31,9 +31,9 @@ fn test_generate_update_statement() {
 
     let mut record = Record::new();
     let fields = record.fields_as_mut();
-    fields.push(Field::new_value("index".to_string(), expected[0].clone()));
-    fields.push(Field::new_value("email".to_string(), expected[1].clone()));
-    fields.push(Field::new_value("name".to_string(), expected[2].clone()));
+    fields.push(Field::new_value("index", expected[0].clone()));
+    fields.push(Field::new_value("email", expected[1].clone()));
+    fields.push(Field::new_value("name", expected[2].clone()));
 
     let unique_fields = ["index".to_string(), "email".to_string()].to_vec();
     if let Ok(statement) = generate_update_statement("tablename", &record, &unique_fields) {

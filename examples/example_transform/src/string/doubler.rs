@@ -4,7 +4,7 @@ use transform::Transformer;
 
 /// Converst string field values to double each character
 /// For example, the string "Hello" will be converted to "HHeelllloo"
-/// 
+///
 pub struct CharacterDoubler;
 impl CharacterDoubler {
     pub(crate) fn new() -> Self {
@@ -35,15 +35,16 @@ impl Transformer for CharacterDoubler {
                         .chars()
                         .flat_map(|c| std::iter::repeat(c).take(2))
                         .collect();
-                    result
-                        .fields_as_mut()
-                        .push(Field::new_string(field.name().to_string(), converted));
+                    result.fields_as_mut().push(Field::new_value(
+                        field.name(),
+                        model::value::Value::String(converted),
+                    ));
                 }
                 _ => {
                     // clone the field into the result record
                     result
                         .fields_as_mut()
-                        .push(Field::new_value(field.name().to_string(), field.value()));
+                        .push(Field::new_value(field.name(), field.value()));
                 }
             }
         }

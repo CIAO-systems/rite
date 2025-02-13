@@ -61,13 +61,13 @@ fn add_project(record: &mut Record, issue_work_item: &IssueWorkItem) {
     if let Some(ref issue) = issue_work_item.issue {
         if let Some(ref project) = issue.project {
             record.fields_as_mut().push(Field::new_value(
-                "project".to_string(),
+                "project",
                 Value::String(project.id.to_string()),
             ));
 
             if let Some(ref name) = project.name {
                 record.fields_as_mut().push(Field::new_value(
-                    "project.name".to_string(),
+                    "project.name",
                     Value::String(name.to_string()),
                 ));
             }
@@ -78,15 +78,14 @@ fn add_project(record: &mut Record, issue_work_item: &IssueWorkItem) {
 fn add_issue(record: &mut Record, issue_work_item: &IssueWorkItem) {
     if let Some(ref issue) = issue_work_item.issue {
         if let Some(ref id) = issue.id_readable {
-            record.fields_as_mut().push(Field::new_value(
-                "issue".to_string(),
-                Value::String(id.to_string()),
-            ));
+            record
+                .fields_as_mut()
+                .push(Field::new_value("issue", Value::String(id.to_string())));
         }
 
         if let Some(ref summary) = issue.summary {
             record.fields_as_mut().push(Field::new_value(
-                "issue.summary".to_string(),
+                "issue.summary",
                 Value::String(summary.to_string()),
             ));
         }
@@ -95,10 +94,9 @@ fn add_issue(record: &mut Record, issue_work_item: &IssueWorkItem) {
 
 fn add_created(record: &mut Record, issue_work_item: &IssueWorkItem) {
     if let Some(ref created) = issue_work_item.created {
-        record.fields_as_mut().push(Field::new_value(
-            "created".to_string(),
-            Value::I64(*created),
-        ));
+        record
+            .fields_as_mut()
+            .push(Field::new_value("created", Value::I64(*created)));
     }
 }
 
@@ -107,7 +105,7 @@ fn add_author(record: &mut Record, issue_work_item: &IssueWorkItem) {
         if let Some(ref email) = author.email {
             record
                 .fields_as_mut()
-                .push(Field::new_string("email".to_string(), email.to_string()));
+                .push(Field::new_value("email", Value::String(email.to_string())));
         }
     }
 }
@@ -117,7 +115,7 @@ fn add_duration(record: &mut Record, issue_work_item: &IssueWorkItem) {
         if let Some(minutes) = duration.minutes {
             record
                 .fields_as_mut()
-                .push(Field::new_i32("minutes".to_string(), minutes));
+                .push(Field::new_value("minutes", Value::I32(minutes)));
         }
     }
 }

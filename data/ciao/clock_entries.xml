@@ -4,7 +4,7 @@
         <plugin id="ciao" path="target/debug" name="rite_ciao"/>
     </plugins>
     <processes>
-        <process id="Time types example">
+        <process id="Clock entries example">
             <importer plugin="ciao" name="clock_entries">
                 <configuration>
                     <config key="url" value="$CIAO_URL" />

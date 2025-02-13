@@ -1,6 +1,6 @@
 use import::{Importer, RecordHandler};
 use json_dotpath::DotPaths;
-use model::{field::Field, record::Record, Initializable};
+use model::{field::Field, record::Record, value::Value, Initializable};
 
 pub static CONFIG_URL: &str = "url";
 pub static CONFIG_RECORDS_FIELD: &str = "records_field";
@@ -97,15 +97,15 @@ fn record_from_json(raw_json: &serde_json::Value, fields_path: &Option<String>) 
             for (key, value) in object.iter() {
                 match value {
                     serde_json::Value::String(s) => {
-                        let field = Field::new_string(key.to_string(), s.to_string());
+                        let field = Field::new_value(key, Value::String(s.to_string()));
                         record.fields_as_mut().push(field);
                     }
                     serde_json::Value::Number(number) => {
-                        let field = Field::new_string(key.to_string(), number.to_string());
+                        let field = Field::new_value(key, Value::String(number.to_string()));
                         record.fields_as_mut().push(field);
                     }
                     serde_json::Value::Bool(b) => {
-                        let field = Field::new_bool(key.to_string(), *b);
+                        let field = Field::new_value(key, Value::Bool(*b));
                         record.fields_as_mut().push(field);
                     }
                     _ => {}
@@ -113,7 +113,7 @@ fn record_from_json(raw_json: &serde_json::Value, fields_path: &Option<String>) 
             }
         }
         _ => {
-            let field = Field::new_string("json".to_string(), json_record.to_string());
+            let field = Field::new_value("json", Value::String(json_record.to_string()));
             record.fields_as_mut().push(field);
         }
     }

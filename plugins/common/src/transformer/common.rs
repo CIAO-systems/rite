@@ -101,14 +101,14 @@ impl Transformer for CommonTransformer {
 
             transformed
                 .fields_as_mut()
-                .push(Field::new_value(name.to_string(), value));
+                .push(Field::new_value(name, value));
         }
 
         // apply adder
         for adder in &self.adders {
             transformed
                 .fields_as_mut()
-                .push(Field::new_value(adder.name(), adder.value()));
+                .push(Field::new_value(&adder.name(), adder.value()));
         }
 
         return Ok(transformed);

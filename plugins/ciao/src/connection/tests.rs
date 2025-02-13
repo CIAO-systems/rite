@@ -152,9 +152,10 @@ fn manual_connection_projects() -> Result<(), BoxedError> {
                                 for project in response.projects {
                                     let s = format!("{:#?}", project);
                                     let mut record = Record::new();
-                                    record
-                                        .fields_as_mut()
-                                        .push(Field::new_string("debug".to_string(), s.clone()));
+                                    record.fields_as_mut().push(Field::new_value(
+                                        "debug",
+                                        model::value::Value::String(s.clone()),
+                                    ));
                                     println!("{s}");
 
                                     if let Err(e) = handler.handle_record(&mut record) {
