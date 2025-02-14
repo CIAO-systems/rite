@@ -4,6 +4,7 @@ pub mod config;
 pub mod connection;
 pub mod exporters;
 pub mod importers;
+pub mod model;
 
 /// This functions creates an importer for CIAO data
 ///
@@ -28,6 +29,7 @@ pub fn create_importer(
 pub fn create_exporter(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
     match name {
         "clock_entries" => Ok(Box::new(exporters::clock_entries::ClockEntries::new())),
+        "projects" => Ok(Box::new(exporters::projects::Projects::new())),
         _ => Err(format!("Unknown exporter '{name}'").into()),
     }
 }

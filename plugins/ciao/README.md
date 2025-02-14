@@ -132,9 +132,14 @@ Currently, this importer retrieves all projects
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | String | Unique id of the project |
-| `external_id` | String | External id of the project |
+| `externalId` | String | External id of the project |
 | `name` | String | Descriptive name of the project |
-
+| `startDate.timeUtc` | Start date of the project in millis since UNIX Epoch |
+| `startDate.timeZome` | IANA timezone id of the start date of the project in millis since UNIX Epoch |
+| `endDate.timeUtc` | End date of the project in millis since UNIX Epoch |
+| `endDate.timeZome` | IANA timezone id of the end date of the project in millis since UNIX Epoch |
+| `closedDate.timeUtc` | Closed date of the project in millis since UNIX Epoch |
+| `closedDate.timeZome` | IANA timezone id of the closed date of the project in millis since UNIX Epoch |
 
 ### Time types
 This importer reads the time types. 
@@ -242,3 +247,31 @@ This exporter uses the following fields from the record passed to it
 | `projectId` | String | (optional) The project id of the clock record |
 | `projectTaskId` | String | (optional) The project task id of the clock record |
 | `costcenterId` | String | (optional) The cost center id of the clock record |
+
+### Projects
+This exporter creates a project on the CIAO backend using the `ProjectService.create` gRPC service.
+To use it, define a process and add the exporter with the name `projects` to your project:
+```xml
+<exporter plugin="ciao" name="projects">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+
+#### Fields
+This exporter uses the following fields from the record passed to it
+
+#### Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the project |
+| `externalId` | String | External id of the project |
+| `name` | String | Descriptive name of the project |
+| `startDate.timeUtc` | Start date of the project in millis since UNIX Epoch |
+| `startDate.timeZome` | IANA timezone id of the start date of the project in millis since UNIX Epoch |
+| `endDate.timeUtc` | End date of the project in millis since UNIX Epoch |
+| `endDate.timeZome` | IANA timezone id of the end date of the project in millis since UNIX Epoch |
+| `closedDate.timeUtc` | Closed date of the project in millis since UNIX Epoch |
+| `closedDate.timeZome` | IANA timezone id of the closed date of the project in millis since UNIX Epoch |

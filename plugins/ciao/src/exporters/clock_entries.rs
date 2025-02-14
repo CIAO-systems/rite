@@ -131,8 +131,10 @@ fn get_field<'a>(
 
 #[cfg(test)]
 mod tests {
-    use chrono::NaiveDateTime;
+
     use model::{field::add_field, record::Record, xml::config::Configuration};
+
+    use crate::model::add_timestamp_parse;
 
     use super::*;
 
@@ -169,7 +171,7 @@ mod tests {
     fn test_get_timestamp() -> Result<(), BoxedError> {
         let mut record = Record::new();
         let fields = record.fields_as_mut();
-        add_timestamp(fields, "2025-02-12 08:00")?;
+        add_timestamp_parse(fields, "timestamp", "2025-02-12 08:00", "%Y-%m-%d %H:%M")?;
         let ts = get_timestamp(&record)?;
         println!("{:?}", ts);
 
@@ -177,21 +179,6 @@ mod tests {
         assert_eq!(ts.time_utc.unwrap().nanos, 0);
         assert_eq!(ts.time_zone, "Europe/Berlin");
 
-        Ok(())
-    }
-
-    fn add_timestamp(fields: &mut Vec<Field>, date: &str) -> Result<(), BoxedError> {
-        let naive = NaiveDateTime::parse_from_str(date, "%Y-%m-%d %H:%M")?;
-        add_field(
-            fields,
-            "timestamp.timeUtc",
-            Value::I64(naive.and_utc().timestamp_millis()),
-        );
-        add_field(
-            fields,
-            "timestamp.timeZone",
-            Value::String("Europe/Berlin".to_string()),
-        );
         Ok(())
     }
 
@@ -248,7 +235,7 @@ mod tests {
 
         let mut record = Record::new();
         let fields = record.fields_as_mut();
-        add_timestamp(fields, "2025-02-12 08:00")?;
+        add_timestamp_parse(fields, "timestamp", "2025-02-12 08:00", "%Y-%m-%d %H:%M")?;
         add_field(
             fields,
             "identity.userId",
