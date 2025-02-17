@@ -1,0 +1,9 @@
+<rite-random-import>
+  <generator number="10">
+     <field name="id" function="uuid" />
+     <field name="externalId" function="uuid" />
+     <field name="startDate.timeZone" function="timezone" />
+     <field name="startDate.timeUtc" function="milliseconds" />
+     <field name="name" function="string" />
+  </generator>
+</rite-random-import>

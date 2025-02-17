@@ -11,7 +11,10 @@ use model::{
     BoxedError, Initializable,
 };
 
-use crate::connection::CiaoConnection;
+use crate::{
+    connection::CiaoConnection,
+    model::add_timestamp,
+};
 
 pub struct Projects {
     config: Option<model::xml::config::Configuration>,
@@ -87,7 +90,17 @@ fn handle_project(
     let fields = record.fields_as_mut();
     add_field(fields, "id", Value::String(project.id.clone()));
     add_field(fields, "name", Value::String(project.name.clone()));
-    add_optional_field(fields, "external_id", project.external_id.clone());
+    add_optional_field(fields, "externalId", project.external_id.clone());
+    add_optional_field(fields, "parentId", project.parent_id.clone());
+    if let Some(date) = project.start_date.clone() {
+        add_timestamp(fields, "startDate", date);
+    }
+    if let Some(date) = project.end_date.clone() {
+        add_timestamp(fields, "endDate", date);
+    }
+    if let Some(date) = project.closed_date.clone() {
+        add_timestamp(fields, "closedDate", date);
+    }
 
     handler.handle_record(&mut record)?;
 
