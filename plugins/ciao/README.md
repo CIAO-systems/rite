@@ -221,6 +221,39 @@ This importer supports the additional filter parameters:
 | `costCenterId` | String | Cost center id of the clock entry |
 
 ## Exporter
+### Accounts
+This exporter creates an account on the CIAO backend using the `AccountService.create` gRPC service.
+To use it, define a process and add the exporter with the name `accounts` to your project:
+```xml
+<exporter plugin="ciao" name="accounts">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+
+#### Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | The id of the new account |
+| `email` | String | The email address of the new account |
+| `password` | String | The password for the new account |
+| `avatar.id` | String | The id of the avatar image of the new account |
+| `avatar.updatedAt.timeUtc` | String | The time in millis since Unix epoch of the last update of the image of the new account |
+| `avatar.updatedAt.timeZone` | String | The The IANA timezon id of the last update of the image of the new account |
+| `address.city` | String | The city of the new account |
+| `address.postalCode` | String | The postalcode of the new account |
+| `address.addressLine1` | String | The first address line of the new account |
+| `address.addressLine2` | String | The second address line of the new account |
+| `address.regionCode` | String | The region code of the new account |
+| `address.state` | String | The state/province of the new account |
+| `name.first` | String | The first name of the new account |
+| `name.middle` | String | The middle name of the new account |
+| `name.last` | String | The last name of the new account |
+
 ### Clock entries
 This exporter creates a clock entry on the CIAO backend using the `TimeTrackingService.clock` gRPC service.
 To use it, define a process and add the exporter with the name `clock_entries` to your project:

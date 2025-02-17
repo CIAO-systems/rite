@@ -436,4 +436,99 @@ mod tests {
         assert_eq!(avatar.id, "12345");
         assert_eq!(avatar.updated_at, None);
     }
+
+    #[test]
+    fn test_all_fields_present() -> Result<(), BoxedError> {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "id",
+            Value::String("98765".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "name.first",
+            Value::String("Alice".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "name.middle",
+            Value::String("B".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "name.last",
+            Value::String("Smith".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "address.city",
+            Value::String("Wonderland".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "address.postalCode",
+            Value::String("54321".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "address.addressLine1",
+            Value::String("123 Main St".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "address.regionCode",
+            Value::String("US-CA".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "address.state",
+            Value::String("California".to_string()),
+        );
+        add_field(
+            record.fields_as_mut(),
+            "avatar.id",
+            Value::String("avatar123".to_string()),
+        );
+
+        add_timestamp_parse(
+            record.fields_as_mut(),
+            "avatar.updatedAt",
+            "2025-02-12 08:00",
+            "%Y-%m-%d %H:%M",
+        )?;
+
+        add_field(
+            record.fields_as_mut(),
+            "email",
+            Value::String("alice@example.com".to_string()),
+        );
+
+        let account = account_from_record(&record);
+
+        assert_eq!(account.id, "98765");
+        assert_eq!(account.email, "alice@example.com");
+
+        let name = account.name.unwrap();
+        assert_eq!(name.first, "Alice");
+        assert_eq!(name.middle, "B");
+        assert_eq!(name.last, "Smith");
+
+        let address = account.address.unwrap();
+        assert_eq!(address.city, "Wonderland");
+        assert_eq!(address.postal_code, "54321");
+        assert_eq!(address.address_line_1, "123 Main St");
+        assert_eq!(address.region_code, "US-CA");
+        assert_eq!(address.state, "California");
+
+        let avatar = account.avatar.unwrap();
+        assert_eq!(avatar.id, "avatar123");
+        assert!(avatar.updated_at.is_some());
+        let updated_at = avatar.updated_at.unwrap();
+        assert_eq!(updated_at.time_utc.unwrap().seconds, 1739347200);
+        assert_eq!(updated_at.time_utc.unwrap().nanos, 0);
+        assert_eq!(updated_at.time_zone, "Europe/Berlin");
+
+        Ok(())
+    }
 }
