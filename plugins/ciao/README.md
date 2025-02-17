@@ -273,6 +273,28 @@ To use it, define a process and add the exporter with the name `projects` to you
 | `closedDate.timeUtc` | Closed date of the project in millis since UNIX Epoch |
 | `closedDate.timeZome` | IANA timezone id of the closed date of the project in millis since UNIX Epoch |
 
+### Project tasks
+This exporter creates a project task on the CIAO backend using the `ProjectTaskService.create` gRPC service.
+To use it, define a process and add the exporter with the name `project_tasks` to your project:
+```xml
+<exporter plugin="ciao" name="project_tasks">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+
+#### Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | The id of the new project task |
+| `projectId` | String | The project id of the new project task |
+| `name` | String | The name of the new project task |
+
+
 ### Cost centers
 This exporter creates a cost center on the CIAO backend using the `CostCenterService.create` gRPC service.
 To use it, define a process and add the exporter with the name `cost_centers` to your project:

@@ -31,6 +31,7 @@ pub fn create_exporter(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::err
         "clock_entries" => Ok(Box::new(exporters::clock_entries::ClockEntries::new())),
         "cost_centers" => Ok(Box::new(exporters::cost_centers::CostCenters::new())),
         "projects" => Ok(Box::new(exporters::projects::Projects::new())),
+        "project_tasks" => Ok(Box::new(exporters::project_tasks::ProjectTasks::new())),
         _ => Err(format!("Unknown exporter '{name}'").into()),
     }
 }
