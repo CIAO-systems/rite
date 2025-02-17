@@ -51,7 +51,7 @@ impl Exporter for Projects {
 }
 
 async fn create_project(
-    service_client: &mut &mut ciao_rs::ciao::clients::time_tracking::projects::ProjectClient,
+    service_client: &mut ciao_rs::ciao::clients::time_tracking::projects::ProjectClient,
     record: &model::record::Record,
 ) -> Result<(), model::BoxedError> {
     let request = CreateRequest {
