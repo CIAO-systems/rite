@@ -154,7 +154,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "CIAO Projects",
+            "name": "CIAO Projects to postgres",
             "cargo": {
                 "args": [
                     "build",
@@ -169,6 +169,27 @@
             "args": [
                 "-f",
                 "data/ciao/projects.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO Projects printer",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/ciao/projects-printer.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
