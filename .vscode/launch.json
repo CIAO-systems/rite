@@ -7,6 +7,27 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "CSV random data exporter",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/csv/write-csv.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Postgres-Example",
             "cargo": {
                 "args": [
@@ -259,7 +280,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "CIAO project exporter",
+            "name": "CIAO cost center exporter",
             "cargo": {
                 "args": [
                     "build",
@@ -273,28 +294,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/project_exporter.xml"
-            ],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "CSV random data exporter",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=rite",
-                    "--package=rite"
-                ],
-                "filter": {
-                    "name": "rite",
-                    "kind": "bin"
-                }
-            },
-            "args": [
-                "-f",
-                "data/csv/write-csv.xml"
+                "data/ciao/random_cost_centers.xml"
             ],
             "cwd": "${workspaceFolder}"
         },

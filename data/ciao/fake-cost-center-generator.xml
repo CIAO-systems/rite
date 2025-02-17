@@ -1,0 +1,6 @@
+<rite-random-import>
+  <generator number="10">
+     <field name="id" function="uuid" />
+     <field name="name" function="timezone" /> <!-- For the giggles -->
+  </generator>
+</rite-random-import>
