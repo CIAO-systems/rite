@@ -1,6 +1,14 @@
 use model::value::Value;
-use rand::{seq::IndexedMutRandom, Rng};
+use rand::{
+    seq::{IndexedMutRandom, IndexedRandom},
+    Rng,
+};
+use resources::{
+    EMAILS, FIRST_NAMES, GERMAN_CITIES, LAST_NAMES, STATES_PROVINCES, STREET_ADDRESSES,
+};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+mod resources;
 
 pub trait RandomFunction {
     fn generate(&self) -> Value;
@@ -70,6 +78,76 @@ impl RandomFunction for RandomString {
     }
 }
 
+pub struct RandomEmail;
+impl RandomFunction for RandomEmail {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = EMAILS.choose(&mut rng).unwrap_or(&"default@example.com");
+
+        Value::String(value.to_string())
+    }
+}
+
+pub struct RandomCities;
+impl RandomFunction for RandomCities {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = GERMAN_CITIES.choose(&mut rng).unwrap_or(&"Regensburg");
+
+        Value::String(value.to_string())
+    }
+}
+
+pub struct RandomLastNames;
+impl RandomFunction for RandomLastNames {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = LAST_NAMES.choose(&mut rng).unwrap_or(&"Meier");
+
+        Value::String(value.to_string())
+    }
+}
+
+pub struct RandomFirstNames;
+impl RandomFunction for RandomFirstNames {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = FIRST_NAMES.choose(&mut rng).unwrap_or(&"Max");
+
+        Value::String(value.to_string())
+    }
+}
+
+pub struct RandomAddressLine;
+impl RandomFunction for RandomAddressLine {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = STREET_ADDRESSES.choose(&mut rng).unwrap_or(&"Holzweg 13");
+
+        Value::String(value.to_string())
+    }
+}
+
+pub struct RandomPostalCode;
+impl RandomFunction for RandomPostalCode {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = rng.random_range(8000..100000);
+
+        Value::U32(value)
+    }
+}
+
+pub struct RandomStates;
+impl RandomFunction for RandomStates {
+    fn generate(&self) -> Value {
+        let mut rng = rand::rng();
+        let value = STATES_PROVINCES.choose(&mut rng).unwrap_or(&"Bayern");
+
+        Value::String(value.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,6 +166,103 @@ mod tests {
                 assert!(TZ_VARIANTS.iter().any(|&tz| tz.name() == timezone_name));
             }
             _ => panic!("Expected a String variant, but got a different variant."),
+        }
+    }
+
+    // Function to validate an email address
+    fn is_valid_email(email: &str) -> bool {
+        let email_regex =
+            regex::Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap();
+        email_regex.is_match(email)
+    }
+
+    #[test]
+    fn test_generate_email() {
+        let generator = RandomEmail;
+        for _ in 0..1000 {
+            let value = generator.generate();
+            assert!(is_valid_email(&value.to_string()));
+        }
+    }
+
+    #[test]
+    fn test_pick_random_city() {
+        let generator = RandomCities;
+
+        for _ in 0..1000 {
+            let city = generator.generate();
+            assert!(
+                GERMAN_CITIES.contains(&city.to_string().as_str()),
+                "The picked city is not in the array"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pick_random_last_name() {
+        let generator = RandomLastNames;
+
+        for _ in 0..1000 {
+            let last_name = generator.generate();
+            assert!(
+                LAST_NAMES.contains(&last_name.to_string().as_str()),
+                "The picked last name is not in the array"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pick_random_first_name() {
+        let generator = RandomFirstNames;
+
+        for _ in 0..1000 {
+            let first_name = generator.generate();
+            assert!(
+                FIRST_NAMES.contains(&first_name.to_string().as_str()),
+                "The picked first name is not in the array"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pick_random_address_line() {
+        let generator = RandomAddressLine;
+
+        for _ in 0..1000 {
+            let value = generator.generate();
+            assert!(
+                STREET_ADDRESSES.contains(&value.to_string().as_str()),
+                "The picked value is not in the array"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pick_random_postal_code() {
+        let generator = RandomPostalCode;
+
+        for _ in 0..1000 {
+            if let Value::U32(value) = generator.generate() {
+                assert!(
+                    value >= 8000 && value < 100000,
+                    "The picked value is not in the range"
+                );
+            } else {
+                panic!("Wrong Value type");
+            }
+        }
+    }
+
+    #[test]
+    fn test_pick_random_state() {
+        let generator = RandomStates;
+
+        for _ in 0..1000 {
+            let value = generator.generate();
+            assert!(
+                STATES_PROVINCES.contains(&value.to_string().as_str()),
+                "The picked value is not in the array"
+            );
         }
     }
 }

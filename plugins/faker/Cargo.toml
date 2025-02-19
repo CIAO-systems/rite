@@ -18,3 +18,6 @@ chrono-tz = "0.10.1"
 [lib]
 name = "rite_faker"
 crate-type = ["dylib"]
+
+[dev-dependencies]
+regex = "1.11.1"

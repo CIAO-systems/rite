@@ -2,7 +2,9 @@ use rand::Rng;
 use serde::Deserialize;
 
 use super::functions::{
-    Milliseconds, RandomFloat, RandomFunction, RandomInteger, RandomString, Timezone, Uuid,
+    Milliseconds, RandomAddressLine, RandomCities, RandomEmail, RandomFirstNames, RandomFloat,
+    RandomFunction, RandomInteger, RandomLastNames, RandomPostalCode, RandomStates, RandomString,
+    Timezone, Uuid,
 };
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -31,6 +33,13 @@ impl Field {
             "milliseconds" => Some(Box::new(Milliseconds)),
             "timezone" => Some(Box::new(Timezone)),
             "uuid" => Some(Box::new(Uuid)),
+            "email" => Some(Box::new(RandomEmail)),
+            "german-cities" => Some(Box::new(RandomCities)),
+            "last-names" => Some(Box::new(RandomLastNames)),
+            "first-names" => Some(Box::new(RandomFirstNames)),
+            "address-line" => Some(Box::new(RandomAddressLine)),
+            "postal-code" => Some(Box::new(RandomPostalCode)),
+            "states" => Some(Box::new(RandomStates)),
             "string" => Some(Box::new(RandomString)),
             "i32" => Some(Box::new(RandomInteger)),
             "f32" => Some(Box::new(RandomFloat)),
