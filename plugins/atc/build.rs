@@ -6,7 +6,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => String::from(""),
     };
 
-    let basepath = format!("{}/bin/proto", base);
+    let basepath = format!("{}/proto", base);
 
     tonic_build::configure()
         .build_server(false)
@@ -14,8 +14,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_transport(true)
         .compile_protos(
             &[
-                &format!("{}/v1/reflection.proto", basepath),
-                &format!("{}/v1alpha/reflection.proto", basepath),
+                &format!("{}/atc/com/atoss/atc/protobuf/dataset.proto", basepath),
+                &format!("{}/grpc/reflection/v1/reflection.proto", basepath),
+                &format!("{}/grpc/reflection/v1alpha/reflection.proto", basepath),
             ],
             &[basepath],
         )?;

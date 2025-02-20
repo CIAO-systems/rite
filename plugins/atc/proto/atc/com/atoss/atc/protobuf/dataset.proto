@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package com.atoss.atc.protobuf;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+service DataSetService { rpc get(Filter) returns (Record); }
+
+message Filter {
+  string table = 1;
+  map<string, ParameterMetaData> parameter_metaData = 2;
+
+  message ParameterMetaData {
+    TreatmentType treatment_type = 1;
+
+    oneof first {
+      Field lower = 2;
+      Field value = 3;
+    }
+
+    Field upper = 4;
+
+    enum TreatmentType {
+      pttNone = 0;
+      pttCommaList = 1;
+      pttAssignUniqueValue = 2;
+      pttReserved2 = 3;
+      pttCompareGreater = 4;
+      pttCompareGreaterEqual = 5;
+      pttCompareSmaller = 6;
+      pttCompareSmallerEqual = 7;
+      pttIntervalOpenClose = 8;
+      pttIntervalOpenOpen = 9;
+      pttIntervalCloseOpen = 10;
+      pttIntervalCloseClose = 11;
+      ptt24Hours = 12;
+      pttCompareNotEqual = 13;
+      pttNotInCommaList = 14;
+      pttReserved = 15;
+      pttCollection = 16;
+      pttContains = 17;
+      pttStartsWith = 18;
+      pttEndsWith = 19;
+    }
+  }
+}
+
+message Field {
+  string name = 1;
+
+  oneof value {
+    int32 int_value = 2;
+    string string_value = 3;
+    double double_value = 4;
+    google.protobuf.Timestamp timestamp_value = 5;
+    google.protobuf.Duration duration_value = 6;
+    bytes binary_value = 7;
+    Record record_value = 8;
+    List list_value = 9;
+    IntCollection ints_value = 10;
+    StringCollection strings_value = 11;
+    DoubleCollection doubles_value = 12;
+    TimestampCollection timestamps_value = 13;
+    DurationCollection durations_value = 14;
+  }
+}
+
+message List { repeated Record list = 1; }
+
+message IntCollection { repeated int32 ints_value = 1; }
+
+message StringCollection { repeated string strings_value = 1; }
+
+message DoubleCollection { repeated double doubles_value = 1; }
+
+message TimestampCollection {
+  repeated google.protobuf.Timestamp timestamps_value = 1;
+}
+
+message DurationCollection {
+  repeated google.protobuf.Duration durations_value = 1;
+}
+
+message Record { map<string, Field> field = 1; }
