@@ -1,6 +1,7 @@
 <rite>
     <plugins>
         <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="csv" path="target/debug" name="rite_csv"/>
         <plugin id="atc" path="target/debug" name="rite_atc"/>
     </plugins>
     <processes>
@@ -17,6 +18,11 @@
             </importer>
             <exporters>
                 <exporter plugin="common" name="console" />
+                <exporter plugin="csv">
+                    <configuration>
+                        <config key="filename" value="/tmp/accounts.csv" />
+                    </configuration>
+                </exporter>
             </exporters>
         </process>
     </processes>
