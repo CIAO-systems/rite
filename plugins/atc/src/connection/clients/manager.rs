@@ -1,10 +1,10 @@
 use grpc_utils_rs::grpc::interceptor::Interceptors;
 
-use super::DatasetClient;
+use super::DataSetClient;
 
 #[derive(Debug)]
 pub struct ClientManager {
-    pub dataset_client: DatasetClient,
+    pub dataset_client: DataSetClient,
 }
 
 impl ClientManager {
@@ -13,7 +13,7 @@ impl ClientManager {
         interceptors: Interceptors,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {
-            dataset_client: DatasetClient::new(url, interceptors.clone()).await?,
+            dataset_client: DataSetClient::new(url, interceptors.clone()).await?,
         })
     }
 }

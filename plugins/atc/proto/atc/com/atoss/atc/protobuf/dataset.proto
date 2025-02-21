@@ -5,7 +5,7 @@ package com.atoss.atc.protobuf;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-service DataSetService { rpc get(Filter) returns (Record); }
+service DataSetService { rpc get(Filter) returns (stream Record); }
 
 message Filter {
   string table = 1;
