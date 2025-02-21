@@ -8,6 +8,20 @@ pub mod com {
     }
 }
 
+pub mod connection;
+pub mod importers;
+
+#[no_mangle]
+pub fn create_importer(
+    name: &str,
+) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
+    match name {
+        "dataset" => Ok(Box::new(importers::dataset::Dataset::new())),
+        _ => Err("Not implemented".into()),
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;

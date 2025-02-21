@@ -2007,7 +2007,9 @@ dependencies = [
 name = "rite_atc"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "futures",
+ "grpc-utils-rs 0.1.0 (git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git)",
  "helper",
  "import",
  "log",
