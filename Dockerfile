@@ -8,11 +8,15 @@ RUN apt-get update && \
     apt-get install -y bash && \
     apt-get install -y protobuf-compiler && \
     apt-get install -y libssl-dev && \
+    apt-get install -y git && \
     apt-get install -y pkg-config && \
     update-ca-certificates
 
 # Create a working directory
 WORKDIR /build
+
+ENV CARGO_HOME=/workdir/.cargo 
+COPY ./.cargo ./.cargo
 
 # Copy the projects into the image
 COPY . . 
