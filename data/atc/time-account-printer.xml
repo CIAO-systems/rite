@@ -4,7 +4,7 @@
         <plugin id="atc" path="target/debug" name="rite_atc"/>
     </plugins>
     <processes>
-        <process id="Project example">
+        <process id="Time account example">
             <importer plugin="atc" name="dataset">
                 <configuration>
                     <config key="url" value="$ATC_URL" />
