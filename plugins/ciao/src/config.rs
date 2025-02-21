@@ -1,11 +1,10 @@
 use ciao_rs::{
     ciao::{
         common::{TimeRange, Timestamp},
-        interceptor::APIKeyClientInterceptor,
         ClientManager,
     },
-    interceptors,
 };
+use grpc_utils_rs::{grpc::interceptor::APIKeyClientInterceptor, interceptors};
 use model::{xml::config::get_config_value, BoxedError};
 
 const CFG_URL: &str = "url";

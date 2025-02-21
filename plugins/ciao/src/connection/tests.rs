@@ -1,15 +1,12 @@
 use std::sync::Once;
 
-use ciao_rs::{
-    ciao::{
-        interceptor::APIKeyClientInterceptor,
-        time_tracking::project::{GetRequest, ListRequest},
-        ClientManager,
-    },
-    interceptors,
+use ciao_rs::ciao::{
+    time_tracking::project::{GetRequest, ListRequest},
+    ClientManager,
 };
 use dotenv::dotenv;
 use futures::StreamExt;
+use grpc_utils_rs::{grpc::interceptor::APIKeyClientInterceptor, interceptors};
 use import::{handlers::CollectingRecordHandler, RecordHandler};
 use model::{
     field::Field,

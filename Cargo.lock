@@ -306,6 +306,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "futures",
+ "grpc-utils-rs 0.1.0 (git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git)",
  "iana-time-zone",
  "log",
  "prost",
@@ -782,6 +783,27 @@ name = "gimli"
 version = "0.31.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
+
+[[package]]
+name = "grpc-utils-rs"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "prost",
+ "prost-types",
+ "tonic",
+]
+
+[[package]]
+name = "grpc-utils-rs"
+version = "0.1.0"
+source = "git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git#10c97108820cf6091040ab22f2cf0ec525052a7e"
+dependencies = [
+ "log",
+ "prost",
+ "prost-types",
+ "tonic",
+]
 
 [[package]]
 name = "h2"
@@ -2010,6 +2032,7 @@ dependencies = [
  "dotenv",
  "export",
  "futures",
+ "grpc-utils-rs 0.1.0 (git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git)",
  "import",
  "log",
  "model",
