@@ -130,18 +130,47 @@ fn atc_value_to_model_value(
             StringValue(v) => Some(Value::String(v)),
             DoubleValue(v) => Some(Value::F64(v)),
             BinaryValue(v) => Some(Value::Blob(v)),
-            TimestampValue(v) => Some(Value::String(v.to_string())),
-            RecordValue(_v) => None, // FIXME recursive field adding with prefix "<name>."?
-            DurationValue(_v) => None, // FIXME duration
-            // FIXME implement the lists
+            TimestampValue(v) => Some(Value::String(timestamp_to_string(v))),
+            DurationValue(v) => Some(Value::I64(duration_to_i64(v))),
+            IntsValue(v) => Some(Value::Collection(
+                v.ints_value.into_iter().map(Value::I32).collect(),
+            )),
+            StringsValue(v) => Some(Value::Collection(
+                v.strings_value.into_iter().map(Value::String).collect(),
+            )),
+            DoublesValue(v) => Some(Value::Collection(
+                v.doubles_value.into_iter().map(Value::F64).collect(),
+            )),
+            TimestampsValue(v) => Some(Value::Collection(
+                v.timestamps_value
+                    .into_iter()
+                    .filter_map(|ts| Some(Value::String(timestamp_to_string(ts))))
+                    .collect(),
+            )),
+            DurationsValue(v) => Some(Value::Collection(
+                v.durations_value
+                    .into_iter()
+                    .filter_map(|d| Some(Value::I64(duration_to_i64(d))))
+                    .collect(),
+            )),
+
+            // TODO implement the lists
             ListValue(_v) => None,
-            IntsValue(_v) => None,
-            StringsValue(_v) => None,
-            DoublesValue(_v) => None,
-            TimestampsValue(_v) => None,
-            DurationsValue(_v) => None,
+            // TODO implement after [RIT-22 Support for Record values](https://ciao-systems.youtrack.cloud/issue/RIT-22)
+            RecordValue(_v) => None,
         }
     } else {
         None
     }
 }
+
+fn duration_to_i64(v: prost_types::Duration) -> i64 {
+    v.seconds * 1000 + ((v.nanos as i64) / 1_000_000)
+}
+
+fn timestamp_to_string(v: prost_types::Timestamp) -> String {
+    v.to_string()
+}
+
+#[cfg(test)]
+mod tests;

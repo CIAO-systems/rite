@@ -1,0 +1,16 @@
+version: v1
+lint:
+  use:
+    - DEFAULT
+  # For a rules documentation: https://buf.build/docs/lint/rules/
+  except:
+  - PACKAGE_DIRECTORY_MATCH
+  - PACKAGE_VERSION_SUFFIX
+  - RPC_PASCAL_CASE
+  - RPC_REQUEST_STANDARD_NAME
+  - RPC_RESPONSE_STANDARD_NAME
+  - SERVICE_SUFFIX
+  - ENUM_VALUE_UPPER_SNAKE_CASE
+  - ENUM_VALUE_PREFIX
+  - ENUM_ZERO_VALUE_SUFFIX
+  - FIELD_LOWER_SNAKE_CASE

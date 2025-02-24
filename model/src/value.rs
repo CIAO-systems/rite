@@ -3,6 +3,7 @@
 use std::fmt::Display;
 
 use chrono::NaiveDate;
+
 /// An enum for all known field values.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Value {
@@ -25,6 +26,7 @@ pub enum Value {
     String(String),
     Blob(Vec<u8>),
     Date(NaiveDate),
+    Collection(Vec<Value>),
     None,
 }
 
@@ -54,6 +56,10 @@ impl Display for Value {
                 // Displaying bytes as hexadecimal
                 let hex: Vec<String> = vec.iter().map(|b| format!("{:02x}", b)).collect();
                 write!(f, "[{}]", hex.join(", "))
+            }
+            Value::Collection(collection) => {
+                let values: Vec<String> = collection.iter().map(|v| format!("{}", v)).collect();
+                write!(f, "[{}]", values.join(", "))
             }
             Value::None => write!(f, "<None>"),
         }
@@ -178,5 +184,11 @@ impl From<Vec<u8>> for Value {
 impl From<NaiveDate> for Value {
     fn from(value: NaiveDate) -> Self {
         Value::Date(value)
+    }
+}
+
+impl From<Vec<Value>> for Value {
+    fn from(value: Vec<Value>) -> Self {
+        Value::Collection(value)
     }
 }
