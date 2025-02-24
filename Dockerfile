@@ -8,13 +8,21 @@ RUN apt-get update && \
     apt-get install -y bash && \
     apt-get install -y protobuf-compiler && \
     apt-get install -y libssl-dev && \
-    apt-get install -y git && \
+    apt-get install -y git openssh-client && \
     apt-get install -y pkg-config && \
     update-ca-certificates
+
+# Add SSH key
+RUN mkdir -p /root/.ssh
+
+# Add GitHub to known hosts
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
 
 # Create a working directory
 WORKDIR /build
 
+# Add the .cargo directory with the config.toml
 ENV CARGO_HOME=/workdir/.cargo 
 COPY ./.cargo ./.cargo
 
@@ -22,8 +30,8 @@ COPY ./.cargo ./.cargo
 COPY . . 
 
 
-# Build workspcae
-RUN cargo update && cargo clean && cargo build --release --workspace
+# Build workspace with credentials provided via SSH agent
+RUN --mount=type=ssh cargo update && cargo clean && cargo build --release --workspace
 
 # -----
 # Take a debian image as base (must be the same as the builder image base, to have the same libc)
