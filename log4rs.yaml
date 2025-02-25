@@ -13,7 +13,7 @@ appenders:
 
   file:
     kind: file
-    path: "log/output.log"
+    path: "logs/output.log"
     encoder:
       pattern: "{d} - {l} - {m}{n}"
 

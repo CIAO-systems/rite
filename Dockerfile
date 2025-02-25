@@ -54,9 +54,6 @@ LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
       org.opencontainers.image.base.name="debian:bookworm-slim" \
       org.opencontainers.image.vendor="CIAO Systems GmbH"
 
-# Create a non-root user for security
-RUN groupadd -r rite && useradd -r -g rite rite
-
 # Setup the application directory
 WORKDIR /app
 
@@ -68,14 +65,17 @@ COPY --from=builder /build/target/release/rite .
 ENV LD_LIBRARY_PATH=/lib:/lib64:/app
 
 # Create mount point for input files
-RUN mkdir /data 
+RUN mkdir /data /app/logs
 
 COPY --from=builder /build/log4rs.yaml /data
 RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
 
-RUN mkdir /logs 
+# Create a non-root user for security
+RUN groupadd -g 1001 rite && useradd -r -u 1001 -g rite rite
+
+RUN chown -R rite:rite /data /app/logs /app 
+
+USER rite
 
 # Command to run the binary
 ENTRYPOINT ["/app/rite", "-f"]
-
-

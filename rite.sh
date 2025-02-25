@@ -2,6 +2,8 @@
 
 # Make sure, you are logged in the GHCR
 CONTAINER_IMAGE=ghcr.io/ciao-systems/rite:main
+DEBUG=false
+SILENT=false
 local_filename=""
 
 # Function to parse command-line arguments
@@ -22,6 +24,14 @@ parse_args() {
         -h|--help)
             usage
             ;;
+        --debug)
+          DEBUG=true
+          shift 1
+          ;;
+        --silent)
+          SILENT=true
+          shift 1
+          ;;
         *)
             echo "Unkown option: $1"
             usage
@@ -44,6 +54,10 @@ usage() {
   echo "     Name of the Docker image to use. (Optional, default: \"$CONTAINER_IMAGE\")"
   echo "  -h, --help "
   echo "     Display this help message and exit"
+  echo "  --debug "
+  echo "     Start a bash shell instead of the rite application"
+  echo "  --silent "
+  echo "     Do not print anything from this script"
   echo ""
   echo "Examples:"
   echo "  $(basename "$0") -f /path/to/config.xml"
@@ -69,16 +83,42 @@ fi
 
 local_directory="$(dirname "$local_filename")"
 container_filename="$(basename "$local_filename")"
+local_logs_directory="$local_directory/logs"
 
-args=(
-    run
-    --network=host
-    --rm
-    -v "$local_directory:/data"
-    -v "$local_directory/logs:/logs"
-    $CONTAINER_IMAGE "/data/$container_filename"
-)
+# Create logs directory, so the container does not create it with root
+mkdir -p "$local_logs_directory"
 
-echo "Running with image $CONTAINER_IMAGE"
+if [[ "$DEBUG" == "true" ]]; then
+  args=(
+      run
+      -u $(id -u):$(id -g)
+      --network=host
+      --rm
+      -it 
+      --entrypoint /bin/bash
+      -v "$local_directory:/data"
+      -v "$local_logs_directory:/app/logs:rw"
+      $CONTAINER_IMAGE # "/data/$container_filename"
+  )
+else
+  args=(
+      run
+      -u $(id -u):$(id -g)
+      --network=host
+      --rm
+      -v "$local_directory:/data"
+      -v "$local_logs_directory:/app/logs:rw"
+      $CONTAINER_IMAGE "/data/$container_filename"
+  )
+fi
+
+if [[ "$SILENT" == "false" ]]; then
+  echo "Image               : $CONTAINER_IMAGE"
+  echo "Local directory     : $local_directory"
+  echo "Local filename      : $local_filename"
+  echo "Local log directory : $local_logs_directory"
+  echo
+fi
+
 # Execute the container image
 docker "${args[@]}"
