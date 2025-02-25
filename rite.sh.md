@@ -10,8 +10,8 @@ It can be downloaded from the [GitHub repository](https://github.com/CIAO-system
 | -f, --file | The local rite configuration XML file | - |
 | -ci, --container-image | An alternative container image | `ghcr.io/ciao-systems/rite:main` |
 | -h, --help | Shows the usage of the script | - |
-| --debug | When given, the container is started with a bash shell | false |
-| --silent | When given, the script does not print anything | false |
+| --debug | When given, the container is started with a bash shell | `false` |
+| --silent | When given, the script does not print anything | `false` |
 
 ## Example
 ```bash
