@@ -8,7 +8,7 @@ use crate::value::Value;
 /// * `name` - Name of the field
 /// * `value` - The value of the field
 ///
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Field {
     /// Name of the field
     name: String,

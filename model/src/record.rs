@@ -8,7 +8,7 @@ use crate::field::Field;
 /// # Members
 /// * `fields` - a [Vec] of [Field]
 ///
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Record {
     fields: Vec<Field>,
 }
