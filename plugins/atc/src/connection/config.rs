@@ -57,10 +57,10 @@ impl ConnectionConfiguration {
                         )
                         .await?)
                     } else {
-                        Err(format!("{CFG_AUTH_TOKEN} not configured").into())
+                        Err(format!("{CFG_PASSWORD} not configured").into())
                     }
                 } else {
-                    Err(format!("{CFG_AUTH_TOKEN} not configured").into())
+                    Err(format!("{CFG_USER} not configured").into())
                 }
             } else {
                 Err(format!("{CFG_AUTH_TOKEN} not configured").into())
