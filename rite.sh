@@ -4,6 +4,7 @@
 CONTAINER_IMAGE=ghcr.io/ciao-systems/rite:main
 DEBUG=false
 SILENT=false
+PULL=false
 local_filename=""
 
 # Function to parse command-line arguments
@@ -30,6 +31,10 @@ parse_args() {
           ;;
         --silent)
           SILENT=true
+          shift 1
+          ;;
+        --pull)
+          PULL=true
           shift 1
           ;;
         *)
@@ -98,7 +103,7 @@ if [[ "$DEBUG" == "true" ]]; then
       --entrypoint /bin/bash
       -v "$local_directory:/data"
       -v "$local_logs_directory:/app/logs:rw"
-      $CONTAINER_IMAGE # "/data/$container_filename"
+      $CONTAINER_IMAGE 
   )
 else
   args=(
@@ -120,5 +125,8 @@ if [[ "$SILENT" == "false" ]]; then
   echo
 fi
 
+if [[ "$PULL" == "true" ]]; then
+  docker pull $CONTAINER_IMAGE
+fi
 # Execute the container image
 docker "${args[@]}"

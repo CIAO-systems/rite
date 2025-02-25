@@ -2,4 +2,9 @@
 eval "$(ssh-agent -s)"
 ssh-add $1
 
-DOCKER_BUILDKIT=1 docker buildx build --ssh default=$SSH_AUTH_SOCK -t rite .
+export DOCKER_BUILDKIT=1 
+docker buildx \
+    build \
+    --cache-from rite:builder \
+    --ssh default=$SSH_AUTH_SOCK \
+    -t rite:latest .

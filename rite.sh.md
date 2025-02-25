@@ -12,6 +12,7 @@ It can be downloaded from the [GitHub repository](https://github.com/CIAO-system
 | -h, --help | Shows the usage of the script | - |
 | --debug | When given, the container is started with a bash shell | `false` |
 | --silent | When given, the script does not print anything | `false` |
+| --pull | When given, the container image is pulled before execution | `false` |
 
 ## Example
 ```bash

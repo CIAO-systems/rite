@@ -70,12 +70,6 @@ RUN mkdir /data /app/logs
 COPY --from=builder /build/log4rs.yaml /data
 RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
 
-# Create a non-root user for security
-RUN groupadd -g 1001 rite && useradd -r -u 1001 -g rite rite
-
-RUN chown -R rite:rite /data /app/logs /app 
-
-USER rite
-
+RUN echo 'export PS1="rite-container@\\h:\\w \\$ "' >> /etc/bash.bashrc
 # Command to run the binary
 ENTRYPOINT ["/app/rite", "-f"]
