@@ -35,7 +35,7 @@ impl ToSql for ValueWrapper {
                 let date_str = v.format("%Y-%m-%d").to_string();
                 date_str.to_sql(ty, out)
             }
-            Value::None => Ok(IsNull::Yes),
+            _ => Ok(IsNull::Yes),
         }
     }
 
@@ -83,6 +83,6 @@ pub fn _get_sql_type(value: &Value) -> &'static str {
         Value::String(_) => "TEXT",
         Value::Blob(_) => "BYTEA",
         Value::Date(_) => "DATE",
-        Value::None => "TEXT", // Default for nullable column
+        _ => "TEXT", // Default for nullable column
     }
 }

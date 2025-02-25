@@ -8,18 +8,30 @@ RUN apt-get update && \
     apt-get install -y bash && \
     apt-get install -y protobuf-compiler && \
     apt-get install -y libssl-dev && \
+    apt-get install -y git openssh-client && \
     apt-get install -y pkg-config && \
     update-ca-certificates
 
+# Add SSH key
+RUN mkdir -p /root/.ssh
+
+# Add GitHub to known hosts
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+
 # Create a working directory
 WORKDIR /build
+
+# Add the .cargo directory with the config.toml
+ENV CARGO_HOME=/workdir/.cargo 
+COPY ./.cargo ./.cargo
 
 # Copy the projects into the image
 COPY . . 
 
 
-# Build workspcae
-RUN cargo update && cargo clean && cargo build --release --workspace
+# Build workspace with credentials provided via SSH agent
+RUN --mount=type=ssh cargo update && cargo clean && cargo build --release --workspace
 
 # -----
 # Take a debian image as base (must be the same as the builder image base, to have the same libc)
@@ -42,9 +54,6 @@ LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
       org.opencontainers.image.base.name="debian:bookworm-slim" \
       org.opencontainers.image.vendor="CIAO Systems GmbH"
 
-# Create a non-root user for security
-RUN groupadd -r rite && useradd -r -g rite rite
-
 # Setup the application directory
 WORKDIR /app
 
@@ -56,14 +65,17 @@ COPY --from=builder /build/target/release/rite .
 ENV LD_LIBRARY_PATH=/lib:/lib64:/app
 
 # Create mount point for input files
-RUN mkdir /data 
+RUN mkdir /data /app/logs
 
 COPY --from=builder /build/log4rs.yaml /data
 RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
 
-RUN mkdir /logs 
+# Create a non-root user for security
+RUN groupadd -g 1001 rite && useradd -r -u 1001 -g rite rite
+
+RUN chown -R rite:rite /data /app/logs /app 
+
+USER rite
 
 # Command to run the binary
 ENTRYPOINT ["/app/rite", "-f"]
-
-

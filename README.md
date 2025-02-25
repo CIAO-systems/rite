@@ -1,5 +1,6 @@
 # rite - Rust Import/Transform/Export
 rite is a framework for importing data from a datasource, optionally transform the data, and then exporting it to a datasink
+For easy usage, there is a shell script to run the container. See [the documentation for the script](rite.sh.md)
 
 ## model
 This [library](model/README.md) describes the data model of the framework

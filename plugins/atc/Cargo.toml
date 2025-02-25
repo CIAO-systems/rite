@@ -1,26 +1,32 @@
 [package]
-name = "rite_ciao"
+name = "rite_atc"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 model = { version="0.1", registry="kellnr", path="../../model" }
 import = { version="0.1.0", registry="kellnr", path="../../import" }
-export = { version="0.1.0", registry="kellnr", path="../../export" }
-ciao-rs = {version = "0.1", path = "ciao-rs"}
 grpc-utils-rs = { git="ssh://git@github.com/CIAO-systems/grpc-utils-rs.git" }
 
 log = "0.4"
 prost = "0.13"
-tonic = "0.12"
+tonic = { version="0.12", features=["tls-roots"] }
 tokio = { version = "1", features = ["full"] }
 futures = "0.3"
 prost-types = "0.13"
-chrono = "0.4"
-
-[dev-dependencies]
-dotenv = "0.15"
+tonic-reflection = "0.12.3"
+tokio-stream = "0.1.17"
+base64 = "0.22.1"
 
 [lib]
-name = "rite_ciao"
+name = "rite_atc"
 crate-type = ["dylib"]
+
+[[bin]]
+name = "reflection"
+path = "bin/reflection.rs"
+
+[build-dependencies]
+tonic-build = "0.12.3"
+helper = { version = "0.1.0", path = "../../helper" }
+prost-build = "0.13.5"

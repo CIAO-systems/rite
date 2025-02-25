@@ -6,3 +6,6 @@
 index = "sparse+https://crates.ciao-systems.tech/api/v1/crates/"
 credential-provider = ["cargo:token"]
 token = "pfYxJ7lpOrvpC7OfcwYwUqWD7qfhFtJW"
+
+[net]
+git-fetch-with-cli = true

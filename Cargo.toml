@@ -12,4 +12,4 @@ members = [
     "examples/example_export", 
     "examples/example_transform", 
     "plugins/postgres"
-, "plugins/rest", "plugins/common", "plugins/youtrack", "plugins/ciao", "plugins/faker", "plugins/csv"]
+, "plugins/rest", "plugins/common", "plugins/youtrack", "plugins/ciao", "plugins/faker", "plugins/csv", "plugins/atc", "grpc-utils-rs"]

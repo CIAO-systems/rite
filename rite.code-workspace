@@ -4,5 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"protoc": {
+			"options": [
+				"--proto_path=plugins/atc/bin/proto",
+			]
+		}
+	}
 }
