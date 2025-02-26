@@ -19,25 +19,44 @@ const ATC_FILTER_FIELDS: &str = "fields";
 
 /// Adds the `filter.fields` filter to the [crate::com::atoss::atc::protobuf::filter::ParameterMetaData]
 pub fn add_fields_filter(
-    parameter_meta_data: &mut HashMap<
-        String,
-        crate::com::atoss::atc::protobuf::filter::ParameterMetaData,
-    >,
+    parameter_meta_data: &mut HashMap<String, ParameterMetaData>,
     config: &model::xml::config::Configuration,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(fields) = config.get(CFG_FILTER_FIELDS) {
-        let fields_filter = ParameterMetaData {
-            treatment_type: TreatmentType::PttNone.into(),
-            upper: None,
-            first: Some(First::Value(Field {
-                name: ATC_FILTER_FIELDS.to_string(),
-                value: Some(StringValue(fields)),
-            })),
-        };
-        parameter_meta_data.insert(String::from(ATC_FILTER_FIELDS), fields_filter);
+        let filter =
+            create_parameter_meta_data_single(TreatmentType::PttNone, ATC_FILTER_FIELDS, fields);
+        add_to_parameter_metadata(parameter_meta_data, filter);
     }
 
     Ok(())
+}
+
+/// Adds a [ParameterMetaData] to a map of [ParameterMetaData] using the name from the first
+pub fn add_to_parameter_metadata(
+    parameter_meta_data: &mut HashMap<String, ParameterMetaData>,
+    data: ParameterMetaData,
+) {
+    if let Some(ref first) = data.first {
+        if let First::Value(ref field) = first {
+            parameter_meta_data.insert(field.name.clone(), data);
+        }
+    }
+}
+
+/// Creates a [ParameterMetaData]
+pub fn create_parameter_meta_data_single(
+    treatment: TreatmentType,
+    name: &str,
+    value: String,
+) -> ParameterMetaData {
+    ParameterMetaData {
+        treatment_type: treatment.into(),
+        upper: None,
+        first: Some(First::Value(Field {
+            name: name.to_string(),
+            value: Some(StringValue(value)),
+        })),
+    }
 }
 
 /// Function to convert a value from ATC to a RITE model value
