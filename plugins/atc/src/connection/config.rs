@@ -9,7 +9,6 @@ const CFG_USER: &str = "user";
 const CFG_PASSWORD: &str = "password";
 
 pub const CFG_FILTER_TABLE: &str = "filter.table";
-pub const CFG_FILTER_FIELDS: &str = "filter.fields";
 
 #[derive(Debug)]
 pub struct ConnectionConfiguration {

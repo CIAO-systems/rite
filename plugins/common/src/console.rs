@@ -1,5 +1,5 @@
 //! Module for the console exporter
-//! 
+//!
 use std::io::{self, Write};
 
 use export::Exporter;
@@ -9,6 +9,9 @@ use model::{record::Record, xml, Initializable};
 pub struct ConsoleExporter {
     writer: Box<dyn Write>,
     prefix: Option<String>,
+    postfix: Option<String>,
+    separator: Option<String>,
+    field_prefix: Option<String>,
 }
 
 impl ConsoleExporter {
@@ -25,6 +28,9 @@ impl ConsoleExporter {
         ConsoleExporter {
             writer,
             prefix: None,
+            postfix: None,
+            separator: None,
+            field_prefix: None,
         }
     }
 }
@@ -42,17 +48,34 @@ impl Exporter for ConsoleExporter {
     fn write(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         let fields = record.fields();
 
+
+        let separator = if let Some(ref separator) = self.separator {
+            separator.as_str()
+        } else {
+            ", "
+        };
+
+        let field_prefix = if let Some(ref field_prefix) = self.field_prefix {
+            field_prefix.as_str()
+        } else {
+            ""
+        };
+
+
         if let Some(ref prefix) = self.prefix {
-            write!(&mut self.writer, "{prefix}")?;
+            writeln!(&mut self.writer, "{prefix}")?;
         }
 
         for (i, field) in fields.iter().enumerate() {
             if i > 0 {
-                write!(&mut self.writer, ",")?;
+                write!(&mut self.writer, "{separator}")?;
             }
-            write!(&mut self.writer, "{}={}", field.name(), field.value())?;
+            write!(&mut self.writer, "{field_prefix}{}={}", field.name(), field.value())?;
         }
         writeln!(&mut self.writer)?;
+        if let Some(ref postfix) = self.postfix {
+            writeln!(&mut self.writer, "{postfix}")?;
+        }
 
         Ok(())
     }
@@ -69,6 +92,15 @@ impl Initializable for ConsoleExporter {
         if let Some(config) = config {
             if let Some(prefix) = config.get("prefix") {
                 self.prefix = Some(String::from(prefix));
+            }
+            if let Some(postfix) = config.get("postfix") {
+                self.postfix = Some(String::from(postfix));
+            }
+            if let Some(separator) = config.get("separator") {
+                self.separator = Some(String::from(separator));
+            }
+            if let Some(field_prefix) = config.get("field-prefix") {
+                self.field_prefix = Some(String::from(field_prefix));
             }
         }
         Ok(())

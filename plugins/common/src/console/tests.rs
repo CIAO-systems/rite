@@ -22,5 +22,5 @@ fn test_write() {
     let mut output = String::new();
     let _ = buf.read_to_string(&mut output);
 
-    assert_eq!("string=value,int=73\n", output);
+    assert_eq!("string=value, int=73\n", output);
 }

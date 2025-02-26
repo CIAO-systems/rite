@@ -4,24 +4,21 @@ use futures::StreamExt;
 use import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, BoxedError, Initializable};
 
-use crate::{
-    com::atoss::atc::protobuf::Filter,
-    connection::{config::CFG_FILTER_TABLE, ATCConnection},
-};
+use crate::{com::atoss::atc::protobuf::Filter, connection::ATCConnection};
 
-use super::common::{add_fields_filter, atc_value_to_model_value};
+use super::common::atc_value_to_model_value;
 
-pub struct Dataset {
+pub struct ClockRecords {
     config: Option<model::xml::config::Configuration>,
 }
 
-impl Dataset {
+impl ClockRecords {
     pub fn new() -> Self {
         Self { config: None }
     }
 }
 
-impl Initializable for Dataset {
+impl Initializable for ClockRecords {
     fn init(
         &mut self,
         config: Option<model::xml::config::Configuration>,
@@ -31,7 +28,7 @@ impl Initializable for Dataset {
     }
 }
 
-impl Importer for Dataset {
+impl Importer for ClockRecords {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establich connection to gRPC server
         let connection = ATCConnection::connect(&self.config)?;
@@ -42,7 +39,7 @@ impl Importer for Dataset {
                 // 3. Use the connection tokio runtime to call a service
                 let result: Result<(), Box<dyn std::error::Error>> = runtime.block_on(async {
                     if let Some(ref config) = self.config {
-                        call_dataset_get(config, service_client, handler).await?;
+                        call_get_clock_records(config, service_client, handler).await?;
                     }
 
                     Ok(())
@@ -55,18 +52,17 @@ impl Importer for Dataset {
     }
 }
 
-async fn call_dataset_get(
+async fn call_get_clock_records(
     config: &model::xml::config::Configuration,
     mut service_client: crate::connection::clients::DataSetClient,
     handler: &mut dyn RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let table = match config.get(CFG_FILTER_TABLE) {
-        Some(table) => table,
-        None => return Err(format!("Parameter '{}' missing", CFG_FILTER_TABLE).into()),
-    };
+    let table = "Clockin".to_string();
 
     let mut parameter_meta_data = HashMap::new();
-    add_fields_filter(&mut parameter_meta_data, &config)?;
+    // FIXME add reasonable filters
+    add_employee_filter(&mut parameter_meta_data, &config)?;
+    add_period_filter(&mut parameter_meta_data, &config)?;
 
     let request = Filter {
         table: table.clone(),
@@ -95,5 +91,22 @@ async fn call_dataset_get(
     Ok(())
 }
 
-#[cfg(test)]
-mod tests;
+fn add_period_filter(
+    parameter_meta_data: &mut HashMap<
+        String,
+        crate::com::atoss::atc::protobuf::filter::ParameterMetaData,
+    >,
+    config: &&model::xml::config::Configuration,
+) -> Result<(), Box<dyn std::error::Error>> {
+    Ok(())
+}
+
+fn add_employee_filter(
+    parameter_meta_data: &mut HashMap<
+        String,
+        crate::com::atoss::atc::protobuf::filter::ParameterMetaData,
+    >,
+    config: &&model::xml::config::Configuration,
+) -> Result<(), Box<dyn std::error::Error>> {
+    Ok(())
+}
