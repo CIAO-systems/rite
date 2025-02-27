@@ -73,6 +73,7 @@ impl Importer for ClockRecords {
     }
 }
 
+/// Calls the Dataset::get service
 async fn call_get_clock_records(
     config: &model::xml::config::Configuration,
     mut service_client: crate::connection::clients::DataSetClient,
@@ -113,6 +114,9 @@ async fn call_get_clock_records(
     Ok(())
 }
 
+/// Parses the a string of two dates separated by `:`. 
+/// Dates can be empty and use the format `"%Y-%m-%d"`. 
+/// Returns a tuple of start and end
 fn parse_period(period: &str) -> (Option<NaiveDate>, Option<NaiveDate>) {
     let parts: Vec<&str> = period.split(':').collect();
 
@@ -143,6 +147,7 @@ fn parse_period(period: &str) -> (Option<NaiveDate>, Option<NaiveDate>) {
     (start, end)
 }
 
+/// Converts a [NaiveDate] to a protobuf [Timestamp]
 fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError> {
     if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
         // Convert the NaiveDateTime to a DateTime<Utc>.
@@ -159,6 +164,7 @@ fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError> {
     }
 }
 
+/// Adds the [ParameterMetaData] filter for the `filter.period` configuration
 fn add_period_filter(
     parameter_meta_data: &mut HashMap<String, ParameterMetaData>,
     config: &model::xml::config::Configuration,
@@ -194,6 +200,7 @@ fn add_period_filter(
     Ok(())
 }
 
+/// Creates a [Field] from the given `date` with the name "timestamp"
 fn create_period_filter_field(date: Option<NaiveDate>) -> Result<Option<Field>, BoxedError> {
     Ok(if let Some(date) = date {
         Some(Field {
@@ -205,6 +212,7 @@ fn create_period_filter_field(date: Option<NaiveDate>) -> Result<Option<Field>, 
     })
 }
 
+/// Adds the [ParameterMetaData] filter for the `filter.employee` configuration
 fn add_employee_filter(
     parameter_meta_data: &mut HashMap<String, ParameterMetaData>,
     config: &model::xml::config::Configuration,
