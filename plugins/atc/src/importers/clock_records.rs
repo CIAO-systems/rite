@@ -19,7 +19,8 @@ use crate::{
 };
 
 use super::common::{
-    add_to_parameter_metadata, atc_value_to_model_value, create_parameter_meta_data_single,
+    add_fields_filter, add_to_parameter_metadata, atc_value_to_model_value,
+    create_parameter_meta_data_single,
 };
 
 pub struct ClockRecords {
@@ -80,9 +81,10 @@ async fn call_get_clock_records(
     let table = "Clockin".to_string();
 
     let mut parameter_meta_data = HashMap::new();
-    // FIXME add reasonable filters
+
     add_employee_filter(&mut parameter_meta_data, &config)?;
     add_period_filter(&mut parameter_meta_data, &config)?;
+    add_fields_filter(&mut parameter_meta_data, &config)?;
 
     let request = Filter {
         table: table.clone(),
@@ -176,34 +178,31 @@ fn add_period_filter(
     */
     if let Some(period_str) = config.get(CFG_FILTER_PERIOD) {
         let (start, end) = parse_period(&period_str);
+        if start.is_some() || end.is_some() {
+            // Only add filter if either start or end is given
+            let lower = create_period_filter_field(start.or(NaiveDate::from_ymd_opt(1, 1, 1)))?;
+            let upper = create_period_filter_field(end.or(NaiveDate::from_ymd_opt(9999, 1, 1)))?;
 
-        let lower = if let Some(date) = start {
-            Some(Field {
-                name: ATC_FILTER_TIMESTAMP.to_string(),
-                value: Some(Value::TimestampValue(date_to_protobuf(&date)?)),
-            })
-        } else {
-            None
-        };
-
-        let upper = if let Some(date) = end {
-            Some(Field {
-                name: ATC_FILTER_TIMESTAMP.to_string(),
-                value: Some(Value::TimestampValue(date_to_protobuf(&date)?)),
-            })
-        } else {
-            None
-        };
-
-        let filter = ParameterMetaData {
-            treatment_type: TreatmentType::PttIntervalCloseClose.into(),
-            upper,
-            first: lower.map(|l| First::Lower(l)),
-        };
-        parameter_meta_data.insert(ATC_FILTER_TIMESTAMP.to_string(), filter);
-        println!("{:?}", parameter_meta_data);
+            let filter = ParameterMetaData {
+                treatment_type: TreatmentType::PttIntervalCloseClose.into(),
+                upper,
+                first: lower.map(|l| First::Lower(l)),
+            };
+            parameter_meta_data.insert(ATC_FILTER_TIMESTAMP.to_string(), filter);
+        }
     }
     Ok(())
+}
+
+fn create_period_filter_field(date: Option<NaiveDate>) -> Result<Option<Field>, BoxedError> {
+    Ok(if let Some(date) = date {
+        Some(Field {
+            name: ATC_FILTER_TIMESTAMP.to_string(),
+            value: Some(Value::TimestampValue(date_to_protobuf(&date)?)),
+        })
+    } else {
+        None
+    })
 }
 
 fn add_employee_filter(
@@ -223,109 +222,4 @@ fn add_employee_filter(
 }
 
 #[cfg(test)]
-mod tests {
-    use std::collections::HashMap;
-
-    use model::xml::config::Configuration;
-
-    use crate::{
-        com::atoss::atc::protobuf::filter::ParameterMetaData,
-        importers::clock_records::{ATC_FILTER_EMPLOYEE, ATC_FILTER_TIMESTAMP},
-    };
-
-    use super::{add_employee_filter, add_period_filter, CFG_FILTER_EMPLOYEE, CFG_FILTER_PERIOD};
-
-    #[test]
-    fn test_add_employee_filter() -> Result<(), Box<dyn std::error::Error>> {
-        let mut parameter_meta_data: HashMap<String, ParameterMetaData> = HashMap::new();
-        let mut config = Configuration::new();
-        config.insert_str(CFG_FILTER_EMPLOYEE, "employee #1");
-        add_employee_filter(&mut parameter_meta_data, &config)?;
-
-        assert!(parameter_meta_data.contains_key(ATC_FILTER_EMPLOYEE));
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_add_period_filter_all() -> Result<(), Box<dyn std::error::Error>> {
-        let mut parameter_meta_data: HashMap<String, ParameterMetaData> = HashMap::new();
-        let mut config = Configuration::new();
-        config.insert_str(CFG_FILTER_PERIOD, "2024-01-01:2024-12-31");
-        add_period_filter(&mut parameter_meta_data, &config)?;
-
-        assert!(parameter_meta_data.contains_key(ATC_FILTER_TIMESTAMP));
-
-        let filter = parameter_meta_data.get(ATC_FILTER_TIMESTAMP);
-        assert!(filter.is_some());
-
-        let lower = &filter.unwrap().first;
-        assert!(lower.is_some());
-
-        let upper = &filter.unwrap().upper;
-        assert!(upper.is_some());
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_add_period_filter_start() -> Result<(), Box<dyn std::error::Error>> {
-        let mut parameter_meta_data: HashMap<String, ParameterMetaData> = HashMap::new();
-        let mut config = Configuration::new();
-        config.insert_str(CFG_FILTER_PERIOD, "2024-01-01:");
-        add_period_filter(&mut parameter_meta_data, &config)?;
-
-        assert!(parameter_meta_data.contains_key(ATC_FILTER_TIMESTAMP));
-
-        let filter = parameter_meta_data.get(ATC_FILTER_TIMESTAMP);
-        assert!(filter.is_some());
-
-        let lower = &filter.unwrap().first;
-        assert!(lower.is_some());
-
-        let upper = &filter.unwrap().upper;
-        assert!(upper.is_none());
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_add_period_filter_end() -> Result<(), Box<dyn std::error::Error>> {
-        let mut parameter_meta_data: HashMap<String, ParameterMetaData> = HashMap::new();
-        let mut config = Configuration::new();
-        config.insert_str(CFG_FILTER_PERIOD, ":2024-12-31");
-        add_period_filter(&mut parameter_meta_data, &config)?;
-
-        assert!(parameter_meta_data.contains_key(ATC_FILTER_TIMESTAMP));
-
-        let filter = parameter_meta_data.get(ATC_FILTER_TIMESTAMP);
-        assert!(filter.is_some());
-
-        let lower = &filter.unwrap().first;
-        assert!(lower.is_none());
-
-        let upper = &filter.unwrap().upper;
-        assert!(upper.is_some());
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_add_period_filter_none() -> Result<(), Box<dyn std::error::Error>> {
-        let mut parameter_meta_data: HashMap<String, ParameterMetaData> = HashMap::new();
-        let mut config = Configuration::new();
-        config.insert_str(CFG_FILTER_PERIOD, ":");
-        add_period_filter(&mut parameter_meta_data, &config)?;
-
-        assert!(parameter_meta_data.contains_key(ATC_FILTER_TIMESTAMP));
-
-        let filter = parameter_meta_data.get(ATC_FILTER_TIMESTAMP);
-        assert!(filter.is_some());
-        let lower = &filter.unwrap().first;
-        assert!(lower.is_none());
-
-        let upper = &filter.unwrap().upper;
-        assert!(upper.is_none());
-        Ok(())
-    }
-}
+mod tests;

@@ -12,8 +12,9 @@
                     <config key="user" value="$ATC_USER" />
                     <config key="password" value="$ATC_PASSWORD" />
                     <!-- Filters -->
-                    <config key="filter.employee" value="API" />
-                    <config key="filter.period" value="2025-01-01:2025-12-31" />
+                    <config key="filter.employee" value="19" />
+                    <config key="filter.period" value="2025-01-01:" />
+                    <config key="filter.fields" value="employee,timestamp" />
                 </configuration>
             </importer>
             <exporters>
