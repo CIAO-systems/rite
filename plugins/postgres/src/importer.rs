@@ -142,6 +142,7 @@ mod tests {
     use super::PostgresImporter;
 
     #[test]
+    #[ignore = "for manual testing"]
     fn test_import() -> Result<(), Box<dyn std::error::Error>> {
         let mut importer = PostgresImporter::new();
         let config = xml::config::Configuration::with_xml("../../data/postgres-import-config.xml");

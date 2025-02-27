@@ -2,7 +2,11 @@ use import::Importer;
 use model::xml;
 use plugin::Plugin;
 
-static PLUGIN_PATH: &str = "../target/debug";
+static PLUGIN_PATH: &str = if cfg!(debug_assertions) {
+    "../target/debug"
+} else {
+    "../target/release"
+};
 static IMPORT_PLUGIN_NAME: &str = "example_import";
 
 static IMPORTER_NAME: &str = "text";

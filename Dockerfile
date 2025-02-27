@@ -31,7 +31,11 @@ COPY . .
 
 
 # Build workspace with credentials provided via SSH agent
-RUN --mount=type=ssh cargo update && cargo clean && cargo build --release --workspace
+RUN --mount=type=ssh \
+    cargo update && \
+    cargo clean && \
+    cargo build --release --workspace && \
+    cargo test --release
 
 # -----
 # Take a debian image as base (must be the same as the builder image base, to have the same libc)
