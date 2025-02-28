@@ -93,32 +93,40 @@ impl Importer for RESTImporter {
             let client = reqwest::blocking::Client::new();
             let request_builder = self.setup_authentication(client.get(url));
 
-            let response = request_builder.send()?;
-            let status = response.status();
-            if status.is_success() {
-                let text = response.text()?;
-                let json: serde_json::Value = serde_json::from_str(&text)?;
+            match request_builder.send() {
+                Ok(response) => {
+                    let status = response.status();
+                    if status.is_success() {
+                        let text = response.text()?;
+                        let json: serde_json::Value = serde_json::from_str(&text)?;
 
-                let records_array = match self.records_field {
-                    Some(ref records_field) => json
-                        .get(records_field)
-                        .ok_or_else(|| format!("Field '{}' not found in JSON", records_field))?,
-                    None => &json,
-                };
+                        let records_array = match self.records_field {
+                            Some(ref records_field) => {
+                                json.get(records_field).ok_or_else(|| {
+                                    format!("Field '{}' not found in JSON", records_field)
+                                })?
+                            }
+                            None => &json,
+                        };
 
-                if let serde_json::Value::Array(array) = records_array {
-                    for json_record in array {
-                        let mut record = record_from_json(json_record, &self.fields_path);
-                        handler.handle_record(&mut record)?;
+                        if let serde_json::Value::Array(array) = records_array {
+                            for json_record in array {
+                                let mut record = record_from_json(json_record, &self.fields_path);
+                                handler.handle_record(&mut record)?;
+                            }
+                        }
+                    } else {
+                        return Err(format!(
+                            "GET {} responded with HTTP status code {}",
+                            url,
+                            status.as_str()
+                        )
+                        .into());
                     }
                 }
-            } else {
-                return Err(format!(
-                    "GET {} responded with HTTP status code {}",
-                    url,
-                    status.as_str()
-                )
-                .into());
+                Err(e) => {
+                    return Err(format!("Send request to URL {} ended with error: {e}", url).into());
+                }
             }
         }
 

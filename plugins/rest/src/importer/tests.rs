@@ -1,9 +1,13 @@
 use std::fs;
 
 use import::{handlers::CollectingRecordHandler, Importer};
+use mockito::Matcher;
 use model::{
     field::Field, record::Record, value::Value, xml::config::Configuration, Initializable,
 };
+use uuid::Uuid;
+
+use crate::importer::{CONFIG_AUTH_APIKEY, CONFIG_AUTH_BASIC, CONFIG_AUTH_BEARER};
 
 use super::{record_from_json, RESTImporter, CONFIG_FIELDS_PATH, CONFIG_RECORDS_FIELD, CONFIG_URL};
 
@@ -161,4 +165,96 @@ fn assert_results(expected: [(&str, &str); 6], results: &serde_json::Value) {
 
         assert_result_records(expected, &records);
     }
+}
+
+#[test]
+fn test_setup_authentication_basic() -> Result<(), Box<dyn std::error::Error>> {
+    // Setup
+    let mut importer = RESTImporter::new();
+    let mut config = Configuration::new();
+    config.insert_str(CONFIG_AUTH_BASIC, "user:password");
+    importer.init(Some(config))?;
+
+    let mut server = mockito::Server::new();
+    let url = server.url();
+    let mock = server
+        .mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .match_header(
+            "Authorization",
+            Matcher::Exact("Basic dXNlcjpwYXNzd29yZA==".to_string()),
+        )
+        .with_body("{}")
+        .create();
+
+    let client = reqwest::blocking::Client::new();
+    let request = importer.setup_authentication(client.get(url));
+    let response = request.send()?;
+    mock.assert();
+    assert_eq!(response.status(), 200);
+
+    Ok(())
+}
+
+#[test]
+fn test_setup_authentication_bearer() -> Result<(), Box<dyn std::error::Error>> {
+    // Setup
+    let expected_token = Uuid::new_v4();
+    let mut importer = RESTImporter::new();
+    let mut config = Configuration::new();
+    config.insert_str(CONFIG_AUTH_BEARER, &expected_token.to_string());
+    importer.init(Some(config))?;
+
+    let mut server = mockito::Server::new();
+    let url = server.url();
+    let mock = server
+        .mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .match_header(
+            "Authorization",
+            Matcher::Exact(format!("Bearer {expected_token}").to_string()),
+        )
+        .with_body("{}")
+        .create();
+
+    let client = reqwest::blocking::Client::new();
+    let request = importer.setup_authentication(client.get(url));
+    let response = request.send()?;
+    mock.assert();
+    assert_eq!(response.status(), 200);
+
+    Ok(())
+}
+
+#[test]
+fn test_setup_authentication_apikey() -> Result<(), Box<dyn std::error::Error>> {
+    // Setup
+    let expected_token = Uuid::new_v4();
+    let mut importer = RESTImporter::new();
+    let mut config = Configuration::new();
+    config.insert_str(
+        CONFIG_AUTH_APIKEY,
+        &format!("x-api-key:{}", expected_token.to_string()),
+    );
+    importer.init(Some(config))?;
+
+    let mut server = mockito::Server::new();
+    let url = server.url();
+    let mock = server
+        .mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .match_header("x-api-key", Matcher::Exact(expected_token.to_string()))
+        .with_body("{}")
+        .create();
+
+    let client = reqwest::blocking::Client::new();
+    let request = importer.setup_authentication(client.get(url));
+    let response = request.send()?;
+    mock.assert();
+    assert_eq!(response.status(), 200);
+
+    Ok(())
 }

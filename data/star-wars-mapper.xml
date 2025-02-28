@@ -27,7 +27,7 @@
                         <config key="postfix" value="}" />
                         <config key="separator" value="&#xA;" />
                         <config key="field-prefix" value=" " />
-                    </configuration>
+                    </configuration>https://gorest.co.in/
                 </exporter>
             </exporters>
         </process>
