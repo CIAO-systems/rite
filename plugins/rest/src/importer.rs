@@ -11,6 +11,8 @@ pub static CONFIG_AUTH_BASIC: &str = "auth.basic";
 pub static CONFIG_AUTH_BEARER: &str = "auth.bearer";
 pub static CONFIG_AUTH_APIKEY: &str = "auth.api-key";
 
+const HEADER_X_API_KEY: &str = "x-api-key";
+
 pub struct RESTImporter {
     url: Option<String>,
     records_field: Option<String>,
@@ -49,7 +51,10 @@ impl RESTImporter {
         };
 
         if let Some(ref apikey) = self.auth_apikey {
-            let (key, value) = split(apikey);
+            let (mut key, value) = split(apikey);
+            if let None = key {
+                key = Some(HEADER_X_API_KEY.to_string());
+            }
             if let Some(key) = key {
                 if let Some(value) = value {
                     if let Ok(value) = HeaderValue::from_str(&value) {
@@ -62,10 +67,30 @@ impl RESTImporter {
     }
 }
 
+/// Splits a string in two by `:`
 fn split(input: &str) -> (Option<String>, Option<String>) {
     let parts: Vec<&str> = input.split(':').collect();
-    let s1 = parts.get(0).map(|&s| s.to_string());
-    let s2 = parts.get(1).map(|&s| s.to_string());
+    let s1 = if let Some(s) = parts.get(0) {
+        if s.is_empty() {
+            None
+        } else {
+            Some(s.to_string())
+        }
+    } else {
+        None
+    };
+
+    let s2 = if parts.len() > 1 {
+        let joined = parts[1..].join(":");
+        if joined.is_empty() {
+            None
+        } else {
+            Some(joined)
+        }
+    } else {
+        None
+    };
+
     (s1, s2)
 }
 

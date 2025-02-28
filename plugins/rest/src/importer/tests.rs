@@ -7,7 +7,7 @@ use model::{
 };
 use uuid::Uuid;
 
-use crate::importer::{CONFIG_AUTH_APIKEY, CONFIG_AUTH_BASIC, CONFIG_AUTH_BEARER};
+use crate::importer::{split, CONFIG_AUTH_APIKEY, CONFIG_AUTH_BASIC, CONFIG_AUTH_BEARER};
 
 use super::{record_from_json, RESTImporter, CONFIG_FIELDS_PATH, CONFIG_RECORDS_FIELD, CONFIG_URL};
 
@@ -257,4 +257,52 @@ fn test_setup_authentication_apikey() -> Result<(), Box<dyn std::error::Error>> 
     assert_eq!(response.status(), 200);
 
     Ok(())
+}
+
+#[test]
+fn test_split_basic() {
+    let input = "hello:world";
+    let result = split(input);
+    assert_eq!(
+        result,
+        (Some("hello".to_string()), Some("world".to_string()))
+    );
+}
+
+#[test]
+fn test_split_no_colon() {
+    let input = "helloworld";
+    let result = split(input);
+    assert_eq!(result, (Some("helloworld".to_string()), None));
+}
+
+#[test]
+fn test_split_multiple_colons() {
+    let input = "hello:world:rust";
+    let result = split(input);
+    assert_eq!(
+        result,
+        (Some("hello".to_string()), Some("world:rust".to_string()))
+    );
+}
+
+#[test]
+fn test_split_empty_string() {
+    let input = "";
+    let result = split(input);
+    assert_eq!(result, (None, None));
+}
+
+#[test]
+fn test_split_leading_colon() {
+    let input = ":world";
+    let result = split(input);
+    assert_eq!(result, (None, Some("world".to_string())));
+}
+
+#[test]
+fn test_split_trailing_colon() {
+    let input = "hello:";
+    let result = split(input);
+    assert_eq!(result, (Some("hello".to_string()), None));
 }
