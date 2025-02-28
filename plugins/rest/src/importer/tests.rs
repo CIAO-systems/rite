@@ -7,7 +7,9 @@ use model::{
 };
 use uuid::Uuid;
 
-use crate::importer::{split, CONFIG_AUTH_APIKEY, CONFIG_AUTH_BASIC, CONFIG_AUTH_BEARER};
+use crate::importer::{
+    split, CONFIG_AUTH_APIKEY, CONFIG_AUTH_BASIC, CONFIG_AUTH_BEARER, HEADER_X_API_KEY,
+};
 
 use super::{record_from_json, RESTImporter, CONFIG_FIELDS_PATH, CONFIG_RECORDS_FIELD, CONFIG_URL};
 
@@ -229,14 +231,14 @@ fn test_setup_authentication_bearer() -> Result<(), Box<dyn std::error::Error>> 
 }
 
 #[test]
-fn test_setup_authentication_apikey() -> Result<(), Box<dyn std::error::Error>> {
+fn test_setup_authentication_apikey_custom() -> Result<(), Box<dyn std::error::Error>> {
     // Setup
     let expected_token = Uuid::new_v4();
     let mut importer = RESTImporter::new();
     let mut config = Configuration::new();
     config.insert_str(
         CONFIG_AUTH_APIKEY,
-        &format!("x-api-key:{}", expected_token.to_string()),
+        &format!("x-custom-header:{}", expected_token.to_string()),
     );
     importer.init(Some(config))?;
 
@@ -246,7 +248,41 @@ fn test_setup_authentication_apikey() -> Result<(), Box<dyn std::error::Error>> 
         .mock("GET", "/")
         .with_status(200)
         .with_header("content-type", "application/json")
-        .match_header("x-api-key", Matcher::Exact(expected_token.to_string()))
+        .match_header(
+            "x-custom-header",
+            Matcher::Exact(expected_token.to_string()),
+        )
+        .with_body("{}")
+        .create();
+
+    let client = reqwest::blocking::Client::new();
+    let request = importer.setup_authentication(client.get(url));
+    let response = request.send()?;
+    mock.assert();
+    assert_eq!(response.status(), 200);
+
+    Ok(())
+}
+
+#[test]
+fn test_setup_authentication_apikey_default() -> Result<(), Box<dyn std::error::Error>> {
+    // Setup
+    let expected_token = Uuid::new_v4();
+    let mut importer = RESTImporter::new();
+    let mut config = Configuration::new();
+    config.insert_str(
+        CONFIG_AUTH_APIKEY,
+        &format!(":{}", expected_token.to_string()),
+    );
+    importer.init(Some(config))?;
+
+    let mut server = mockito::Server::new();
+    let url = server.url();
+    let mock = server
+        .mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .match_header(HEADER_X_API_KEY, Matcher::Exact(expected_token.to_string()))
         .with_body("{}")
         .create();
 
