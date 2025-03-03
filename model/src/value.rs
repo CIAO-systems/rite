@@ -1,8 +1,7 @@
 //! Module for the Value
 //!
-use std::fmt::Display;
-
 use chrono::NaiveDate;
+use std::fmt::Display;
 
 pub mod from;
 
@@ -76,7 +75,6 @@ impl Display for Value {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests;
