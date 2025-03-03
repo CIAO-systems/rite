@@ -1,0 +1,11 @@
+{% set greeting = "Hello" %}
+
+Variable: {{greeting}} {{ name }}!
+
+Loop:
+{% for record in records %}
+  {{loop.index}}. 
+  {% for field in record.fields %}
+    {{field.name}} = {{field.value}}
+  {% endfor %}
+{% endfor %}
