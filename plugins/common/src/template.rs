@@ -30,11 +30,17 @@ impl TemplateExporter {
             let mut context = Context::new();
             context.insert("records", &self.records);
 
-            let rendered = tera.render("exporter", &context)?;
-
-            // write rendered string in output file
-            if let Some(ref output_file) = self.output_file {
-                std::fs::write(output_file, rendered)?;
+            match tera.render("exporter", &context) {
+                Ok(rendered) => {
+                    // write rendered string in output file
+                    if let Some(ref output_file) = self.output_file {
+                        std::fs::write(output_file, rendered)?;
+                    }
+                }
+                Err(e) => {
+                    log::error!("Error rendering {template_file}: {e} ");
+                    return Err(e.into());
+                }
             }
         }
         Ok(())

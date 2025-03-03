@@ -438,5 +438,26 @@
             ],
             "cwd": "${workspaceFolder}"
         },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO Time type mapping generator",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "data/ciao/time_type/time_types.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }
