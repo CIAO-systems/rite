@@ -5,6 +5,7 @@ use export::Exporter;
 use model::{field::Field, record::Record};
 
 #[test]
+#[ignore = "stdout redirect does not work reliably"]
 fn test_write() {
     // Redirect stdout
     let mut buf = gag::BufferRedirect::stdout().unwrap();

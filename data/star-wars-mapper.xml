@@ -21,7 +21,14 @@
                 </transformer>
             </transformers>
             <exporters>
-                <exporter plugin="common" name="console" />
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="{" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>https://gorest.co.in/
+                </exporter>
             </exporters>
         </process>
     </processes>

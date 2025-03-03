@@ -1,15 +1,25 @@
 use import::{Importer, RecordHandler};
 use json_dotpath::DotPaths;
 use model::{field::Field, record::Record, value::Value, Initializable};
+use reqwest::header::HeaderValue;
 
 pub static CONFIG_URL: &str = "url";
 pub static CONFIG_RECORDS_FIELD: &str = "records_field";
 pub static CONFIG_FIELDS_PATH: &str = "fields_path";
 
+pub static CONFIG_AUTH_BASIC: &str = "auth.basic";
+pub static CONFIG_AUTH_BEARER: &str = "auth.bearer";
+pub static CONFIG_AUTH_APIKEY: &str = "auth.api-key";
+
+const HEADER_X_API_KEY: &str = "x-api-key";
+
 pub struct RESTImporter {
     url: Option<String>,
     records_field: Option<String>,
     fields_path: Option<String>,
+    auth_basic: Option<String>,
+    auth_bearer: Option<String>,
+    auth_apikey: Option<String>,
 }
 
 impl RESTImporter {
@@ -18,8 +28,70 @@ impl RESTImporter {
             url: None,
             records_field: None,
             fields_path: None,
+            auth_basic: None,
+            auth_bearer: None,
+            auth_apikey: None,
         }
     }
+
+    /// Add the configured authentication headers
+    fn setup_authentication(
+        &self,
+        mut request_builder: reqwest::blocking::RequestBuilder,
+    ) -> reqwest::blocking::RequestBuilder {
+        if let Some(ref user_password) = self.auth_basic {
+            let (user, password) = split(user_password);
+            if let Some(user) = user {
+                request_builder = request_builder.basic_auth(user, password);
+            }
+        };
+
+        if let Some(ref token) = self.auth_bearer {
+            request_builder = request_builder.bearer_auth(token);
+        };
+
+        if let Some(ref apikey) = self.auth_apikey {
+            let (mut key, value) = split(apikey);
+            if let None = key {
+                key = Some(HEADER_X_API_KEY.to_string());
+            }
+            if let Some(key) = key {
+                if let Some(value) = value {
+                    if let Ok(value) = HeaderValue::from_str(&value) {
+                        request_builder = request_builder.header(key, value);
+                    }
+                }
+            }
+        }
+        request_builder
+    }
+}
+
+/// Splits a string in two by `:`
+fn split(input: &str) -> (Option<String>, Option<String>) {
+    let parts: Vec<&str> = input.split(':').collect();
+    let s1 = if let Some(s) = parts.get(0) {
+        if s.is_empty() {
+            None
+        } else {
+            Some(s.to_string())
+        }
+    } else {
+        None
+    };
+
+    let s2 = if parts.len() > 1 {
+        let joined = parts[1..].join(":");
+        if joined.is_empty() {
+            None
+        } else {
+            Some(joined)
+        }
+    } else {
+        None
+    };
+
+    (s1, s2)
 }
 
 impl Initializable for RESTImporter {
@@ -31,6 +103,9 @@ impl Initializable for RESTImporter {
             self.url = config.get(CONFIG_URL);
             self.records_field = config.get(CONFIG_RECORDS_FIELD);
             self.fields_path = config.get(CONFIG_FIELDS_PATH);
+            self.auth_apikey = config.get(CONFIG_AUTH_APIKEY);
+            self.auth_basic = config.get(CONFIG_AUTH_BASIC);
+            self.auth_bearer = config.get(CONFIG_AUTH_BEARER);
         }
 
         Ok(())
@@ -41,39 +116,45 @@ impl Importer for RESTImporter {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref url) = self.url {
             let client = reqwest::blocking::Client::new();
-            let response = client.get(url).send()?;
-            let status = response.status();
-            if status.is_success() {
-                let text = response.text()?;
-                let json: serde_json::Value = serde_json::from_str(&text)?;
+            let request_builder = self.setup_authentication(client.get(url));
 
-                let records_array = match self.records_field {
-                    Some(ref records_field) => json
-                        .get(records_field)
-                        .ok_or_else(|| format!("Field '{}' not found in JSON", records_field))?,
-                    None => &json,
-                };
+            match request_builder.send() {
+                Ok(response) => {
+                    let status = response.status();
+                    if status.is_success() {
+                        let text = response.text()?;
+                        let json: serde_json::Value = serde_json::from_str(&text)?;
 
-                if let serde_json::Value::Array(array) = records_array {
-                    for json_record in array {
-                        let mut record = record_from_json(json_record, &self.fields_path);
-                        handler.handle_record(&mut record)?;
+                        let records_array = match self.records_field {
+                            Some(ref records_field) => {
+                                json.get(records_field).ok_or_else(|| {
+                                    format!("Field '{}' not found in JSON", records_field)
+                                })?
+                            }
+                            None => &json,
+                        };
+
+                        if let serde_json::Value::Array(array) = records_array {
+                            for json_record in array {
+                                let mut record = record_from_json(json_record, &self.fields_path);
+                                handler.handle_record(&mut record)?;
+                            }
+                        }
+                    } else {
+                        return Err(format!(
+                            "GET {} responded with HTTP status code {}",
+                            url,
+                            status.as_str()
+                        )
+                        .into());
                     }
                 }
-            } else {
-                return Err(format!(
-                    "GET {} responded with HTTP status code {}",
-                    url,
-                    status.as_str()
-                )
-                .into());
+                Err(e) => {
+                    return Err(format!("Send request to URL {} ended with error: {e}", url).into());
+                }
             }
         }
 
-        Ok(())
-    }
-
-    fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }
 }
