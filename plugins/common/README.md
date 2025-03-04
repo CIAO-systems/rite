@@ -174,7 +174,7 @@ The `template` exporter takes all records and at the end of the import passes th
 | outputFile | The pathname of the output file. After the template has been rendered, the result will be written into this file. The file will be overwritten |  
 
 #### Variables for the template
-The plugin will provide a array of all records from the input. Currently, record and collection fields are not supported. The name of the array in the template is `records`. To process them, a loop over records can be done like this:
+The plugin will provide a array of all records from the input. The name of the array in the template is `records`. To process them, a loop over records can be done like this:
 ```
 {% for record in records %}
     {{ record.id }}
