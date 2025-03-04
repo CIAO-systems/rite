@@ -3,7 +3,7 @@
      <name source="id" target="account" />
      <type source="string" target="string" />
      <values>{% for record in records %}
-         <!-- Time type: {{ record.description }} -->
+         <!-- Time type: {{ record.desc }} -->
         <value source="{{ record.id }}" target="{{ loop.index }}" />{% endfor %}
      </values>
    </field>
