@@ -1,0 +1,3 @@
+{% for record in records %}
+{{ record.id }} = {{ record.sub.number }}
+{% endfor %}

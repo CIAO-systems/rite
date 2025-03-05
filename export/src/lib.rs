@@ -16,7 +16,7 @@ pub trait Exporter: Initializable {
     /// 
     /// Exporters can utilize this, to collect records and process them at the 
     /// end
-    fn event(&self, #[allow(unused_variables)] signal: Signal) -> Result<(), BoxedError> {
+    fn event(&mut self, #[allow(unused_variables)] signal: Signal) -> Result<(), BoxedError> {
         Ok(())
     }
 }

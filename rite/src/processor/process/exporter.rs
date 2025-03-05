@@ -21,9 +21,8 @@ impl<'a> Exporter<'a> {
     }
 
     /// Signal event to all exporters
-    #[allow(dead_code)]
-    pub fn event(&self, signal: export::Signal) -> Result<(), Box<dyn std::error::Error>> {
-        for exporter in self.exporters.iter() {
+    pub fn event(&mut self, signal: export::Signal) -> Result<(), Box<dyn std::error::Error>> {
+        for exporter in self.exporters.iter_mut() {
             exporter.event(signal.clone())?;
         }
 

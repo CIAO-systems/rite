@@ -1,3 +1,4 @@
+use export::Signal;
 use import::RecordHandler;
 use model::{record::Record, BoxedError};
 
@@ -17,6 +18,14 @@ impl<'a> TransformAndExportRecordHandler<'a> {
             transformer,
             exporter,
         }
+    }
+
+    pub fn event(&mut self, signal: Signal) -> Result<(), Box<dyn std::error::Error>> {
+        if let Some(ref mut exporter) = self.exporter {
+            exporter.event(signal)?;
+        }
+
+        Ok(())
     }
 }
 
