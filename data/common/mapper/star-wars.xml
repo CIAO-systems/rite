@@ -1,7 +1,7 @@
 <rite>
     <plugins>
-        <plugin id="common" path="$RITE_CONFIG_PATH/../target/debug" name="rite_common"/>
-        <plugin id="star-wars" path="$RITE_CONFIG_PATH/../target/debug" name="rite_rest"/>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="star-wars" name="rite_rest"/>
     </plugins>
     <processes>
         <process id="read-from-star-wars-api-map-and-print">
@@ -17,13 +17,13 @@
                     </configuration>
                 </transformer>
                 <transformer plugin="common" name="mapper">
-                    <configuration xml="$RITE_CONFIG_PATH/star-wars-mapper-config.xml" />
+                    <configuration xml="$RITE_CONFIG_PATH/mapper-regex.xml" />
                 </transformer>
             </transformers>
             <exporters>
                 <exporter plugin="common" name="console">
                     <configuration>
-                        <config key="prefix" value="{" />
+                        <config key="prefix" value="Film {" />
                         <config key="postfix" value="}" />
                         <config key="separator" value="&#xA;" />
                         <config key="field-prefix" value=" " />

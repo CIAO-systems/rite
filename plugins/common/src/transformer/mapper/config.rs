@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod mapper;
+pub mod pattern;
 pub mod values;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -8,7 +9,8 @@ pub struct Field {
     pub name: Name,
     #[serde(rename = "type")]
     pub field_type: Type,
-    pub values: values::Values,
+    pub patterns: Option<pattern::Patterns>,
+    pub values: Option<values::Values>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -93,11 +95,13 @@ mod tests {
                 target: "int".to_string()
             }
         );
-        assert_eq!(field1.values.value.len(), 3);
+        assert_eq!(field1.values.clone().unwrap().value.len(), 3);
 
         assert_eq!(
             field1
                 .values
+                .clone()
+                .unwrap()
                 .get("1ced5054-b109-4b9b-aab1-72e1ace3ef54".to_string()),
             Some(Value {
                 source: String::from("1ced5054-b109-4b9b-aab1-72e1ace3ef54"),
@@ -106,14 +110,14 @@ mod tests {
         );
 
         assert_eq!(
-            field1.values.value.get(0),
+            field1.values.clone().unwrap().value.get(0),
             Some(&Value {
                 source: "".to_string(),
                 target: "0".to_string()
             })
         );
         assert_eq!(
-            field1.values.value.get(1),
+            field1.values.clone().unwrap().value.get(1),
             Some(&Value {
                 source: "b691be93-7272-4089-a575-9f3a3d951c2e".to_string(),
                 target: "1".to_string()
@@ -136,16 +140,16 @@ mod tests {
                 target: "string".to_string()
             }
         );
-        assert_eq!(field2.values.value.len(), 4);
+        assert_eq!(field2.values.clone().unwrap().value.len(), 4);
         assert_eq!(
-            field2.values.value.get(0),
+            field2.values.clone().unwrap().value.get(0),
             Some(&Value {
                 source: "Samuel Clemens".to_string(),
                 target: "Mark Twain".to_string()
             })
         );
         assert_eq!(
-            field2.values.value.get(1),
+            field2.values.clone().unwrap().value.get(1),
             Some(&Value {
                 source: "Farrokh Bulsara".to_string(),
                 target: "Freddy Mercury".to_string()
@@ -153,7 +157,11 @@ mod tests {
         );
 
         assert_eq!(
-            field2.values.get("Farrokh Bulsara".to_string()),
+            field2
+                .values
+                .clone()
+                .unwrap()
+                .get("Farrokh Bulsara".to_string()),
             Some(Value {
                 source: "Farrokh Bulsara".to_string(),
                 target: "Freddy Mercury".to_string()
@@ -161,7 +169,11 @@ mod tests {
         );
 
         assert_eq!(
-            field2.values.get("Cassius Clay".to_string()),
+            field2
+                .values
+                .clone()
+                .unwrap()
+                .get("Cassius Clay".to_string()),
             Some(Value {
                 source: "Cassius Clay".to_string(),
                 target: "Muhammad Ali".to_string()
@@ -175,13 +187,13 @@ mod tests {
 
         let field = parsed.get("ns1".to_string()).unwrap();
         assert_eq!(
-            field.values.get("vs1".to_string()),
+            field.values.clone().unwrap().get("vs1".to_string()),
             Some(Value {
                 source: "vs1".to_string(),
                 target: "vt1".to_string()
             })
         );
 
-        assert_eq!(field.values.get("unknown value".to_string()), None);
+        assert_eq!(field.values.unwrap().get("unknown value".to_string()), None);
     }
 }

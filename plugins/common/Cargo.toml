@@ -19,6 +19,7 @@ serde = "1.0"
 serde-xml-rs = "0"
 log = "0.4.25"
 tera = "1.20.0"
+regex = "1.11.1"
 
 
 [lib]

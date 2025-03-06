@@ -50,7 +50,7 @@ impl Transformer for MapperTransformer {
                 let mut new_field: Option<Field> = None;
                 if let Some(mapping_field) = mapper.get(String::from(field.name())) {
                     // We found a mapping for this field
-                    new_field = map_field(&mapping_field, field);
+                    new_field = map_field(&mapping_field, field, Some(&record));
                 }
 
                 let f = if let Some(field_to_add) = new_field {
@@ -78,14 +78,50 @@ impl Transformer for MapperTransformer {
 ///                    name matches with `field`
 /// * `field`: The source field from the importer, which value should be mapped
 ///
-fn map_field(mapping_field: &config::Field, field: &Field) -> Option<Field> {
+fn map_field(
+    mapping_field: &config::Field,
+    field: &Field,
+    record: Option<&Record>,
+) -> Option<Field> {
+    if let Some(ref values) = mapping_field.values {
+        map_by_values(mapping_field, field, values)
+    } else if let Some(ref patterns) = mapping_field.patterns {
+        map_by_patterns(mapping_field, field, patterns, record)
+    } else {
+        None
+    }
+}
+
+fn map_by_patterns(
+    mapping_field_config: &config::Field,
+    soure_field: &Field,
+    patterns: &config::pattern::Patterns,
+    record: Option<&Record>,
+) -> Option<Field> {
+    let source_value = soure_field.value().to_string();
+
+    let replaced_value = patterns.apply(&source_value, record);
+
+    let target_name = mapping_field_config.name.target.clone();
+    Some(Field::new_value(
+        &target_name,
+        Value::String(replaced_value),
+    ))
+}
+
+fn map_by_values(
+    mapping_field_config: &config::Field,
+    soure_field: &Field,
+    values: &config::values::Values,
+) -> Option<Field> {
     // Look for a matching mapping configuration for the `field`
-    let source_value = field.value();
-    if let Some(mapping_value) = mapping_field.values.get(source_value.to_string()) {
+    let source_value = soure_field.value();
+
+    if let Some(mapping_value) = values.get(source_value.to_string()) {
         // We found a mapping field. Now we take the target value, convert it to the
         // the target type and create a new field with the target name
-        let target_name = mapping_field.name.target.clone();
-        let target_value: Value = convert_value(mapping_field, mapping_value);
+        let target_name = mapping_field_config.name.target.clone();
+        let target_value: Value = convert_value(mapping_field_config, mapping_value);
         let mapped_field = Field::new_value(&target_name, target_value);
 
         Some(mapped_field)
@@ -154,7 +190,8 @@ mod tests {
                 source: "source_type".to_string(),
                 target: target_type.to_string(),
             },
-            values: config::values::Values { value: vec![] },
+            patterns: None,
+            values: Some(config::values::Values { value: vec![] }),
         }
     }
 

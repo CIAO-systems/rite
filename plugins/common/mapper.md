@@ -6,6 +6,10 @@ this is required, if a value from the source needs to be converted to another va
    <field>
      <name source="gender_code" target="gender" />
      <type source="string" target="string" />
+     <patterns>
+        <!-- RegEx patterns will be applied in the order of appearance -->
+        <pattern matcher="^(.*)" replacement="PREFIX: $1" />
+     </patterns>
      <values>
         <value source="M" target="male" />
         <value source="F" target="female" />
@@ -20,16 +24,22 @@ A mapper configuration consists of a list of field definitions.
 For the mapping, the transformer takes the current record and tries to find a field with the `name.source`. If such a field is found, it tries to find a value in the list of values, that matches one of the values in the field defintion. 
 If there is such a value, in the resulting record a field with the `target.name` will be created, with the type of `type.target` and the `value.target` of the matching value.
 
-A field definition has the elements `name`, `type` and `values`:
+A field definition has the elements `name`, `type` and `patterns` or `values`:
 ```xml
    <field>
      <name source="<source-name>" target="<target-name>" />
      <type source="<source-type>" target="<target-type>" />
+     <patterns>
+        <!-- Patterns definitions -->
+     </patterns>
+
      <values>
         <!-- Value definitions -->
      </values>
    </field>
 ```
+If `patterns` and `values` are provided, only `values` will be processed.
+
 ### Name
 The name definition tells the mapper, what name the field in the source has, and what name it should have in the resulting target. 
 ### Type
@@ -54,4 +64,56 @@ A list of values that should be mapped `value.source` -> `value.target`. If the 
         <value source="Cassius Clay" target="Muhammad Ali" />
      </values>
    </field>
+```
+
+### Patterns
+A list of regular expression replacement patterns. The replacement patterns will be applied in order of apearance in the configuration file. The mappe applies the `matcher` regular expression on the source field value and will replace all found parts with the value from the `replacement`.
+For more information on regular expressions, go to the [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions)
+
+#### Matcher
+This is a regular expression. Some example expressions:
+| RegEx | Description |
+| --- | --- |
+| "-" | Replaces the character `-` with an empty string (removing all dashes) |
+| "^(.*)" | The expression takes the whole text at the beginning |
+| "(.*)$ |  The expression takes the whole text at the end |
+| "([A-Z])\\w+" | Find all words that start with a capital letter |
+
+#### Replacement
+All found occurences will be replaced with this value. There are varaibles that can be used in the text. 
+| Variable | Description |
+| --- | --- |
+| $n | The captured group n 
+| ${<field_name>} | Replaces the text with a field from the record currently processed.
+
+### Examples
+```xml
+<mapper>
+   <field>
+     <name source="title" target="title" />
+     <type source="string" target="string" />
+     <patterns>
+        <!-- Patterns will be applied in the order of appearance -->
+        <pattern matcher="^(.*)" replacement="Episode ${episode_id}: $1 (${release_date})" />
+     </patterns>
+   </field>
+</mapper>
+```
+In the above example, the field `title` from the record will be replaced with a combination of other fields of the record and the original value ($1 is the first group found by the regex)
+
+#### Adding a prefix
+```xml
+   <pattern matcher="^(.*)" replacement="PREFIX-$1" />
+```
+#### Adding a suffix
+```xml
+   <pattern matcher="(.*)$" replacement="$1-SUFFIX" />
+```
+#### Removing a character
+```xml
+   <pattern matcher="-" replacement="" />
+```
+#### Combining field values
+```xml
+   <pattern matcher="" replacement="${firstname} ${lastname}" />
 ```

@@ -1,4 +1,4 @@
 pub mod adder;
 pub mod filter;
-pub mod renamer;
 pub mod formatter;
+pub mod renamer;
