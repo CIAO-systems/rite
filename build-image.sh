@@ -7,5 +7,5 @@ docker buildx \
     build \
     --cache-from rite:builder \
     --ssh default=$SSH_AUTH_SOCK \
-    --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+    --platform linux/arm64/v8,linux/amd64 \
     -t rite:latest .
