@@ -7,7 +7,6 @@ use model::{
 use transform::Transformer;
 
 mod config;
-pub mod regex;
 
 pub struct MapperTransformer {
     config: Option<Configuration>,
@@ -51,7 +50,7 @@ impl Transformer for MapperTransformer {
                 let mut new_field: Option<Field> = None;
                 if let Some(mapping_field) = mapper.get(String::from(field.name())) {
                     // We found a mapping for this field
-                    new_field = map_field(&mapping_field, field);
+                    new_field = map_field(&mapping_field, field, Some(&record));
                 }
 
                 let f = if let Some(field_to_add) = new_field {
@@ -79,11 +78,15 @@ impl Transformer for MapperTransformer {
 ///                    name matches with `field`
 /// * `field`: The source field from the importer, which value should be mapped
 ///
-fn map_field(mapping_field: &config::Field, field: &Field) -> Option<Field> {
+fn map_field(
+    mapping_field: &config::Field,
+    field: &Field,
+    record: Option<&Record>,
+) -> Option<Field> {
     if let Some(ref values) = mapping_field.values {
         map_by_values(mapping_field, field, values)
     } else if let Some(ref patterns) = mapping_field.patterns {
-        map_by_patterns(mapping_field, field, patterns)
+        map_by_patterns(mapping_field, field, patterns, record)
     } else {
         None
     }
@@ -93,11 +96,11 @@ fn map_by_patterns(
     mapping_field_config: &config::Field,
     soure_field: &Field,
     patterns: &config::pattern::Patterns,
+    record: Option<&Record>,
 ) -> Option<Field> {
     let source_value = soure_field.value().to_string();
 
-    // FIXME provide fields from the record
-    let replaced_value = patterns.apply(&source_value, None);
+    let replaced_value = patterns.apply(&source_value, record);
 
     let target_name = mapping_field_config.name.target.clone();
     Some(Field::new_value(
