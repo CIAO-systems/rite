@@ -99,6 +99,7 @@ if [[ "$DEBUG" == "true" ]]; then
       -u $(id -u):$(id -g)
       --network=host
       --rm
+      --platform linux/amd64
       -it 
       --entrypoint /bin/bash
       -v "$local_directory:/data"
@@ -111,6 +112,7 @@ else
       -u $(id -u):$(id -g)
       --network=host
       --rm
+      --platform linux/amd64
       -v "$local_directory:/data"
       -v "$local_logs_directory:/app/logs:rw"
       $CONTAINER_IMAGE "/data/$container_filename"
