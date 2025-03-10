@@ -48,6 +48,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set platform variable
+        id: set-platform
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "PLATFORMS=linux/arm64/v8,linux/amd64" >> $GITHUB_ENV
+          else
+            echo "PLATFORMS=linux/amd64" >> $GITHUB_ENV
+          fi
+
       - name: Build and push container image
         uses: docker/build-push-action@v4
         id: build-and-push
@@ -56,5 +65,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/arm64/v8,linux/amd64
+          platforms: ${{ env.PLATFORMS }}
           ssh: default
