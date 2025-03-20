@@ -14,5 +14,6 @@ publish = ["kellnr"]
 chrono = "0.4.39"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.5"
+serde_json = "^1.0"
 subst = "0.3"
 xml-rs = "0.8"

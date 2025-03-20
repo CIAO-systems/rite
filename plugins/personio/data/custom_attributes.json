@@ -1,0 +1,139 @@
+{
+    "custom_attributes": [
+        {
+            "global_id": "12545739",
+            "id": "date_of_birth",
+            "type": "date"
+        },
+        {
+            "global_id": "12545741",
+            "id": "dynamic_66a9eccc0625c0.47546518",
+            "type": "string"
+        },
+        {
+            "global_id": "12545742",
+            "id": "tax_id",
+            "type": "string"
+        },
+        {
+            "global_id": "12545743",
+            "id": "dynamic_66a9eccc062653.57548817",
+            "type": "string"
+        },
+        {
+            "global_id": "12545744",
+            "id": "dynamic_66a9eccc062693.52071980",
+            "type": "string"
+        },
+        {
+            "global_id": "12545745",
+            "id": "ssn",
+            "type": "string"
+        },
+        {
+            "global_id": "12545746",
+            "id": "health_insurance_type",
+            "type": "string"
+        },
+        {
+            "global_id": "12545747",
+            "id": "dynamic_66a9eccc062743.67141255",
+            "type": "string"
+        },
+        {
+            "global_id": "12545749",
+            "id": "iban",
+            "type": "string"
+        },
+        {
+            "global_id": "12545750",
+            "id": "bic",
+            "type": "string"
+        },
+        {
+            "global_id": "12545755",
+            "id": "is_primary_employment",
+            "type": "string"
+        },
+        {
+            "global_id": "12545756",
+            "id": "dynamic_66a9eccc062961.79523090",
+            "type": "string"
+        },
+        {
+            "global_id": "12545758",
+            "id": "dynamic_66a9eccc0629d5.64301806",
+            "type": "string"
+        },
+        {
+            "global_id": "12545761",
+            "id": "dynamic_66a9eccc062a81.33851172",
+            "type": "string"
+        },
+        {
+            "global_id": "12545762",
+            "id": "dynamic_66a9eccc062ac6.71270630",
+            "type": "string"
+        },
+        {
+            "global_id": "12545763",
+            "id": "dynamic_66a9eccc062b04.18393053",
+            "type": "string"
+        },
+        {
+            "global_id": "12545764",
+            "id": "postcode",
+            "type": "string"
+        },
+        {
+            "global_id": "12545765",
+            "id": "city",
+            "type": "string"
+        },
+        {
+            "global_id": "12545766",
+            "id": "address_street",
+            "type": "string"
+        },
+        {
+            "global_id": "12545767",
+            "id": "address_number",
+            "type": "string"
+        },
+        {
+            "global_id": "13015285",
+            "id": "place_of_birth",
+            "type": "string"
+        },
+        {
+            "global_id": "13015286",
+            "id": "address_country",
+            "type": "string"
+        },
+        {
+            "global_id": "13015289",
+            "id": "country_of_birth",
+            "type": "string"
+        },
+        {
+            "global_id": "13015290",
+            "id": "nationality",
+            "type": "string"
+        },
+        {
+            "global_id": "13015291",
+            "id": "civil_status",
+            "type": "string"
+        },
+        {
+            "global_id": "13015300",
+            "id": "first_company_entry_date",
+            "type": "date"
+        },
+        {
+            "global_id": "13015301",
+            "id": "latest_employment_start_date",
+            "type": "date"
+        }
+    ]
+}

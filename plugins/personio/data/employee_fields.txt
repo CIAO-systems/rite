@@ -1,0 +1,11 @@
+created_at
+email
+employments
+first_name
+gender
+id
+last_name
+preferred_name
+profile_picture
+status
+updated_at
