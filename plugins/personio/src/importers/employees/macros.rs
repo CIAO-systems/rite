@@ -42,6 +42,21 @@ macro_rules! add_field {
     };
 }
 
-pub(crate) use add_field;
-pub(crate) use get_label_and_value;
+#[macro_export]
+macro_rules! add_field_hc {
+    ($fields:expr, $attr:expr, $field:ident) => {
+        if let Some((_label, value)) = macros::get_label_and_value!($attr, $field) {
+            model::field::add_field(
+                $fields,
+                stringify!($field),
+                model::value::Value::from(value),
+            );
+            // add_field($fields, label, Value::from(value));
+        }
+    };
+}
+
 pub(crate) use unpack_attribute;
+pub(crate) use get_label_and_value;
+pub(crate) use add_field;
+//pub(crate) use add_field_hc;

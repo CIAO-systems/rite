@@ -1,4 +1,6 @@
 pub mod employees {
+    use std::collections::HashMap;
+
     use import::Importer;
     use model::{BoxedError, Initializable, record::Record};
     use personio_rs::{
@@ -14,10 +16,11 @@ pub mod employees {
 
     const CFG_CLIENT_ID: &str = "client_id";
     const CFG_CLIENT_SECRET: &str = "client_secret";
-
+    const FLAG_SALARY: &str = "flags.salary";
 
     pub struct Employees {
         token: Option<String>,
+        flags: HashMap<String, bool>,
         runtime: Option<Runtime>,
     }
 
@@ -25,8 +28,13 @@ pub mod employees {
         pub(crate) fn new() -> Self {
             Self {
                 token: None,
+                flags: HashMap::new(),
                 runtime: None,
             }
+        }
+
+        fn is_flag_set(&self, flag: &str) -> bool {
+            self.flags.get(flag).map_or(false, |&value| value)
         }
 
         /// Get the Configuration with the `bearer_access_token`
@@ -75,6 +83,34 @@ pub mod employees {
             macros::add_field!(fields, attr, preferred_name);
             macros::add_field!(fields, attr, status);
             macros::add_field!(fields, attr, created_at);
+            macros::add_field!(fields, attr, weekly_working_hours);
+            macros::add_field!(fields, attr, hire_date);
+            macros::add_field!(fields, attr, contract_end_date);
+            macros::add_field!(fields, attr, termination_date);
+            macros::add_field!(fields, attr, termination_type);
+            macros::add_field!(fields, attr, termination_reason);
+            macros::add_field!(fields, attr, probation_period_end);
+            macros::add_field!(fields, attr, last_modified_at);
+            macros::add_field!(fields, attr, position);
+            macros::add_field!(fields, attr, last_working_day);
+            macros::add_field!(fields, attr, profile_picture);
+            macros::add_field!(fields, attr, dynamic_21827);
+
+            if self.is_flag_set(FLAG_SALARY) {
+                macros::add_field!(fields, attr, fix_salary);
+                macros::add_field!(fields, attr, fix_salary_interval);
+                macros::add_field!(fields, attr, hourly_salary);
+            }
+
+            // macros::add_field_hc!(fields, attr, holiday_calendar);
+            // macros::add_field!(fields, attr, supervisor);
+            // macros::add_field!(fields, attr, subcompany);
+            // macros::add_field!(fields, attr, office);
+            // macros::add_field!(fields, attr, department);
+            // macros::add_field!(fields, attr, cost_centers);
+            // macros::add_field!(fields, attr, work_schedule);
+            // macros::add_field!(fields, attr, absence_entitlement);
+            // macros::add_field!(fields, attr, team);
 
             Ok(record)
         }
@@ -99,6 +135,13 @@ pub mod employees {
                             }
                             Err(e) => return Err(e),
                         }
+                    }
+                }
+
+                // read flags
+                if let Some(salary) = config.get(FLAG_SALARY) {
+                    if let Ok(salary) = salary.parse::<bool>() {
+                        self.flags.insert(String::from(FLAG_SALARY), salary);
                     }
                 }
             }
