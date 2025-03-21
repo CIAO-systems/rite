@@ -10,18 +10,10 @@ macro_rules! unpack_attribute {
 }
 
 #[macro_export]
-macro_rules! get_label_and_value {
+macro_rules! get_value {
     ($attr:expr, $field:ident) => {
-        if let Some(label) = macros::unpack_attribute!($attr, $field, label) {
-            if let Some(value) = macros::unpack_attribute!($attr, $field, value) {
-                if let Some(label) = label.as_str() {
-                    Some((label, value.clone()))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
+        if let Some(value) = macros::unpack_attribute!($attr, $field, value) {
+            Some(value.clone())
         } else {
             None
         }
@@ -31,32 +23,70 @@ macro_rules! get_label_and_value {
 #[macro_export]
 macro_rules! add_field {
     ($fields:expr, $attr:expr, $field:ident) => {
-        if let Some((_label, value)) = macros::get_label_and_value!($attr, $field) {
+        if let Some(value) = macros::get_value!($attr, $field) {
             model::field::add_field(
                 $fields,
                 stringify!($field),
                 model::value::Value::from(value),
             );
-            // add_field($fields, label, Value::from(value));
         }
     };
 }
 
-#[macro_export]
-macro_rules! add_field_hc {
-    ($fields:expr, $attr:expr, $field:ident) => {
-        if let Some((_label, value)) = macros::get_label_and_value!($attr, $field) {
-            model::field::add_field(
-                $fields,
+macro_rules! add_field_none {
+    ($record:expr, $attributes:expr, $field:ident) => {
+        let inner = &$attributes.$field;
+        $record.fields_as_mut().push(model::field::Field::new_value(
+            stringify!($field),
+            model::value::Value::from(inner.clone()),
+        ));
+    };
+}
+
+macro_rules! add_field_direct {
+    ($record:expr, $attributes:expr, $field:ident) => {
+        if let Some(inner) = &$attributes.$field {
+            $record.fields_as_mut().push(model::field::Field::new_value(
                 stringify!($field),
-                model::value::Value::from(value),
-            );
-            // add_field($fields, label, Value::from(value));
+                model::value::Value::from(inner.clone()),
+            ));
         }
     };
 }
 
-pub(crate) use unpack_attribute;
-pub(crate) use get_label_and_value;
+macro_rules! add_field_option {
+    ($record:expr, $attributes:expr, $field:ident) => {
+        if let Some(outer) = &$attributes.$field {
+            if let Some(inner) = outer {
+                $record.fields_as_mut().push(model::field::Field::new_value(
+                    stringify!($field),
+                    model::value::Value::from(inner.clone()),
+                ));
+            }
+        }
+    };
+}
+
+macro_rules! add_field_boxed {
+    ($record:expr, $attributes:expr, $field:ident) => {
+        if let Some(boxed) = &$attributes.$field {
+            if let Some(ref outer) = boxed.value {
+                if let Some(inner) = outer {
+                    $record.fields_as_mut().push(model::field::Field::new_value(
+                        stringify!($field),
+                        model::value::Value::from(inner.clone()),
+                    ));
+                }
+            }
+        }
+    };
+}
+
 pub(crate) use add_field;
-//pub(crate) use add_field_hc;
+pub(crate) use get_value;
+pub(crate) use unpack_attribute;
+
+pub(crate) use add_field_none;
+pub(crate) use add_field_boxed;
+pub(crate) use add_field_direct;
+pub(crate) use add_field_option;

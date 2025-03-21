@@ -16,12 +16,12 @@
             </importer>
             <exporters>
                 <exporter plugin="common" name="console">
-                    <!-- <configuration>
+                    <configuration>
                         <config key="prefix" value="Employee {" />
                         <config key="postfix" value="}" />
                         <config key="separator" value="&#xA;" />
                         <config key="field-prefix" value=" " />
-                    </configuration> -->
+                    </configuration>
                 </exporter>
             </exporters>
         </process>
