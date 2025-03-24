@@ -11,6 +11,7 @@
                     <config key="client_secret" value="$PERSONIO_CLIENT_SECRET" />
 
                     <!-- <config key="flags.salary" value="true" /> -->
+                    <config key="options.limit" value="1" />
 
                 </configuration>
             </importer>

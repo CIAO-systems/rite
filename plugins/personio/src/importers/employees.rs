@@ -1,26 +1,20 @@
 use std::collections::HashMap;
 
-use import::Importer;
-use model::{BoxedError, Initializable, field::add_field, record::Record, value::Value};
-use personio_rs::{
-    auth::login,
-    personnel::{
-        apis::{configuration::Configuration, employees_api::company_employees_get},
-        models::EmployeesResponse,
-    },
-};
+use model::{BoxedError, field::add_field, record::Record, value::Value};
+use personio_rs::personnel::{apis::configuration::Configuration, models::EmployeesResponse};
 use tokio::runtime::Runtime;
 
 mod composite;
+mod importer;
+mod initializable;
 mod macros;
 
-const CFG_CLIENT_ID: &str = "client_id";
-const CFG_CLIENT_SECRET: &str = "client_secret";
 const FLAG_SALARY: &str = "flags.salary";
 
 pub struct Employees {
     token: Option<String>,
     flags: HashMap<String, bool>,
+    limit: Option<i32>,
     runtime: Option<Runtime>,
 }
 
@@ -29,6 +23,7 @@ impl Employees {
         Self {
             token: None,
             flags: HashMap::new(),
+            limit: None,
             runtime: None,
         }
     }
@@ -131,7 +126,11 @@ impl Employees {
         }
 
         if let Some(absence_entitlement) = composite::get_absence_entitlement(&attr) {
-            add_field(fields, "absence_entitlement", Value::from(absence_entitlement));
+            add_field(
+                fields,
+                "absence_entitlement",
+                Value::from(absence_entitlement),
+            );
         }
 
         if let Some(team) = composite::get_team(&attr) {
@@ -139,65 +138,5 @@ impl Employees {
         }
 
         Ok(record)
-    }
-}
-
-impl Initializable for Employees {
-    fn init(
-        &mut self,
-        config: Option<model::xml::config::Configuration>,
-    ) -> Result<(), BoxedError> {
-        if let Some(config) = config {
-            if let Some(client_id) = config.get(CFG_CLIENT_ID) {
-                if let Some(client_secret) = config.get(CFG_CLIENT_SECRET) {
-                    let runtime = Runtime::new()?;
-                    let result: Result<String, BoxedError> =
-                        runtime.block_on(async { Ok(login(client_id, client_secret).await?) });
-                    match result {
-                        Ok(token) => {
-                            // We have a valid token now, store it and the tokio runtime
-                            self.token = Some(token);
-                            self.runtime = Some(runtime);
-                        }
-                        Err(e) => return Err(e),
-                    }
-                }
-            }
-
-            // read flags
-            if let Some(salary) = config.get(FLAG_SALARY) {
-                if let Ok(salary) = salary.parse::<bool>() {
-                    self.flags.insert(String::from(FLAG_SALARY), salary);
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-impl Importer for Employees {
-    fn read(
-        &mut self,
-        handler: &mut dyn import::RecordHandler,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        let configuration = self.get_personnel_configuration()?;
-        if let Some(ref runtime) = self.runtime {
-            let result: Result<EmployeesResponse, BoxedError> = runtime.block_on(async {
-                Ok(company_employees_get(
-                    &configuration,
-                    None, // x_personio_partner_id,
-                    None, // x_personio_app_id,
-                    None, // limit,
-                    None, // offset,
-                    None, // email,
-                    None, // attributes_left_square_bracket_right_square_bracket,
-                    None, // updated_since,
-                )
-                .await?)
-            });
-
-            self.handle_employee_response(handler, result?)?;
-        }
-        Ok(())
     }
 }
