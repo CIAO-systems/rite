@@ -1,3 +1,5 @@
+use serde_json::json;
+
 use crate::value::Value;
 
 use super::*;
@@ -98,4 +100,89 @@ fn test_record_copy() {
         original.field_by_name("value").unwrap().value(),
         copyied.field_by_name("value").unwrap().value()
     );
+}
+
+#[test]
+fn test_record_from_json_empty() {
+    let json_value = json!({});
+    let record = Record::from(json_value);
+    assert_eq!(record, Record::new());
+}
+
+#[test]
+fn test_record_from_json_single_field() {
+    let json_value = json!({
+        "name": "John Doe"
+    });
+    let record = Record::from(json_value);
+
+    let mut expected_record = Record::new();
+    expected_record.fields_as_mut().push(Field::new_value(
+        "name",
+        crate::value::Value::String("John Doe".to_string()),
+    ));
+
+    assert_eq!(record, expected_record);
+}
+
+#[test]
+fn test_record_from_json_multiple_fields() {
+    let json_value = json!({
+        "name": "John Doe",
+        "age": 30,
+        "is_active": true,
+        "items": [1, 2, 3]
+    });
+    let record = Record::from(json_value);
+
+    let mut expected_record = Record::new();
+    expected_record
+        .fields_as_mut()
+        .push(Field::new_value("age", crate::value::Value::I8(30)));
+    expected_record.fields_as_mut().push(Field::new_value(
+        "is_active",
+        crate::value::Value::Bool(true),
+    ));
+    expected_record.fields_as_mut().push(Field::new_value(
+        "items",
+        crate::value::Value::Collection(vec![
+            crate::value::Value::I8(1),
+            crate::value::Value::I8(2),
+            crate::value::Value::I8(3),
+        ]),
+    ));
+    expected_record.fields_as_mut().push(Field::new_value(
+        "name",
+        crate::value::Value::String("John Doe".to_string()),
+    ));
+
+    assert_eq!(record, expected_record);
+}
+
+#[test]
+fn test_record_from_json_nested_object() {
+    let json_value = json!({
+        "person": {
+            "name": "Jane Smith",
+            "age": 25
+        }
+    });
+    let record = Record::from(json_value);
+
+    let mut expected_record = Record::new();
+    let mut nested_record = Record::new();
+    nested_record
+        .fields_as_mut()
+        .push(Field::new_value("age", crate::value::Value::I8(25)));
+    nested_record.fields_as_mut().push(Field::new_value(
+        "name",
+        crate::value::Value::String("Jane Smith".to_string()),
+    ));
+
+    expected_record.fields_as_mut().push(Field::new_value(
+        "person",
+        crate::value::Value::Record(nested_record),
+    ));
+
+    assert_eq!(record, expected_record);
 }

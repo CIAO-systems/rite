@@ -1,6 +1,7 @@
 //! Module for the Record
 //!
-use crate::field::Field;
+use crate::{field::Field, value::Value};
+use serde_json::Value as JsonValue;
 
 /// A record struct, that is used to transfer data from the import data source
 /// to the export data sink
@@ -69,6 +70,19 @@ impl Record {
     /// Returns a mutable field by name. If the field cannot be found, a [None] is returned
     pub fn field_by_name_mut(&mut self, name: &str) -> Option<&mut Field> {
         self.fields.iter_mut().find(|field| field.name() == name)
+    }
+}
+
+impl From<JsonValue> for Record {
+    fn from(value: JsonValue) -> Self {
+        let mut record = Record::new();
+        if let JsonValue::Object(map) = value {
+            let fields = record.fields_as_mut();
+            for (key, json_value) in map {
+                fields.push(Field::new_value(&key, Value::from(json_value)));
+            }
+        }
+        record
     }
 }
 
