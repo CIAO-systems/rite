@@ -8,9 +8,12 @@ use tokio::runtime::Runtime;
 
 use crate::importers::pagination::{self, PageResult, Paginator};
 
+use super::Filter;
+
 pub struct Parameters<'a> {
     pub runtime: &'a Runtime,
     pub configuration: &'a Configuration,
+    pub filter: &'a Filter,
 }
 
 impl Importer for super::Employees {
@@ -26,6 +29,7 @@ impl Importer for super::Employees {
             let params = Parameters {
                 runtime,
                 configuration,
+                filter: &self.filter,
             };
 
             paginator.fetch_all(&params, |page_data| {
@@ -45,13 +49,13 @@ pub fn get_employees_page<'a>(
         let offset = pagination::next_offset(limit, page);
         Ok(company_employees_get(
             params.configuration,
-            None,         // x_personio_partner_id,
-            None,         // x_personio_app_id,
-            Some(limit),  // limit,
-            Some(offset), // offset,
-            None,         // email,
-            None,         // attributes_left_square_bracket_right_square_bracket,
-            None,         // updated_since,
+            None,                                   // x_personio_partner_id,
+            None,                                   // x_personio_app_id,
+            Some(limit),                            // limit,
+            Some(offset),                           // offset,
+            params.filter.email.as_deref(),         // email,
+            params.filter.attributes.clone(),       // attributes,
+            params.filter.updated_since.as_deref(), // updated_since,
         )
         .await?)
     });

@@ -13,3 +13,5 @@ See the [documentation](youtrack/README.md)
 See the [documentation](ciao/README.md)
 ## ATOSS Time Control
 See the [documentation](atc/README.md)
+## Personio
+See the [documentation](personio/README.md)
