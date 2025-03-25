@@ -11,11 +11,32 @@ mod macros;
 
 const FLAG_SALARY: &str = "flags.salary";
 
+pub struct Filter {
+    email: Option<String>,
+    updated_since: Option<String>,
+    attributes: Option<Vec<String>>,
+}
+
+impl Filter {
+    pub fn new() -> Self {
+        Self {
+            email: None,
+            updated_since: None,
+            attributes: None,
+        }
+    }
+
+    fn set_attributes(&mut self, attributes: String) {
+        self.attributes = Some(attributes.split(',').map(|s| s.to_string()).collect());
+    }
+}
+
 pub struct Employees {
     token: Option<String>,
     flags: HashMap<String, bool>,
     limit: Option<i32>,
     runtime: Option<Runtime>,
+    filter: Filter,
 }
 
 impl Employees {
@@ -25,6 +46,7 @@ impl Employees {
             flags: HashMap::new(),
             limit: None,
             runtime: None,
+            filter: Filter::new(),
         }
     }
 
@@ -135,6 +157,16 @@ impl Employees {
 
         if let Some(team) = composite::get_team(&attr) {
             add_field(fields, "team", Value::from(team));
+        }
+
+        // Add all "unknown" properties. Use "universal_id" as field name, when available
+        for (key, value) in &attr.additional_properties {
+            let id = value["universal_id"]
+                .as_str()
+                .unwrap_or_else(|| key)
+                .to_string();
+
+            add_field(fields, &id, Value::from(value["value"].clone()));
         }
 
         Ok(record)

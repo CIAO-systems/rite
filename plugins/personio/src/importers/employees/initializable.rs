@@ -7,6 +7,9 @@ use super::FLAG_SALARY;
 const CFG_CLIENT_ID: &str = "client_id";
 const CFG_CLIENT_SECRET: &str = "client_secret";
 const CFG_OPTIONS_LIMIT: &str = "options.limit";
+const CFG_FILTER_EMAIL: &str = "filter.email";
+const CFG_FILTER_UPDATED_SINCE: &str = "filter.updated_since";
+const CFG_FILTER_ATTRIBUTES: &str = "filter.attributes";
 
 impl Initializable for super::Employees {
     fn init(
@@ -42,6 +45,19 @@ impl Initializable for super::Employees {
                 if let Ok(limit) = limit.parse::<i32>() {
                     self.limit = Some(limit);
                 }
+            }
+
+            // read filters
+            if let Some(email) = config.get(CFG_FILTER_EMAIL) {
+                self.filter.email = Some(email);
+            }
+
+            if let Some(updated_since) = config.get(CFG_FILTER_UPDATED_SINCE) {
+                self.filter.updated_since = Some(updated_since);
+            }
+
+            if let Some(attributes) = config.get(CFG_FILTER_ATTRIBUTES) {
+                self.filter.set_attributes(attributes);
             }
         }
         Ok(())
