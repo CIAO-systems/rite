@@ -21,7 +21,7 @@ The importer will retrieve an access token using the Persion authentication API.
 
 ## Importers
 ### Employees
-The `employees` importer reads the personio company employees using the Personio API v1 (useing the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
+The `employees` importer reads the personio company employees using the Personio API v1 (using the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
 ```xml
     <!-- ... -->
             <importer plugin="personio" name="employees">
@@ -76,7 +76,7 @@ documentation for the [company employees](https://developer.personio.de/v1.0/ref
 ```
 
 ### Projects
-The `projects` importer reads the personio company projects using the Personio API v1 (useing the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
+The `projects` importer reads the personio company projects using the Personio API v1 (using the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
 ```xml
     <!-- ... -->
             <importer plugin="personio" name="employees">
