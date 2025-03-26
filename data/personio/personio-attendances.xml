@@ -1,0 +1,32 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="personio" name="rite_personio"/>
+    </plugins>
+    <processes>
+        <process id="Personio attendances">
+            <importer plugin="personio" name="attendances">
+                <configuration>
+                    <config key="client_id" value="$PERSONIO_CLIENT_ID" />
+                    <config key="client_secret" value="$PERSONIO_CLIENT_SECRET" />
+
+                    <config key="X-Personio-Partner-ID" value="CIAO Systems GmbH" />
+                    <config key="X-Personio-App-ID" value="rite" />
+
+                    <config key="filter.start_date" value="2024-01-01" />
+                    <config key="filter.end_date" value="2025-03-26" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="Attendance {" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

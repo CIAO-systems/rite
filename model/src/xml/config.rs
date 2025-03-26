@@ -2,6 +2,8 @@
 //!
 use serde::{Deserialize, Serialize};
 
+use crate::BoxedError;
+
 /// A struct for a configuration key/value list or a special XML file
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Configuration {
@@ -63,6 +65,11 @@ impl Configuration {
                 .map(|item| item.value.clone()),
             _ => None,
         }
+    }
+
+    /// Get the config value or an error
+    pub fn get_result(&self, key: &str) -> Result<String, BoxedError> {
+        Ok(self.get(key).ok_or(format!("Configuration key '{}' missing", key))?)
     }
 
     /// Returns the amount of keys in this configuration
