@@ -1,6 +1,6 @@
 # Personio import
-This plugin provides an importer Personio API
-To use importer, include the plugin in the rite-XML:
+This plugin provides importers for the Personio API
+To use an importer, include the plugin in the rite-XML:
 ```xml
 <rite>
     <plugins>
@@ -64,6 +64,56 @@ documentation for the [company employees](https://developer.personio.de/v1.0/ref
                 <exporter plugin="common" name="console">
                     <configuration>
                         <config key="prefix" value="Employee {" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>
+```
+
+### Projects
+The `projects` importer reads the personio company projects using the Personio API v1 (useing the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
+```xml
+    <!-- ... -->
+            <importer plugin="personio" name="employees">
+                <!-- Configuration goes here -->
+            <importer>
+    <!-- ... -->
+```
+#### Configuration
+Currently there is no projects specific configuration available
+
+#### Results
+The resulting records will contain the fields as described in the Personio API V1 
+documentation for the [company projects](https://developer.personio.de/v1.0/reference/get_company-attendances-projects)
+
+#### Example
+```xml
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="personio" name="rite_personio"/>
+    </plugins>
+    <processes>
+        <process id="Personio projects">
+            <importer plugin="personio" name="projects">
+                <configuration>
+                    <config key="client_id" value="$PERSONIO_CLIENT_ID" />
+                    <config key="client_secret" value="$PERSONIO_CLIENT_SECRET" />
+
+                    <config key="X-Personio-Partner-ID" value="CIAO Systems GmbH" />
+                    <config key="X-Personio-App-ID" value="rite" />
+
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="Project {" />
                         <config key="postfix" value="}" />
                         <config key="separator" value="&#xA;" />
                         <config key="field-prefix" value=" " />
