@@ -95,7 +95,7 @@ fn handle_device(
     add_field(
         fields,
         "description",
-        Value::String(device.description.clone()),
+        Value::String(device.name.clone()),
     );
     add_field(
         fields,
@@ -132,7 +132,7 @@ fn handle_device(
         add_optional_field(
             fields,
             &format!("{element_prefix}.description"),
-            action.description.clone(),
+            action.name.clone(),
         );
         add_field(
             fields,

@@ -96,8 +96,8 @@ fn handle_time_type(
     add_field(fields, "id", Value::String(time_type.id.clone()));
     add_field(
         fields,
-        "description",
-        Value::String(time_type.description.clone()),
+        "name",
+        Value::String(time_type.name.clone()),
     );
     add_field(
         fields,
@@ -136,7 +136,7 @@ mod tests {
     fn test_handle_time_type() -> Result<(), Box<dyn std::error::Error>> {
         let time_type = TimeType {
             id: "759b2a5d-70fb-4d51-9516-0ab724e36d1d".to_string(),
-            description: "A description".to_string(),
+            name: "A name".to_string(),
             shorthand: "AD".to_string(),
             color: Some(Color {
                 alpha: 0,
@@ -163,8 +163,8 @@ mod tests {
             Value::String(time_type.id)
         );
         assert_eq!(
-            first.field_by_name("description").unwrap().value(),
-            Value::String(time_type.description)
+            first.field_by_name("name").unwrap().value(),
+            Value::String(time_type.name)
         );
         assert_eq!(
             first.field_by_name("shorthand").unwrap().value(),
