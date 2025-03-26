@@ -16,6 +16,8 @@ The importer will retrieve an access token using the Persion authentication API.
 | --- | --- |
 | client_id | The Personio client id |
 | client_secret | The secret for the `client_id` |
+| X-Personio-Partner-ID | See [Personio documentation](https://developer.personio.de/v1.0/reference/include-our-headers-in-your-requests) |
+| X-Personio-App-ID | See [Personio documentation](https://developer.personio.de/v1.0/reference/include-our-headers-in-your-requests) |
 
 ## Importers
 ### Employees
