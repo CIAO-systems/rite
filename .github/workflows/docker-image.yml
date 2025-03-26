@@ -51,7 +51,7 @@ jobs:
       - name: Set platform variable
         id: set-platform
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "**disabled_for_now**" ]]; then
             echo "PLATFORMS=linux/arm64/v8,linux/amd64" >> $GITHUB_ENV
           else
             echo "PLATFORMS=linux/amd64" >> $GITHUB_ENV

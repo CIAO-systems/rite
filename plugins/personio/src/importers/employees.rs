@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use model::{BoxedError, field::add_field, record::Record, value::Value};
 use personio_rs::personnel::{apis::configuration::Configuration, models::EmployeesResponse};
-use tokio::runtime::Runtime;
+
+use super::configuration::GeneralConfiguration;
 
 mod composite;
 mod importer;
@@ -32,20 +33,18 @@ impl Filter {
 }
 
 pub struct Employees {
-    token: Option<String>,
+    general: GeneralConfiguration,
     flags: HashMap<String, bool>,
     limit: Option<i32>,
-    runtime: Option<Runtime>,
     filter: Filter,
 }
 
 impl Employees {
     pub(crate) fn new() -> Self {
         Self {
-            token: None,
+            general: GeneralConfiguration::new(),
             flags: HashMap::new(),
             limit: None,
-            runtime: None,
             filter: Filter::new(),
         }
     }
@@ -56,7 +55,7 @@ impl Employees {
 
     /// Get the Configuration with the `bearer_access_token`
     fn get_personnel_configuration(&self) -> Result<Configuration, BoxedError> {
-        if let Some(ref token) = self.token {
+        if let Some(ref token) = self.general.token {
             let mut configuration = Configuration::new();
             configuration.bearer_access_token = Some(token.clone());
             Ok(configuration)

@@ -1,11 +1,9 @@
 use model::{BoxedError, Initializable};
-use personio_rs::auth::login;
-use tokio::runtime::Runtime;
+
+use crate::importers::configuration::GeneralConfiguration;
 
 use super::FLAG_SALARY;
 
-const CFG_CLIENT_ID: &str = "client_id";
-const CFG_CLIENT_SECRET: &str = "client_secret";
 const CFG_OPTIONS_LIMIT: &str = "options.limit";
 const CFG_FILTER_EMAIL: &str = "filter.email";
 const CFG_FILTER_UPDATED_SINCE: &str = "filter.updated_since";
@@ -17,21 +15,7 @@ impl Initializable for super::Employees {
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), BoxedError> {
         if let Some(config) = config {
-            if let Some(client_id) = config.get(CFG_CLIENT_ID) {
-                if let Some(client_secret) = config.get(CFG_CLIENT_SECRET) {
-                    let runtime = Runtime::new()?;
-                    let result: Result<String, BoxedError> =
-                        runtime.block_on(async { Ok(login(client_id, client_secret).await?) });
-                    match result {
-                        Ok(token) => {
-                            // We have a valid token now, store it and the tokio runtime
-                            self.token = Some(token);
-                            self.runtime = Some(runtime);
-                        }
-                        Err(e) => return Err(e),
-                    }
-                }
-            }
+            self.general = GeneralConfiguration::load(&config)?;
 
             // read flags
             if let Some(salary) = config.get(FLAG_SALARY) {
