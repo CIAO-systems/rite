@@ -26,7 +26,7 @@ impl Importer for super::Employees {
         handler: &mut dyn import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref runtime) = self.general.runtime {
-            let configuration = &self.get_personnel_configuration()?;
+            let configuration = &self.general.get_personnel_configuration()?;
             let limit = self.limit.unwrap_or(10);
 
             let mut paginator = Paginator::new(limit, get_employees_page);

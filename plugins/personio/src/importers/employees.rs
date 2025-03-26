@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 
 use model::{BoxedError, field::add_field, record::Record, value::Value};
-use personio_rs::personnel::{apis::configuration::Configuration, models::EmployeesResponse};
+use personio_rs::personnel::models::EmployeesResponse;
+
+use crate::macros;
 
 use super::configuration::GeneralConfiguration;
 
 mod composite;
 mod importer;
 mod initializable;
-mod macros;
 
 const FLAG_SALARY: &str = "flags.salary";
 
@@ -51,17 +52,6 @@ impl Employees {
 
     fn is_flag_set(&self, flag: &str) -> bool {
         self.flags.get(flag).map_or(false, |&value| value)
-    }
-
-    /// Get the Configuration with the `bearer_access_token`
-    fn get_personnel_configuration(&self) -> Result<Configuration, BoxedError> {
-        if let Some(ref token) = self.general.token {
-            let mut configuration = Configuration::new();
-            configuration.bearer_access_token = Some(token.clone());
-            Ok(configuration)
-        } else {
-            Err("No valid token stored".into())
-        }
     }
 
     /// Iterate the EmployeesResponse and call the record handler.

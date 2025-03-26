@@ -1,4 +1,6 @@
 pub mod importers;
+mod macros;
+
 
 /// This functions creates an importer for the Personio plugin
 ///
@@ -8,6 +10,7 @@ pub fn create_importer(
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
         "employees" => Ok(Box::new(importers::employees::Employees::new())),
+        "projects" => Ok(Box::new(importers::projects::Projects::new())),
         _ => Err(format!("Unknown importer '{name}'").into()),
     }
 }

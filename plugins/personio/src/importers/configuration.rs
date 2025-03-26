@@ -1,5 +1,5 @@
 use model::BoxedError;
-use personio_rs::auth::login;
+use personio_rs::{auth::login, personnel::apis::configuration::Configuration};
 use tokio::runtime::Runtime;
 
 pub const CFG_CLIENT_ID: &str = "client_id";
@@ -51,6 +51,17 @@ impl GeneralConfiguration {
                 config.get(CFG_APP_ID),
             ),
         })
+    }
+
+    /// Get the Configuration with the `bearer_access_token`
+    pub fn get_personnel_configuration(&self) -> Result<Configuration, BoxedError> {
+        if let Some(ref token) = self.token {
+            let mut configuration = Configuration::new();
+            configuration.bearer_access_token = Some(token.clone());
+            Ok(configuration)
+        } else {
+            Err("No valid token stored".into())
+        }
     }
 }
 
