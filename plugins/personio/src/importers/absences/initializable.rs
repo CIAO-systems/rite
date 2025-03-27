@@ -1,6 +1,6 @@
 use model::Initializable;
 
-use crate::importers::configuration::GeneralConfiguration;
+use crate::importers::{absences::filter::AbsencesFilter, configuration::GeneralConfiguration};
 
 impl Initializable for super::Absences {
     fn init(
@@ -9,6 +9,7 @@ impl Initializable for super::Absences {
     ) -> Result<(), model::BoxedError> {
         if let Some(config) = config {
             self.general = GeneralConfiguration::load(&config)?;
+            self.filter = AbsencesFilter::load(&config)?;
         }
         Ok(())
     }

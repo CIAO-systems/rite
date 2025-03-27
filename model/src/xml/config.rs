@@ -1,5 +1,7 @@
 //! The configuration element for all RITE elements (importer, transformer and exporter)
 //!
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
 use crate::BoxedError;
@@ -25,6 +27,7 @@ pub struct ConfigItem {
     /// A string value for this configuration variable
     pub value: String,
 }
+
 impl ConfigItem {
     /// Creates a new configuration variable
     /// # Arguments
@@ -69,7 +72,29 @@ impl Configuration {
 
     /// Get the config value or an error
     pub fn get_result(&self, key: &str) -> Result<String, BoxedError> {
-        Ok(self.get(key).ok_or(format!("Configuration key '{}' missing", key))?)
+        Ok(self
+            .get(key)
+            .ok_or(format!("Configuration key '{}' missing", key))?)
+    }
+
+    /// Get list value (comma separated values)
+    pub fn get_list<I: FromStr>(&self, key: &str) -> Option<Vec<I>> {
+        self.get(key)
+            .map(|s| {
+                s.split(',') // split string
+                    .filter_map(|i| i.trim().parse::<I>().ok()) // trim and convert to I
+                    .collect::<Vec<I>>()
+            })
+            .filter(|vec| !vec.is_empty())
+    }
+
+    /// Get boolean value
+    pub fn get_bool(&self, key: &str) -> Option<bool> {
+        self.get(key).and_then(|s| match s.to_lowercase().as_str() {
+            "true" | "1" => Some(true),
+            "false" | "0" => Some(false),
+            _ => None,
+        })
     }
 
     /// Returns the amount of keys in this configuration
@@ -89,16 +114,21 @@ impl Configuration {
     ///
     pub fn insert(&mut self, key: String, value: String) {
         if let Some(ref mut config) = self.config {
-            config.push(ConfigItem::new(key, value));
+            // Try to find an existing item with the same name
+            if let Some(item) = config.iter_mut().find(|item| item.key == key) {
+                // Update existing item's value
+                item.value = value.to_string();
+            } else {
+                // Add new item if no existing item found
+                config.push(ConfigItem::new(key, value));
+            }
         }
     }
 
     /// Adds a new key to the map with the given value. &str variant
     ///
     pub fn insert_str(&mut self, key: &str, value: &str) {
-        if let Some(ref mut config) = self.config {
-            config.push(ConfigItem::new(key.to_string(), value.to_string()));
-        }
+        self.insert(key.to_string(), value.to_string());
     }
 }
 
@@ -118,70 +148,4 @@ pub fn get_config_value<T: std::str::FromStr>(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_get_config_value_success() {
-        let mut config = Configuration::new();
-        config.insert("port".to_string(), "8080".to_string());
-
-        let port: Option<u16> = get_config_value(&Some(config.clone()), "port");
-        assert_eq!(port, Some(8080));
-
-        let value: Option<String> = get_config_value(&Some(config.clone()), "port");
-        assert_eq!(value, Some("8080".to_string()));
-
-        let enabled: Option<bool> = get_config_value(&Some(config), "enabled"); // Not present
-        assert_eq!(enabled, None);
-
-        let mut config = Configuration::new();
-        config.insert("enabled".to_string(), "true".to_string());
-        let enabled: Option<bool> = get_config_value(&Some(config), "enabled"); // Present
-        assert_eq!(enabled, Some(true));
-    }
-
-    #[test]
-    fn test_get_config_value_missing_key() {
-        let config = Configuration::new();
-        let value: Option<String> = get_config_value(&Some(config), "missing_key");
-        assert_eq!(value, None);
-    }
-
-    #[test]
-    fn test_get_config_value_empty_config() {
-        let value: Option<String> = get_config_value(&None, "any_key");
-        assert_eq!(value, None);
-    }
-
-    #[test]
-    fn test_get_config_value_invalid_type() {
-        let mut config = Configuration::new();
-        config.insert("port".to_string(), "not_a_number".to_string());
-
-        let port: Option<u16> = get_config_value(&Some(config), "port");
-        assert_eq!(port, None); // Parsing should fail
-
-        let mut config = Configuration::new();
-        config.insert("float".to_string(), "3.14".to_string());
-        let float_val: Option<f32> = get_config_value(&Some(config), "float");
-        assert_eq!(float_val, Some(3.14));
-    }
-
-    #[test]
-    fn test_get_config_value_with_spaces() {
-        let mut config = Configuration::new();
-        config.insert(
-            "key_with_spaces".to_string(),
-            "  value with spaces  ".to_string(),
-        );
-
-        let value: Option<String> = get_config_value(&Some(config), "key_with_spaces");
-        assert_eq!(value, Some("  value with spaces  ".to_string())); // Preserves spaces
-
-        let mut config = Configuration::new();
-        config.insert("key_with_spaces_trimmed".to_string(), "  123  ".to_string());
-        let value_trimmed: Option<u32> = get_config_value(&Some(config), "key_with_spaces_trimmed");
-        assert_eq!(value_trimmed, None); // spaces dont parse
-    }
-}
+mod tests;
