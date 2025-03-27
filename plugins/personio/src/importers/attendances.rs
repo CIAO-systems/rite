@@ -51,8 +51,6 @@ impl Attendances {
                     add_field(record.fields_as_mut(), &key, Value::from(value.clone()));
                 }
 
-                //println!("{:#?}", attendance);
-
                 handler.handle_record(&mut record)?;
             }
         }
