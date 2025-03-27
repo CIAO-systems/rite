@@ -1,3 +1,4 @@
+use filter::AttendancesFilter;
 use import::RecordHandler;
 use model::{BoxedError, field::add_field, record::Record, value::Value};
 
@@ -7,33 +8,7 @@ use super::configuration::GeneralConfiguration;
 
 mod importer;
 mod initializable;
-
-const CFG_FILTER_START_DATE: &str = "filter.start_date";
-const CFG_FILTER_END_DATE: &str = "filter.end_date";
-
-pub struct AttendancesFilter {
-    start_date: String,
-    end_date: String,
-}
-
-impl AttendancesFilter {
-    fn new() -> Self {
-        Self {
-            start_date: "".to_string(),
-            end_date: "".to_string(),
-        }
-    }
-
-    fn load(config: &model::xml::config::Configuration) -> Result<Self, BoxedError> {
-        let start_date = config.get_result(CFG_FILTER_START_DATE)?;
-        let end_date = config.get_result(CFG_FILTER_END_DATE)?;
-
-        Ok(Self {
-            start_date,
-            end_date,
-        })
-    }
-}
+mod filter;
 
 pub struct Attendances {
     general: GeneralConfiguration,
@@ -69,8 +44,8 @@ impl Attendances {
                 macros::add_field_direct!(record, attributes, is_holiday);
                 macros::add_field_direct!(record, attributes, is_on_time_off);
 
-                // TODO status
-                // TODO: project
+                add_status(&mut record, attributes);
+                add_project(&mut record, attributes);
 
                 for (key, value) in &attendance.additional_properties {
                     add_field(record.fields_as_mut(), &key, Value::from(value.clone()));
@@ -82,5 +57,29 @@ impl Attendances {
             }
         }
         Ok(())
+    }
+}
+
+fn add_project(record: &mut Record, attributes: &Box<personio_rs::personnel::models::Attendance>) {
+    if let Some(ref project) = attributes.project {
+        if let Some(project) = project {
+            let mut project_record = Record::new();
+            macros::add_field_direct!(project_record, project, id);
+            if let Some(ref attributes) = project.attributes {
+                macros::add_field_direct!(project_record, attributes, active);
+                macros::add_field_direct!(project_record, attributes, name);
+            }
+            add_field(record.fields_as_mut(), "project", project_record.into());
+        }
+    }
+}
+
+fn add_status(record: &mut Record, attributes: &Box<personio_rs::personnel::models::Attendance>) {
+    if let Some(status) = attributes.status {
+        add_field(
+            record.fields_as_mut(),
+            "status",
+            format!("{:?}", status).into(),
+        );
     }
 }

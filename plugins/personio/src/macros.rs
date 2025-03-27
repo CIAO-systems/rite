@@ -26,7 +26,7 @@ macro_rules! add_field {
         if let Some(value) = macros::get_value!($attr, $field) {
             model::field::add_field(
                 $fields,
-                stringify!($field),
+                crate::macros::name_from_ident(stringify!($field)),
                 model::value::Value::from(value),
             );
         }
@@ -37,17 +37,21 @@ macro_rules! add_field_none {
     ($record:expr, $attributes:expr, $field:ident) => {
         let inner = &$attributes.$field;
         $record.fields_as_mut().push(model::field::Field::new_value(
-            stringify!($field),
+            crate::macros::name_from_ident(stringify!($field)),
             model::value::Value::from(inner.clone()),
         ));
     };
+}
+
+pub fn name_from_ident(ident: &str) -> &str {
+    ident.strip_prefix("r#").unwrap_or(ident)
 }
 
 macro_rules! add_field_direct {
     ($record:expr, $attributes:expr, $field:ident) => {
         if let Some(inner) = &$attributes.$field {
             $record.fields_as_mut().push(model::field::Field::new_value(
-                stringify!($field),
+                crate::macros::name_from_ident(stringify!($field)),
                 model::value::Value::from(inner.clone()),
             ));
         }
@@ -59,7 +63,7 @@ macro_rules! add_field_option {
         if let Some(outer) = &$attributes.$field {
             if let Some(inner) = outer {
                 $record.fields_as_mut().push(model::field::Field::new_value(
-                    stringify!($field),
+                    crate::macros::name_from_ident(stringify!($field)),
                     model::value::Value::from(inner.clone()),
                 ));
             }
@@ -73,7 +77,7 @@ macro_rules! add_field_boxed {
             if let Some(ref outer) = boxed.value {
                 if let Some(inner) = outer {
                     $record.fields_as_mut().push(model::field::Field::new_value(
-                        stringify!($field),
+                        crate::macros::name_from_ident(stringify!($field)),
                         model::value::Value::from(inner.clone()),
                     ));
                 }
@@ -86,7 +90,7 @@ pub(crate) use add_field;
 pub(crate) use get_value;
 pub(crate) use unpack_attribute;
 
-pub(crate) use add_field_none;
 pub(crate) use add_field_boxed;
 pub(crate) use add_field_direct;
+pub(crate) use add_field_none;
 pub(crate) use add_field_option;
