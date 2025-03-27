@@ -13,13 +13,13 @@ mod initializable;
 
 const FLAG_SALARY: &str = "flags.salary";
 
-pub struct Filter {
+pub struct EmployeesFilter {
     email: Option<String>,
     updated_since: Option<String>,
     attributes: Option<Vec<String>>,
 }
 
-impl Filter {
+impl EmployeesFilter {
     pub fn new() -> Self {
         Self {
             email: None,
@@ -36,8 +36,7 @@ impl Filter {
 pub struct Employees {
     general: GeneralConfiguration,
     flags: HashMap<String, bool>,
-    limit: Option<i32>,
-    filter: Filter,
+    filter: EmployeesFilter,
 }
 
 impl Employees {
@@ -45,8 +44,7 @@ impl Employees {
         Self {
             general: GeneralConfiguration::new(),
             flags: HashMap::new(),
-            limit: None,
-            filter: Filter::new(),
+            filter: EmployeesFilter::new(),
         }
     }
 
