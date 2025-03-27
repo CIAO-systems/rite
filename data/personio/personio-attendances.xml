@@ -14,9 +14,8 @@
                     <config key="X-Personio-App-ID" value="rite" />
 
                     <config key="filter.start_date" value="2024-01-01" />
-                    <config key="filter.end_date" value="2025-03-26" />
+                    <config key="filter.end_date" value="2025-12-31" />
 
-                    <!-- <config key="filter.employees" value="1" /> -->
                     <config key="filter.includePending" value="false" />
                     
                 </configuration>
