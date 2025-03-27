@@ -4,7 +4,6 @@ use crate::importers::configuration::GeneralConfiguration;
 
 use super::FLAG_SALARY;
 
-const CFG_OPTIONS_LIMIT: &str = "options.limit";
 const CFG_FILTER_EMAIL: &str = "filter.email";
 const CFG_FILTER_UPDATED_SINCE: &str = "filter.updated_since";
 const CFG_FILTER_ATTRIBUTES: &str = "filter.attributes";
@@ -21,13 +20,6 @@ impl Initializable for super::Employees {
             if let Some(salary) = config.get(FLAG_SALARY) {
                 if let Ok(salary) = salary.parse::<bool>() {
                     self.flags.insert(String::from(FLAG_SALARY), salary);
-                }
-            }
-
-            // read options
-            if let Some(limit) = config.get(CFG_OPTIONS_LIMIT) {
-                if let Ok(limit) = limit.parse::<i32>() {
-                    self.limit = Some(limit);
                 }
             }
 
