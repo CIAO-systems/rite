@@ -16,9 +16,6 @@
                     <config key="options.limit" value="1" />
                     <config key="filter.start_date" value="2025-01-01" />
                     <config key="filter.end_date" value="2025-12-31" />
-                    <!-- <config key="filter.updated_from" value="2025-01-01" /> -->
-                    <!-- <config key="filter.updated_to" value="2025-01-01" /> -->
-                    <!-- <config key="filter.employees" value="1,2,3" /> -->
 
                 </configuration>
             </importer>
