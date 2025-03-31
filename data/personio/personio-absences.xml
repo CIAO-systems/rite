@@ -25,7 +25,7 @@
             <exporters>
                 <exporter plugin="common" name="console">
                     <configuration>
-                        <config key="prefix" value="Employee {" />
+                        <config key="prefix" value="Absence {" />
                         <config key="postfix" value="}" />
                         <config key="separator" value="&#xA;" />
                         <config key="field-prefix" value=" " />

@@ -83,6 +83,67 @@ documentation for the [company attendances](https://developer.personio.de/v1.0/r
 </rite>
 ```
 
+### Absences
+The `absences` importer reads the personio company absences using the Personio API v1 (using the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
+```xml
+    <!-- ... -->
+            <importer plugin="personio" name="attendances">
+                <!-- Configuration goes here -->
+            <importer>
+    <!-- ... -->
+```
+#### Configuration
+| Key | Description | Default | Required |
+| --- | --- | --- | --- |
+| options.limit | Page size for pagination | 200 | false |
+| filter.start_date | See [Personio API documentation](https://developer.personio.de/v1.0/reference/get_company-time-offs) |  | false |
+| filter.end_date | See [Personio API documentation](https://developer.personio.de/v1.0/reference/get_company-time-offs) |  | true |
+| filter.updated_from | See [Personio API documentation](https://developer.personio.de/v1.0/reference/get_company-time-offs) |  | false |
+| filter.updated_to | See [Personio API documentation](https://developer.personio.de/v1.0/reference/get_company-time-offs) |  | false |
+| filter.employees | A comma separated list of employee ids (integer) to include in the result. See [Personio API documentation](https://developer.personio.de/v1.0/reference/get_company-time-offs) | | false |
+
+#### Results
+The resulting records will contain the fields as described in the Personio API V1 
+documentation for the [company attendances](https://developer.personio.de/v1.0/reference/get_company-time-offs)
+
+#### Example
+```xml
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="personio" name="rite_personio"/>
+    </plugins>
+    <processes>
+        <process id="Personio absences">
+            <importer plugin="personio" name="absences">
+                <configuration>
+                    <config key="client_id" value="$PERSONIO_CLIENT_ID" />
+                    <config key="client_secret" value="$PERSONIO_CLIENT_SECRET" />
+
+                    <config key="X-Personio-Partner-ID" value="CIAO Systems GmbH" />
+                    <config key="X-Personio-App-ID" value="rite" />
+
+                    <config key="options.limit" value="1" />
+                    <config key="filter.start_date" value="2025-01-01" />
+                    <config key="filter.end_date" value="2025-12-31" />
+
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="Absence {" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>
+```
+
 ### Employees
 The `employees` importer reads the personio company employees using the Personio API v1 (using the project [personio-rs](https://github.com/CIAO-systems/personio-rs)) 
 ```xml
