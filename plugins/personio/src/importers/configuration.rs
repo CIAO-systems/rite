@@ -8,6 +8,7 @@ const CFG_PARTNER_ID: &str = "X-Personio-Partner-ID";
 const CFG_APP_ID: &str = "X-Personio-App-ID";
 const CFG_OPTIONS_LIMIT: &str = "options.limit";
 
+#[derive(Debug)]
 pub struct PersonioHeaders {
     pub partner_id: Option<String>,
     pub app_id: Option<String>,
@@ -26,6 +27,7 @@ impl PersonioHeaders {
     }
 }
 
+#[derive(Debug)]
 pub struct GeneralConfiguration {
     pub token: Option<String>,
     pub runtime: Option<Runtime>,

@@ -2402,6 +2402,7 @@ name = "rite_personio"
 version = "0.1.0"
 dependencies = [
  "import",
+ "log",
  "model",
  "personio-rs",
  "tokio",

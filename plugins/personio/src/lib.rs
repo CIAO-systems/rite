@@ -10,6 +10,7 @@ pub fn create_importer(
     match name {
         "employees" => Ok(Box::new(importers::employees::Employees::new())),
         "projects" => Ok(Box::new(importers::projects::Projects::new())),
+        "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "attendances" => Ok(Box::new(importers::attendances::Attendances::new())),
         _ => Err(format!("Unknown importer '{name}'").into()),
     }
