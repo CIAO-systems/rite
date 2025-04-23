@@ -1,4 +1,8 @@
 #!/bin/env bash
+#
+#   Script to build the container image using the Open SSH private key for GitHub access
+#   ./build-image.sh ~/.ssh/<your-github-private-key-for-ciao>
+#
 eval "$(ssh-agent -s)"
 ssh-add $1
 
@@ -9,4 +13,3 @@ docker buildx \
     --ssh default=$SSH_AUTH_SOCK \
     -t rite:latest .
 
-#    --platform linux/arm64/v8,linux/amd64 \ # build for both ARM and x86 https://docs.docker.com/build/building/multi-platform/
