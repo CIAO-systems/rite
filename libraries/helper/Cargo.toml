@@ -1,0 +1,13 @@
+[package]
+name = "helper"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andreas Blochberger"]
+description = "Some helpful functions"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+publish = ["kellnr"]
+
+[dependencies]
+log = "0.4"
