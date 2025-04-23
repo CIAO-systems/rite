@@ -349,7 +349,7 @@ dependencies = [
  "chrono",
  "chrono-tz 0.10.3",
  "futures",
- "grpc-utils-rs 0.1.0 (git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git)",
+ "grpc-utils-rs",
  "iana-time-zone",
  "log",
  "prost",
@@ -910,27 +910,6 @@ dependencies = [
  "bitflags",
  "ignore",
  "walkdir",
-]
-
-[[package]]
-name = "grpc-utils-rs"
-version = "0.1.0"
-dependencies = [
- "log",
- "prost",
- "prost-types",
- "tonic",
-]
-
-[[package]]
-name = "grpc-utils-rs"
-version = "0.1.0"
-source = "git+ssh://git@github.com/CIAO-systems/grpc-utils-rs.git#31f1eebac244161de573d0cd4607dbc0aad7ed60"
-dependencies = [
- "log",
- "prost",
- "prost-types",
- "tonic",
 ]
 
 [[package]]
@@ -2330,7 +2309,7 @@ dependencies = [
  "base64",
  "chrono",
  "futures",
- "grpc-utils-rs 0.1.0 (git+https://github.com/CIAO-systems/grpc-utils-rs)",
+ "grpc-utils-rs",
  "helper",
  "import",
  "log",
@@ -2354,7 +2333,7 @@ dependencies = [
  "dotenv",
  "export",
  "futures",
- "grpc-utils-rs 0.1.0 (git+https://github.com/CIAO-systems/grpc-utils-rs)",
+ "grpc-utils-rs",
  "import",
  "log",
  "model",

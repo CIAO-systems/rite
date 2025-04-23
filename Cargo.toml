@@ -11,5 +11,13 @@ members = [
     "examples/example_import", 
     "examples/example_export", 
     "examples/example_transform", 
-    "plugins/postgres"
-, "plugins/rest", "plugins/common", "plugins/youtrack", "plugins/ciao", "plugins/faker", "plugins/csv", "plugins/atc", "grpc-utils-rs", "plugins/personio"]
+    "plugins/postgres", 
+    "plugins/rest", 
+    "plugins/common", 
+    "plugins/youtrack", 
+    "plugins/ciao", 
+    "plugins/faker", 
+    "plugins/csv", 
+    "plugins/atc", 
+    "plugins/personio"
+]
