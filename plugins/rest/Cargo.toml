@@ -10,8 +10,8 @@ publish = ["kellnr"]
 
 
 [dependencies]
-model = { version="0.1", registry="kellnr", path="../../model" }
-import = { version="0.1.0", registry="kellnr", path="../../import" }
+model = { version="0.1", registry="kellnr", path="../../libraries/model" }
+import = { version="0.1.0", registry="kellnr", path="../../libraries/import" }
 
 log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json"] }

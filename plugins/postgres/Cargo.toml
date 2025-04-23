@@ -10,10 +10,10 @@ publish = ["kellnr"]
 
 
 [dependencies]
-model = { version="0.1", registry="kellnr", path="../../model" }
-import = { version="0.1.0", registry="kellnr", path="../../import" }
-export = { version="0.1.0", registry="kellnr", path="../../export" }
-helper = { version="0.1.0", registry="kellnr", path="../../helper" }
+model = { version="0.1", registry="kellnr", path="../../libraries/model" }
+import = { version="0.1.0", registry="kellnr", path="../../libraries/import" }
+export = { version="0.1.0", registry="kellnr", path="../../libraries/export" }
+helper = { version="0.1.0", registry="kellnr", path="../../libraries/helper" }
 
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.5"

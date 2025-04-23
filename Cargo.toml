@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2"
 members = [ 
-    "export", 
-    "helper",
-    "import", 
-    "model", 
+    "libraries/export", 
+    "libraries/helper",
+    "libraries/import", 
+    "libraries/model", 
+    "libraries/transform", 
+    "libraries/plugin", 
     "rite", 
-    "transform", 
-    "plugin", 
     "examples/example_import", 
     "examples/example_export", 
     "examples/example_transform", 
