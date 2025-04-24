@@ -13,10 +13,10 @@ RUN apt-get update && \
     update-ca-certificates
 
 # Add SSH key
-RUN mkdir -p /root/.ssh
+#RUN mkdir -p /root/.ssh
 
 # Add GitHub to known hosts
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+#RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 
 # Create a working directory
@@ -27,8 +27,11 @@ WORKDIR /build
 #COPY ./.cargo ./.cargo
 
 # Copy the projects into the image
-COPY .. . 
+COPY ./libraries /build/libraries
+COPY ./base /build/base
+COPY ./data /build/data
 
+WORKDIR /build/base
 
 # Build workspace with credentials provided via SSH agent
 RUN --mount=type=ssh \
@@ -62,8 +65,8 @@ LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
 WORKDIR /app
 
 # Copy the built binary from the builder image to the WORKDIR
-COPY --from=builder /build/target/release/*.so .
-COPY --from=builder /build/target/release/rite .
+COPY --from=builder /build/base/target/release/*.so .
+COPY --from=builder /build/base/target/release/rite .
 
 # Set the library path
 ENV LD_LIBRARY_PATH=/lib:/lib64:/app
@@ -71,7 +74,7 @@ ENV LD_LIBRARY_PATH=/lib:/lib64:/app
 # Create mount point for input files
 RUN mkdir /data /app/logs
 
-COPY --from=builder /build/log4rs.yaml /data
+COPY ./log4rs.yaml /data
 RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
 
 RUN echo 'export PS1="rite-container@\\h:\\w \\$ "' >> /etc/bash.bashrc
