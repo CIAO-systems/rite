@@ -4,10 +4,12 @@ on:
   workflow_dispatch:
 
   push:
-    branches: ["main"]
+    branches: # ["main"]
+      - never-trigger-this
 
   pull_request:
-    branches: ["main"]
+    branches: # ["main"]
+    - never-trigger-this
 
 env:
   REGISTRY: ghcr.io
