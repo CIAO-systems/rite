@@ -1,9 +1,0 @@
-syntax = "proto3";
-package ciao.common;
-
-import "ciao/common/timestamp.proto";
-
-message TimeRange {
-  ciao.common.Timestamp start_time = 1;
-  ciao.common.Timestamp end_time = 2;
-}

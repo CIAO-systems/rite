@@ -1,4 +1,0 @@
-[submodule "ciao-proto"]
-	path = ciao-proto
-	url = git@github.com:CIAO-systems/ciao-proto.git
-	branch = main
