@@ -37,8 +37,18 @@ A set of dynamic libraries to be used as [plugins](extended/plugins/README.md) f
 A set of dynamic libraries to be used as [plugins](custom/plugins/README.md) for rite
 
 # Building
+## git submodules
 Some of the projects use git submodules. To initialize all of them, including 
 nested submodules, execute the following command:
 ```bash
 git submodule update --init --recursive
+```
+### Branch
+To make sure, that the submodule uses the `HEAD` of the `main` branch, execute this (replacing <submodule-path> with the actual path of the submodule):
+```bash
+git submodule set-branch -b main -- <submodule-path>
+```
+To update the submodule to the latest commit in the branch, execute:
+```bash
+git submodule update --remote --merge
 ```

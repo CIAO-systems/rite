@@ -1,3 +1,4 @@
 [submodule "custom/plugins/ciao/ciao-rs"]
 	path = custom/plugins/ciao/ciao-rs
 	url = git@github.com:CIAO-systems/ciao-rs.git
+	branch = main
