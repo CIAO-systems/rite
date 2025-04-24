@@ -30,6 +30,7 @@ jobs:
                 registry: ${{ env.REGISTRY }}
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Extract metadata (tags, labels) for Docker
               id: meta
               uses: docker/metadata-action@v4
@@ -50,7 +51,7 @@ jobs:
               with:
                 context: .
                 file: ./Dockerfile.base
-                push: true
+                push: false
                 tags: ${{ steps.meta.outputs.tags }}
                 labels: ${{ steps.meta.outputs.labels }}
                 ssh: default
@@ -170,7 +171,7 @@ jobs:
               with:
                 context: .
                 file: ./Dockerfile.custom
-                push: false
+                push: true
                 tags: ${{ steps.meta.outputs.tags }}
                 labels: ${{ steps.meta.outputs.labels }}
                 ssh: default
