@@ -1,4 +1,4 @@
-name: RITE container image
+name: RITE base container image
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}-base
 
 jobs:
   build:
@@ -40,10 +40,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRPC_UTILS }}
+      # - name: Set up SSH agent
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRPC_UTILS }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -62,6 +62,7 @@ jobs:
         id: build-and-push
         with:
           context: .
+          file: ./Dockerfile.base
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

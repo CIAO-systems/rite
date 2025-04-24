@@ -12,19 +12,12 @@ RUN apt-get update && \
     apt-get install -y pkg-config && \
     update-ca-certificates
 
-# Add SSH key
-#RUN mkdir -p /root/.ssh
-
-# Add GitHub to known hosts
-#RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-
-
 # Create a working directory
 WORKDIR /build
 
 # Add the .cargo directory with the config.toml
-#ENV CARGO_HOME=/workdir/.cargo 
-#COPY ./.cargo ./.cargo
+ENV CARGO_HOME=/workdir/.cargo 
+COPY ./.cargo ./.cargo
 
 # Copy the projects into the image
 COPY ./libraries /build/libraries
