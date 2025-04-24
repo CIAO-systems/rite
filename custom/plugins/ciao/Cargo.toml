@@ -1,0 +1,26 @@
+[package]
+name = "rite_ciao"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { version="0.1", path="../../../libraries/model" }
+import = { version="0.1.0", path="../../../libraries/import" }
+export = { version="0.1.0", path="../../../libraries/export" }
+ciao-rs = {version = "0.1", path = "ciao-rs"}
+grpc-utils-rs = { git="https://github.com/CIAO-systems/grpc-utils-rs" }
+
+log = "0.4"
+prost = "0.13"
+tonic = "0.12"
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+prost-types = "0.13"
+chrono = "0.4"
+
+[dev-dependencies]
+dotenv = "0.15"
+
+[lib]
+name = "rite_ciao"
+crate-type = ["dylib"]

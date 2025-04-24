@@ -1,0 +1,58 @@
+syntax = "proto3";
+package ciao.devices;
+
+message Device {
+  // Unique id (UUID)
+  string id = 1;
+  string name = 2;
+  DeviceType type = 3;
+
+  // Optional. The time zone of the device. If omitted, device returns
+  // timestamps in local time
+  optional string time_zone_id = 4;
+
+  // Custom unique external id
+  string external_id = 5;
+
+  repeated DeviceAction actions = 10;
+}
+
+message DeviceAction {
+  int32 id = 1;
+  // e.g. DataFox record type (an int from 1-6 for the button position)
+  int32 device_action_id = 2;
+  optional string icon = 3;
+  optional string name = 4;
+
+  DeviceActionType type = 5;
+
+  // Action configuration, based on the type
+  oneof configuration {
+    ClockConfiguration clock = 100;
+    CustomConfiguration custom = 101;
+  }
+}
+
+enum DeviceType {
+  UNKNOWN = 0;
+  DATAFOX = 1;
+  MOBILE = 2;
+}
+
+enum DeviceActionType {
+  CLOCK = 0;
+  CUSTOM = 1; //
+}
+
+message ClockConfiguration {
+  // Default configured parameters to clock on
+  string time_type_id = 1;
+  string cost_center_id = 2;
+  string project_id = 3;
+  string project_task_id = 4;
+}
+
+message CustomConfiguration {
+  // the operation that should be carried out by the device process
+  string operation = 1;
+}

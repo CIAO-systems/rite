@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package ciao.common;
+
+// Address information
+message Address {
+  // Name of the city
+  string city = 1;
+
+  // Postalcode (or ZIP) code
+  string postal_code = 2;
+
+  // Name of the street including house number
+  // optionally with additional information like floor or apartment number
+  string address_line_1 = 3;
+  string address_line_2 = 6;
+
+  // Country name (e.g. DE for Germany)
+  string region_code = 4;
+
+  // State or province (e.g. Bavaria or California)
+  string state = 5;
+}

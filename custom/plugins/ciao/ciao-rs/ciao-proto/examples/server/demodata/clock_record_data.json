@@ -1,0 +1,325 @@
+[
+    {
+        "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": {
+            "time_utc": "2024-10-27T11:25:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "user_id": "user123",
+        "device_id": "terminal456",
+        "time_type_id": "work",
+        "project_id": "projectA",
+        "cost_center_id": "cc123",
+        "project_task_id": "task789"
+    },
+    {
+        "id": "b2c3d4e5-f6a7-8901-2345-678901bcdefa",
+        "timestamp": {
+            "time_utc": "2024-10-27T10:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badge_id": "badge987",
+        "device_id": "terminal456",
+        "time_type_id": "break"
+    },
+    {
+        "id": "c3d4e5f6-a7b8-9012-3456-789012cdefab",
+        "timestamp": {
+            "time_utc": "2024-10-27T10:20:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "user_id": "user456",
+        "time_type_id": "work",
+        "project_id": "projectB"
+    },
+    {
+        "id": "d4e5f6a7-b8c9-0123-4567-890123defabc",
+        "timestamp": {
+            "time_utc": "2024-10-27T10:40:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badge_id": "badge654",
+        "device_id": "terminal789",
+        "time_type_id": "lunch",
+        "cost_center_id": "cc456"
+    },
+    {
+        "id": "e5f6a7b8-c9d0-1234-5678-901234efabcd",
+        "timestamp": {
+            "time_utc": "2024-10-27T10:35:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "user_id": "user789",
+        "time_type_id": "work",
+        "project_id": "projectA",
+        "project_task_id": "task123"
+    },
+    {
+        "id": "f6a7b8c9-d0e1-2345-6789-012345fabcde",
+        "timestamp": {
+            "time_utc": "2024-10-27T11:10:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badge_id": "badge123",
+        "device_id": "terminal123",
+        "time_type_id": "end"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:15:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user456",
+        "deviceId": "terminal456",
+        "timeTypeId": "work",
+        "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:20:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge789",
+        "deviceId": "terminal789",
+        "timeTypeId": "break",
+        "id": "b2c3d4e5-f6a7-8901-2345-678901bcdefa"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:25:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user101",
+        "deviceId": "terminal101",
+        "timeTypeId": "lunch",
+        "id": "c3d4e5f6-a7b8-9012-3456-789012cdefab"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:30:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge202",
+        "deviceId": "terminal202",
+        "timeTypeId": "end",
+        "id": "d4e5f6a7-b8c9-0123-4567-890123defabc"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:35:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user303",
+        "deviceId": "terminal303",
+        "timeTypeId": "work",
+        "id": "e5f6a7b8-c9d0-1234-5678-901234efabcd"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:40:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge404",
+        "deviceId": "terminal404",
+        "timeTypeId": "break",
+        "id": "f6a7b8c9-d0e1-2345-6789-012345fabcde"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:45:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user505",
+        "deviceId": "terminal505",
+        "timeTypeId": "lunch",
+        "id": "a7b8c9d0-e1f2-3456-7890-123456bcdef0"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:50:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge606",
+        "deviceId": "terminal606",
+        "timeTypeId": "end",
+        "id": "b8c9d0e1-f2a3-4567-8901-234567cdef0a"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T11:55:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user707",
+        "deviceId": "terminal707",
+        "timeTypeId": "work",
+        "id": "c9d0e1f2-a3b4-5678-9012-345678def0ab"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T12:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user808",
+        "deviceId": "terminal808",
+        "timeTypeId": "break",
+        "projectId": "projectA",
+        "costCenterId": "cc123",
+        "id": "d0e1f2a3-b4c5-6789-0123-456789ef0abc"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T12:05:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge909",
+        "deviceId": "terminal909",
+        "timeTypeId": "lunch",
+        "projectId": "projectB",
+        "id": "e1f2a3b4-c5d6-7890-1234-567890f0abcd"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T12:10:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user1001",
+        "deviceId": "terminal001",
+        "timeTypeId": "end",
+        "projectId": "projectC",
+        "costCenterId": "cc456",
+        "projectTaskId": "task789",
+        "id": "f2a3b4c5-d6e7-8901-2345-6789010abcdef"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T12:15:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge1111",
+        "deviceId": "terminal111",
+        "timeTypeId": "work",
+        "id": "a3b4c5d6-e7f8-9012-3456-789012abcdef1"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2024-10-27T12:20:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user1212",
+        "deviceId": "terminal212",
+        "timeTypeId": "break",
+        "costCenterId": "cc789",
+        "id": "b4c5d6e7-f8a9-0123-4567-890123bcdef1a"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-01T08:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user2001",
+        "deviceId": "terminal001",
+        "timeTypeId": "work",
+        "id": "e8f9a0b1-c2d3-4567-8901-234567f2abcd"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-01T12:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge2002",
+        "deviceId": "terminal002",
+        "timeTypeId": "lunch",
+        "projectId": "projectA",
+        "id": "f9a0b1c2-d3e4-5678-9012-345678a3bcde"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-02T16:30:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user2003",
+        "deviceId": "terminal003",
+        "timeTypeId": "end",
+        "costCenterId": "cc123",
+        "id": "a0b1c2d3-e4f5-6789-0123-456789b4cdef"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-03T09:15:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge2004",
+        "deviceId": "terminal004",
+        "timeTypeId": "work",
+        "projectTaskId": "task456",
+        "id": "b1c2d3e4-f5a6-7890-1234-567890c5defa"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-04T13:45:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user2005",
+        "deviceId": "terminal005",
+        "timeTypeId": "break",
+        "projectId": "projectB",
+        "costCenterId": "cc456",
+        "id": "c2d3e4f5-a6b7-8901-2345-678901d6efab"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-05T17:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge2006",
+        "deviceId": "terminal006",
+        "timeTypeId": "lunch",
+        "id": "d3e4f5a6-b7c8-9012-3456-789012e7fabc"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-06T10:30:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user2007",
+        "deviceId": "terminal007",
+        "timeTypeId": "end",
+        "projectId": "projectC",
+        "projectTaskId": "task789",
+        "id": "e4f5a6b7-c8d9-0123-4567-890123f8abcd"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-07T14:15:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge2008",
+        "deviceId": "terminal008",
+        "timeTypeId": "work",
+        "costCenterId": "cc789",
+        "id": "f5a6b7c8-d9e0-2345-6789-01234509bcde"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-08T18:00:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "userId": "user2009",
+        "deviceId": "terminal009",
+        "timeTypeId": "break",
+        "id": "a6b7c8d9-e0f1-3456-7890-12345610cdef"
+    },
+    {
+        "timestamp": {
+            "timeUtc": "2025-01-09T09:45:00Z",
+            "timeZone": "Europe/Berlin"
+        },
+        "badgeId": "badge2010",
+        "deviceId": "terminal010",
+        "timeTypeId": "lunch",
+        "projectId": "projectA",
+        "costCenterId": "cc123",
+        "projectTaskId": "task123",
+        "id": "b7c8d9e0-f1a2-4567-8901-23456721defa"
+    }
+]

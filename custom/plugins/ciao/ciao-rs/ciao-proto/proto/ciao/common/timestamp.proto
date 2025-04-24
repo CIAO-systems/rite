@@ -1,0 +1,11 @@
+syntax = "proto3";
+package ciao.common;
+
+import "google/protobuf/timestamp.proto";
+
+message Timestamp {
+  // The time in UTC
+  google.protobuf.Timestamp time_utc = 1;
+  // The TZ identifier
+  string time_zone = 2;
+}

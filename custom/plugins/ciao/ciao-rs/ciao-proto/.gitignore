@@ -1,0 +1,12 @@
+target/
+
+# Devenv
+.devenv*
+devenv.*
+.envrc
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

@@ -5,12 +5,11 @@ edition = "2021"
 description = "RITE example importer"
 repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
-publish = ["kellnr"]
 
 [dependencies]
-model = { version="0.1", registry="kellnr", path="../../libraries/model" }
-import = { version="0.1", registry="kellnr", path="../../libraries/import" }
-helper = { version="0.1", registry="kellnr", path="../../libraries/helper" }
+model = { version="0.1", path="../../libraries/model" }
+import = { version="0.1", path="../../libraries/import" }
+helper = { version="0.1", path="../../libraries/helper" }
 
 [lib]
 name = "example_import"

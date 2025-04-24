@@ -1,0 +1,23 @@
+[package]
+name = "rite_faker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { version="0.1", path="../../../libraries/model" }
+import = { version="0.1.0", path="../../../libraries/import" }
+
+chrono = { version="0.4"}
+uuid = { version = "1.13", features = ["v4"] }
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde-xml-rs = "0.5"
+rand = "0.9.0"
+chrono-tz = "0.10.1"
+
+[lib]
+name = "rite_faker"
+crate-type = ["dylib"]
+
+[dev-dependencies]
+regex = "1.11.1"

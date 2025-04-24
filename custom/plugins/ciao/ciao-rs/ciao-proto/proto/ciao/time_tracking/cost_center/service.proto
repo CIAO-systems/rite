@@ -1,0 +1,65 @@
+syntax = "proto3";
+package ciao.time_tracking.cost_center;
+
+import "ciao/time_tracking/cost_center/cost_center.proto";
+
+// Service for CostCenter data
+service CostCenterService {
+  // Returns a cost center that matches the request filter
+  rpc Get(GetRequest) returns (GetResponse);
+
+  // Returns all cost centers that match the request filter
+  rpc List(ListRequest) returns (stream ListResponse);
+
+  // Create a new cost center
+  rpc Create(CreateRequest) returns (CreateResponse);
+
+  // Update an existing cost center
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+
+  // Delete a cost center
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+// Request parameter for CostCenterService.Get
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  CostCenter cost_center = 1;
+}
+
+// Request parameter for CostCenterService.List
+message ListRequest {}
+
+message ListResponse {
+  repeated CostCenter cost_centers = 1;
+}
+
+// Request parameter for CostCenterService.Create
+message CreateRequest {
+  CostCenter cost_center = 1;
+}
+
+message CreateResponse {
+  CostCenter cost_center = 1;
+}
+
+// Request parameter for CostCenterService.Update
+message UpdateRequest {
+  CostCenter cost_center = 1;
+}
+
+message UpdateResponse {
+  CostCenter cost_center = 1;
+}
+
+// Request parameter for CostCenterService.Delete
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}

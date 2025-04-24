@@ -1,0 +1,27 @@
+syntax = "proto3";
+package ciao.core.config;
+
+service ConfigurationService {
+  // Returns a list of configuration value entries
+  rpc GetConfigurationValues(ConfigurationValuesRequest) returns (ConfigurationValuesResponse);
+  // Returns details about the server
+  rpc GetServerInfo(ServerInfoRequest) returns (ServerInfoResponse);
+}
+
+// Request to return configuration values for the given `keys`. If `keys` is
+// empty, all known configuration values should be returned
+message ConfigurationValuesRequest {
+  repeated string keys = 1;
+}
+
+// A map of the configuration values requested
+message ConfigurationValuesResponse {
+  map<string, string> entries = 1;
+}
+
+message ServerInfoRequest {}
+
+message ServerInfoResponse {
+  string version = 1;
+  string build_time = 2;
+}

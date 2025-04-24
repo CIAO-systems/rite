@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package ciao.common;
+
+import "ciao/common/timestamp.proto";
+
+// Encapsulation of an image. The `id` is used to fetch the image from an image service
+message Image {
+  // Id used as a parameter for an image service
+  string id = 1;
+  ciao.common.Timestamp updated_at = 2;
+}

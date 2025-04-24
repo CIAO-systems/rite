@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ciao.time_tracking.cost_center;
+
+// Cost center data
+message CostCenter {
+  // Unique id (UUID)
+  string id = 1;
+  string name = 2;
+}

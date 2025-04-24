@@ -1,0 +1,63 @@
+syntax = "proto3";
+package ciao.time_tracking.project.task;
+
+import "ciao/time_tracking/project/task/project_task.proto";
+
+// Service for managing project tasks
+service ProjectTaskService {
+  // Get a single task by ID
+  rpc Get(GetRequest) returns (GetResponse);
+
+  // List tasks for a project
+  rpc List(ListRequest) returns (stream ListResponse);
+
+  // Create a new task
+  rpc Create(CreateRequest) returns (CreateResponse);
+
+  // Update an existing task
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+
+  // Delete a task
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+// Request and Response Messages
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  ProjectTask task = 1;
+}
+
+message ListRequest {
+  optional string project_id = 1;
+}
+
+message ListResponse {
+  repeated ProjectTask tasks = 1;
+}
+
+message CreateRequest {
+  ProjectTask task = 1;
+}
+
+message CreateResponse {
+  ProjectTask task = 1;
+}
+
+message UpdateRequest {
+  ProjectTask task = 1;
+}
+
+message UpdateResponse {
+  ProjectTask task = 1;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}

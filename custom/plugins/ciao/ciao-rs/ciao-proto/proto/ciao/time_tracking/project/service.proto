@@ -1,0 +1,64 @@
+syntax = "proto3";
+package ciao.time_tracking.project;
+
+import "ciao/common/timestamp.proto";
+import "ciao/time_tracking/project/project.proto";
+
+// Service for managing projects
+service ProjectService {
+  // Get a single project by ID
+  rpc Get(GetRequest) returns (GetResponse);
+
+  // List all projects
+  rpc List(ListRequest) returns (stream ListResponse);
+
+  // Create a new project
+  rpc Create(CreateRequest) returns (CreateResponse);
+
+  // Update an existing project
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+
+  // Delete a project
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+// Request and Response Messages
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  Project project = 1;
+}
+
+message ListRequest {
+  optional ciao.common.Timestamp active_at = 1;
+}
+
+message ListResponse {
+  repeated Project projects = 1;
+}
+
+message CreateRequest {
+  Project project = 1;
+}
+
+message CreateResponse {
+  Project project = 1;
+}
+
+message UpdateRequest {
+  Project project = 1;
+}
+
+message UpdateResponse {
+  Project project = 1;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}

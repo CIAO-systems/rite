@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.watcherExclude": {
+			"ciao-proto/examples/**": true
+		},
+		"[dart]": {
+			"editor.defaultFormatter": null,
+			"editor.formatOnSave": false
+		}
+	}
+}

@@ -3,28 +3,35 @@ rite is a framework for importing data from a datasource, optionally transform t
 For easy usage, there is a shell script to run the container. See [the documentation for the script](rite.sh.md)
 
 ## model
-This [library](model/README.md) describes the data model of the framework
+This [library](libraries/model/README.md) describes the data model of the framework
 
 ## import
-This [library](import/README.md) defines the traits for the import interface
+This [library](libraries/import/README.md) defines the traits for the import interface
 
 ## transform
-This [library](transform/README.md) defines the traits for the transformer interface
+This [library](libraries/transform/README.md) defines the traits for the transformer interface
 
 ## export
-This [library](export/README.md) defines the traits for the export interface
+This [library](libraries/export/README.md) defines the traits for the export interface
 
 ## plugin
-A [library](plugin/README.md) for managing import/transfom/export dynamic libraries
-
-## plugins
-A set of dynamic libraries to be used as [plugins](plugins/README.md) for rite
+A [library](libraries/plugin/README.md) for managing import/transfom/export dynamic libraries
 
 ## helper
-A [library](helper/README.md) with some useful functions
+A [library](libraries/helper/README.md) with some useful functions
 
 ## examples
 Some [example](examples/README.md) implementations for plugins
 
 ## data
 Test files and [example rite configurations](data/README.md)
+
+# Plugins
+## base
+A set of dynamic libraries to be used as [plugins](base/plugins/README.md) for rite
+
+## extended
+A set of dynamic libraries to be used as [plugins](extended/plugins/README.md) for rite
+
+## custom
+A set of dynamic libraries to be used as [plugins](custom/plugins/README.md) for rite

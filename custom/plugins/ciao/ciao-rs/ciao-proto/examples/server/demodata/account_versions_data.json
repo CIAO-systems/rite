@@ -1,0 +1,140 @@
+[
+    {
+        "id": "av-550e8400-e29b-41d4-a716-446655440000",
+        "user_id": "550e8400-e29b-41d4-a716-446655440000",
+        "date": {
+            "time_utc": "2025-02-01T00:00:00Z",
+            "time_zone": "Europe/Berlin"
+        },
+        "holiday_calendar_id": "hc-001",
+        "shift_schedule_id": "ss-001",
+        "vacation_balance_id": "vb-001",
+        "yearly_vacation_entitlement": 25.0,
+        "vacation_entitlement_offset": 2.0,
+        "weekly_working_hours": 40.0,
+        "address": {
+            "address_line_1": "123 Main St",
+            "city": "Anytown",
+            "postal_code": "12345",
+            "state": "California"
+        },
+        "cost_centers": [
+            {
+                "cost_center_id": "cc-001",
+                "percentage": 100
+            }
+        ]
+    },
+    {
+        "id": "av-8f7d1b6e-22a3-4c76-9138-a9f7e38c9876",
+        "user_id": "8f7d1b6e-22a3-4c76-9138-a9f7e38c9876",
+        "date": {
+            "time_utc": "2025-02-01T00:00:00Z",
+            "time_zone": "Europe/Berlin"
+        },
+        "holiday_calendar_id": "hc-002",
+        "shift_schedule_id": "ss-002",
+        "vacation_balance_id": "vb-002",
+        "yearly_vacation_entitlement": 30.0,
+        "vacation_entitlement_offset": 1.5,
+        "weekly_working_hours": 37.5,
+        "address": {
+            "address_line_1": "10 Downing Street",
+            "city": "London",
+            "postal_code": "SW1A 1AA",
+            "state": "England"
+        },
+        "cost_centers": [
+            {
+                "cost_center_id": "cc-002",
+                "percentage": 80
+            },
+            {
+                "cost_center_id": "cc-003",
+                "percentage": 20
+            }
+        ]
+    },
+    {
+        "id": "av-a1b2c3d4-e5f6-4a5b-8c7d-9e8f7a6b5c4d",
+        "user_id": "a1b2c3d4-e5f6-4a5b-8c7d-9e8f7a6b5c4d",
+        "date": {
+            "time_utc": "2025-02-01T00:00:00Z",
+            "time_zone": "Europe/Berlin"
+        },
+        "holiday_calendar_id": "hc-003",
+        "shift_schedule_id": "ss-003",
+        "vacation_balance_id": "vb-003",
+        "yearly_vacation_entitlement": 28.0,
+        "vacation_entitlement_offset": 2.5,
+        "weekly_working_hours": 38.0,
+        "address": {
+            "address_line_1": "Calle de Alcalá 45",
+            "city": "Madrid",
+            "postal_code": "28001",
+            "state": "Community of Madrid"
+        },
+        "cost_centers": [
+            {
+                "cost_center_id": "cc-004",
+                "percentage": 100
+            }
+        ]
+    },
+    {
+        "id": "av-7e6d5c4b-3a2b-1c0d-9e8f-7a6b5c4d3e2f",
+        "user_id": "7e6d5c4b-3a2b-1c0d-9e8f-7a6b5c4d3e2f",
+        "date": {
+            "time_utc": "2025-02-01T00:00:00Z",
+            "time_zone": "Europe/Berlin"
+        },
+        "holiday_calendar_id": "hc-004",
+        "shift_schedule_id": "ss-004",
+        "vacation_balance_id": "vb-004",
+        "yearly_vacation_entitlement": 26.5,
+        "vacation_entitlement_offset": 1.0,
+        "weekly_working_hours": 39.5,
+        "address": {
+            "address_line_1": "1-1-1 Marunouchi",
+            "city": "Tokyo",
+            "postal_code": "100-0005",
+            "state": "Tokyo"
+        },
+        "cost_centers": [
+            {
+                "cost_center_id": "cc-005",
+                "percentage": 60
+            },
+            {
+                "cost_center_id": "cc-006",
+                "percentage": 40
+            }
+        ]
+    },
+    {
+        "id": "av-2f3e4d5c-6b7a-8c9d-0e1f-2a3b4c5d6e7f",
+        "user_id": "2f3e4d5c-6b7a-8c9d-0e1f-2a3b4c5d6e7f",
+        "date": {
+            "time_utc": "2025-02-01T00:00:00Z",
+            "time_zone": "Europe/Berlin"
+        },
+        "holiday_calendar_id": "hc-005",
+        "shift_schedule_id": "ss-005",
+        "vacation_balance_id": "vb-005",
+        "yearly_vacation_entitlement": 27.0,
+        "vacation_entitlement_offset": 1.5,
+        "weekly_working_hours": 40.0,
+        "address": {
+            "address_line_1": "Unter den Linden 77",
+            "city": "Berlin",
+            "postal_code": "10117",
+            "state": "Berlin"
+        },
+        "cost_centers": [
+            {
+                "cost_center_id": "cc-007",
+                "percentage": 100
+            }
+        ]
+    }
+]

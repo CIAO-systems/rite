@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ciao.time_tracking.project.task;
+
+// ProjectTask data
+message ProjectTask {
+  string id = 1;
+  string project_id = 2;
+  string name = 3;
+}

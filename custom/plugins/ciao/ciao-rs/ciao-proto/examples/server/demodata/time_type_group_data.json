@@ -1,0 +1,41 @@
+[
+    {
+        "id": "58a5ad9e-e946-4e15-95ef-57b6369355be",
+        "name": "Absences",
+        "time_type_ids": [
+            "b2c3d4e5-f6g7-8901-2345-678901bcdefa",
+            "c3d4e5f6-g7h8-9012-3456-789012cdefab"
+        ]
+    },
+    {
+        "id": "8d238b59-9ccb-4a66-9e26-981991d1cae4",
+        "name": "Meetings",
+        "time_type_ids": [
+            "d4e5f6g7-h8i9-0123-4567-890123defabc",
+            "i9j0k1l2-m3n4-5678-9012-345678ijefab",
+            "j0k1l2m3-n4o5-6789-0123-456789jkefbc"
+        ]
+    },
+    {
+        "id": "a362567c-6119-4b75-a316-1a3b5d6f56fc",
+        "name": "Productivity",
+        "time_type_ids": [
+            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "h8i9j0k1-l2m3-4567-8901-234567hidefa",
+            "k1l2m3n4-o5p6-7890-1234-567890klefcd",
+            "l2m3n4o5-p6q7-8901-2345-678901lmefde",
+            "m3n4o5p6-q7r8-9012-3456-789012mnefab",
+            "n4o5p6q7-r8s9-0123-4567-890123nofabc",
+            "o5p6q7r8-s9t0-1234-5678-901234opbcda"
+        ]
+    },
+    {
+        "id": "4b2e02b1-028d-49d7-9608-0b507583ca9e",
+        "name": "Other",
+        "time_type_ids": [
+            "e5f6g7h8-i9j0-1234-5678-901234efabcd",
+            "f6g7h8i9-j0k1-2345-6789-012345fgbcde",
+            "g7h8i9j0-k1l2-3456-7890-123456ghcdef"
+        ]
+    }
+]

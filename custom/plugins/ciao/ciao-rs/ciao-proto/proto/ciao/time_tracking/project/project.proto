@@ -1,0 +1,15 @@
+syntax = "proto3";
+package ciao.time_tracking.project;
+
+import "ciao/common/timestamp.proto";
+
+// Project data
+message Project {
+  string id = 1;
+  optional string external_id = 2;
+  string name = 3;
+  optional ciao.common.Timestamp start_date = 4;
+  optional ciao.common.Timestamp end_date = 5;
+  optional ciao.common.Timestamp closed_date = 6;
+  optional string parent_id = 7;
+}
