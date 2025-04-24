@@ -35,3 +35,10 @@ A set of dynamic libraries to be used as [plugins](extended/plugins/README.md) f
 
 ## custom
 A set of dynamic libraries to be used as [plugins](custom/plugins/README.md) for rite
+
+# Building
+Some of the projects use git submodules. To initialize all of them, including 
+nested submodules, execute the following command:
+```bash
+git submodule update --init --recursive
+```
