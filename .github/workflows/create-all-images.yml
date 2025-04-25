@@ -50,8 +50,8 @@ jobs:
                 context: .
                 file: ./Dockerfile.base
                 push: true
-                tags: ${{ steps.setup_container_build.tags }}
-                labels: ${{ steps.setup_container_build.labels }}
+                tags: ${{ steps.setup_container_build.outputs.tags }}
+                labels: ${{ steps.setup_container_build.outputs.labels }}
                 ssh: default
 
     build_extended:
