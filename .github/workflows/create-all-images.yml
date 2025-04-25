@@ -117,7 +117,7 @@ jobs:
                 ssh: default
                 build-args: |
                   BASE_IMAGE_TAG=${{ env.BASE_IMAGE_TAG }}
-                  REGISTRY=${{ env.REGISTRY }}/
+                  REGISTRY=${{ env.REGISTRY }}/ciao-systems/
 
     build_custom:
         name: Build Custom Image
