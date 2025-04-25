@@ -35,7 +35,7 @@ RUN --mount=type=ssh \
 
 # -----    
 # Runtime stage
-ARG BASE_IMAGE_TAG
+ARG BASE_IMAGE_TAG=latest
 FROM rite-base:${BASE_IMAGE_TAG} AS runtime
 
 # Setup the application directory
