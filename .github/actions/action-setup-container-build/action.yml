@@ -7,10 +7,10 @@ inputs:
   registry: 
     description: "The name container registry"
     required: true
-  github.actor: 
+  username: 
     description: "The github actor"
     required: true
-  secrets.token: 
+  password: 
     description: "The secrets token"
     required: true
    
@@ -21,8 +21,8 @@ runs:
       uses: docker/login-action@v3
       with:
         registry: ${{ inputs.registry }} # ${{ env.REGISTRY }}
-        username: ${{ inputs.github.actor }} # ${{ github.actor }}
-        password: ${{ inputs.secrets.token }} # ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ inputs.username }} # ${{ github.actor }}
+        password: ${{ inputs.password }} # ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta

@@ -35,8 +35,8 @@ jobs:
               with:
                 image_name: ${{ env.IMAGE_NAME_BASE }}
                 registry: ${{ env.REGISTRY }}
-                github.actor: ${{ github.actor }}
-                secrets.token: ${{ secrets.GITHUB_TOKEN }}
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Set up SSH agent
               uses: webfactory/ssh-agent@v0.9.0
