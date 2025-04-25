@@ -61,7 +61,7 @@ jobs:
             - name: Save base image artifact
               uses: actions/upload-artifact@v4
               with:
-                name: base-image
+                name: rite-base
                 path: /tmp/base.tar
 
     build_extended:
@@ -99,7 +99,7 @@ jobs:
             - name: Download base image artifact
               uses: actions/download-artifact@v4
               with:
-                name: base-image
+                name: rite-base
                 path: /tmp
 
             - name: Load base image
@@ -121,7 +121,7 @@ jobs:
             - name: Save extended image artifact
               uses: actions/upload-artifact@v4
               with:
-                name: extended-image
+                name: rite-extended
                 path: /tmp/extended.tar
 
     build_custom:
@@ -156,10 +156,10 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
                 
-            - name: Download base extended artifact
+            - name: Download extended artifact
               uses: actions/download-artifact@v4
               with:
-                name: base-extended
+                name: rite-extended
                 path: /tmp
 
             - name: Load extended image
