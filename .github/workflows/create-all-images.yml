@@ -13,6 +13,10 @@ env:
   IMAGE_NAME_EXTENDED: ${{ github.repository }}-extended
   IMAGE_NAME_CUSTOM: ${{ github.repository }}-custom
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
     build_base:
         name: Build Base Image
