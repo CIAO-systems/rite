@@ -1,3 +1,4 @@
+ARG REGISTRY=""
 ARG BASE_IMAGE_TAG="latest"
 
 # Builder stage
@@ -37,7 +38,7 @@ RUN --mount=type=ssh \
 
 # -----    
 # Runtime stage
-FROM rite-base:${BASE_IMAGE_TAG} AS runtime
+FROM ${REGISTRY}rite-base:${BASE_IMAGE_TAG} AS runtime
 
 # Setup the application directory
 WORKDIR /app

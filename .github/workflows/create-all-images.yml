@@ -20,6 +20,7 @@ permissions:
 
 jobs:
     build_base:
+        if: false
         name: Build Base Image
         runs-on: ubuntu-latest
         steps:
@@ -63,7 +64,7 @@ jobs:
 
     build_extended:
         name: Build Extended Image
-        needs: build_base
+        # needs: build_base
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -116,6 +117,7 @@ jobs:
                 ssh: default
                 build-args: |
                   BASE_IMAGE_TAG=${{ env.BASE_IMAGE_TAG }}
+                  REGISTRY=${{ env.REGISTRY }}
 
     build_custom:
         name: Build Custom Image
