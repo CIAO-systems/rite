@@ -23,12 +23,6 @@ jobs:
         name: Build Base Image
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                submodules: recursive
-                token: ${{ secrets.ORG_GITHUB_PAT }}
-
             - name: Setup container build
               uses: ./.github/actions/action-setup-container-build.yml
               id: setup_container_build
