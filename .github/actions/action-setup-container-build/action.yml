@@ -8,10 +8,10 @@ inputs:
     description: "The name container registry"
     required: true
   github.actor: 
-    description: "The github actor ${{ github.actor }}"
+    description: "The github actor"
     required: true
   secrets.token: 
-    description: "The secrets token ${{ secrets.GITHUB_TOKEN }}"
+    description: "The secrets token"
     required: true
    
 runs:
