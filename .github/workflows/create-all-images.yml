@@ -102,6 +102,8 @@ jobs:
                 tags: ${{ steps.meta.outputs.tags }}
                 labels: ${{ steps.meta.outputs.labels }}
                 ssh: default
+                build-args: |
+                  BASE_IMAGE_TAG=${{ github.event.pull_request.head.sha }}
 
     build_custom:
         name: Build Custom Image

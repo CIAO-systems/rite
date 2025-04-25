@@ -35,7 +35,8 @@ RUN --mount=type=ssh \
 
 # -----    
 # Runtime stage
-FROM rite-base:latest AS runtime
+ARG BASE_IMAGE_TAG
+FROM rite-base:${BASE_IMAGE_TAG} AS runtime
 
 # Setup the application directory
 WORKDIR /app
