@@ -9,6 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  BASE_IMAGE_TAG: main
   IMAGE_NAME_BASE: ${{ github.repository }}-base
   IMAGE_NAME_EXTENDED: ${{ github.repository }}-extended
   IMAGE_NAME_CUSTOM: ${{ github.repository }}-custom
@@ -93,6 +94,17 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
                 
+            - name: Set base image tag
+              id: set_base_image_tag
+              run: |
+                if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+                  # For pull requests: "pr-NUMBER"
+                  echo "BASE_IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+                else
+                  # For pushes to branches (including main)
+                  echo "BASE_IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+                fi
+
             - name: Build and push container image
               uses: docker/build-push-action@v4
               id: build-and-push
@@ -104,7 +116,7 @@ jobs:
                 labels: ${{ steps.meta.outputs.labels }}
                 ssh: default
                 build-args: |
-                  BASE_IMAGE_TAG=${{ github.ref_name }}
+                  BASE_IMAGE_TAG=${{ env.BASE_IMAGE_TAG }}
 
     build_custom:
         name: Build Custom Image
