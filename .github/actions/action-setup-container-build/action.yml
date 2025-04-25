@@ -13,6 +13,11 @@ inputs:
   password: 
     description: "The secrets token"
     required: true
+outputs:
+  tags:
+    value: ${{ steps.meta.outputs.tags }}
+  labels:    
+    value: ${{ steps.meta.outputs.labels }}
    
 runs:
   using: "composite"
