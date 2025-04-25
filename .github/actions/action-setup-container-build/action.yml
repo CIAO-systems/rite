@@ -49,6 +49,7 @@ runs:
       uses: docker/setup-buildx-action@v3
 
     - name: Set base image tag
+      shell: bash
       id: set_image_tag
       run: |
         if [[ ${{ inputs.event_name }} == 'pull_request' ]]; then
