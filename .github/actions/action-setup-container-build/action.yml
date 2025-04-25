@@ -15,7 +15,7 @@ inputs:
     required: true
   event_name:
     required: false
-    default: ""
+    default: "push"
   ref_name:
     required: false
     default: "main"
