@@ -63,6 +63,7 @@ jobs:
                 ssh: default
 
     build_extended:
+        if: false
         name: Build Extended Image
         # needs: build_base
         runs-on: ubuntu-latest
@@ -121,7 +122,7 @@ jobs:
 
     build_custom:
         name: Build Custom Image
-        needs: build_extended
+        # needs: build_extended
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
