@@ -34,6 +34,7 @@ jobs:
               id: setup_container_build
               with:
                 image_name: ${{ env.IMAGE_NAME_BASE }}
+                registry: ${{ env.REGISTRY }}
 
             - name: Set up SSH agent
               uses: webfactory/ssh-agent@v0.9.0
