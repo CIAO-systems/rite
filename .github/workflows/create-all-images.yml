@@ -30,7 +30,7 @@ jobs:
                 token: ${{ secrets.ORG_GITHUB_PAT }}
     
             - name: Setup container build
-              uses: ./.github/actions/action-setup-container-build.yml
+              uses: ./.github/actions/action-setup-container-build
               id: setup_container_build
               with:
                 image_name: ${{ env.IMAGE_NAME_BASE }}
