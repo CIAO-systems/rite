@@ -1,4 +1,4 @@
-ARG BASE_IMAGE_TAG="pr-30"
+ARG BASE_IMAGE_TAG="latest"
 
 # Builder stage
 FROM rust:slim AS builder
