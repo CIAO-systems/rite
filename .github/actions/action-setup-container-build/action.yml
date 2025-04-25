@@ -1,0 +1,25 @@
+name: "Setup container build"
+description: "Builds a container image"
+inputs:
+  image_name: 
+    description: "The name of the image to be built"
+    required: true
+   
+runs:
+  using: "composite"
+  steps:
+    - name: Login container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.REGISTRY }}/${{ inputs.image_name }}"
+        
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
