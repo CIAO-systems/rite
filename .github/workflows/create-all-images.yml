@@ -12,7 +12,7 @@ env:
   BASE_IMAGE_TAG: main
   IMAGE_NAME_BASE: ${{ github.repository }}-base
   IMAGE_NAME_EXTENDED: ${{ github.repository }}-extended
-  IMAGE_NAME_CUSTOM: ${{ github.repository }}-custom
+  IMAGE_NAME_CUSTOM: ${{ github.repository }}
 
 permissions:
   packages: write
