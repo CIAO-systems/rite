@@ -1,3 +1,5 @@
+ARG BASE_IMAGE_TAG="pr-30"
+
 # Builder stage
 FROM rust:slim AS builder
 
@@ -35,7 +37,6 @@ RUN --mount=type=ssh \
 
 # -----    
 # Runtime stage
-ARG BASE_IMAGE_TAG="pr-30"
 FROM rite-base:${BASE_IMAGE_TAG} AS runtime
 
 # Setup the application directory
