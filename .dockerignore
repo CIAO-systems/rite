@@ -1,6 +1,0 @@
-Dockerfile
-.env
-target/
-logs/
-.github
-.vscode

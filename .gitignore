@@ -1,4 +1,4 @@
 target/
 logs/
 .env
-data/ciao/time_type/time-type-mapping.xml
+Dockerfile.test

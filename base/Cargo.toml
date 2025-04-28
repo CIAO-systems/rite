@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [ 
+    "rite", 
+    "plugins/common", 
+    "plugins/postgres", 
+    "plugins/rest", 
+    "plugins/faker", 
+    "plugins/csv", 
+]

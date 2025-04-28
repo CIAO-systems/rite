@@ -1,6 +1,4 @@
-[submodule "plugins/ciao/ciao-rs"]
-	path = plugins/ciao/ciao-rs
+[submodule "custom/plugins/ciao/ciao-rs"]
+	path = custom/plugins/ciao/ciao-rs
 	url = git@github.com:CIAO-systems/ciao-rs.git
-[submodule "grpc-utils-rs"]
-	path = grpc-utils-rs
-	url = git@github.com:CIAO-systems/grpc-utils-rs.git
+	branch = main

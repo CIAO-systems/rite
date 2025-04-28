@@ -1,0 +1,47 @@
+ARG REGISTRY=""
+ARG BASE_IMAGE_TAG="latest"
+
+# Builder stage
+FROM rust:slim AS builder
+
+# Install dependencies
+# See https://stackoverflow.com/questions/65553557/why-rust-is-failing-to-build-command-for-openssl-sys-v0-9-60-even-after-local-in
+# See https://stackoverflow.com/questions/65538591/run-protoc-command-into-docker-container
+RUN apt-get update && \
+    apt-get install -y bash && \
+    apt-get install -y protobuf-compiler && \
+    apt-get install -y libssl-dev && \
+    apt-get install -y git openssh-client && \
+    apt-get install -y pkg-config && \
+    update-ca-certificates
+
+# Create a working directory
+WORKDIR /build
+
+# Add the .cargo directory with the config.toml
+ENV CARGO_HOME=/workdir/.cargo 
+COPY ./.cargo ./.cargo
+
+# Copy the projects into the image
+COPY ./libraries /build/libraries
+COPY ./custom /build/custom
+COPY ./data /build/data
+
+WORKDIR /build/custom
+
+# Build workspace with credentials provided via SSH agent
+RUN --mount=type=ssh \
+    cargo update && \
+    cargo clean && \
+    cargo build --release --workspace && \
+    cargo test --release
+
+# -----    
+# Runtime stage
+FROM ${REGISTRY}rite-extended:${BASE_IMAGE_TAG} AS runtime
+
+# Setup the application directory
+WORKDIR /app
+
+# Copy the custom plugins from the builder stage
+COPY --from=builder /build/custom/target/release/*.so .

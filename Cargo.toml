@@ -1,15 +1,23 @@
 [workspace]
 resolver = "2"
 members = [ 
-    "export", 
-    "helper",
-    "import", 
-    "model", 
-    "rite", 
-    "transform", 
-    "plugin", 
+    "libraries/export", 
+    "libraries/helper",
+    "libraries/import", 
+    "libraries/model", 
+    "libraries/transform", 
+    "libraries/plugin", 
     "examples/example_import", 
     "examples/example_export", 
     "examples/example_transform", 
-    "plugins/postgres"
-, "plugins/rest", "plugins/common", "plugins/youtrack", "plugins/ciao", "plugins/faker", "plugins/csv", "plugins/atc", "grpc-utils-rs", "plugins/personio"]
+    "base/rite", 
+    "base/plugins/common", 
+    "base/plugins/postgres", 
+    "base/plugins/rest", 
+    "base/plugins/faker", 
+    "base/plugins/csv", 
+    "extended/plugins/youtrack", 
+    "extended/plugins/personio",
+    "custom/plugins/atc", 
+    "custom/plugins/ciao", 
+]
