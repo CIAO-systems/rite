@@ -62,4 +62,12 @@ mod tests {
         });
         Ok(())
     }
+
+    #[test]
+    fn test_reset() -> Result<(), BoxedError> {
+        let mut importer = DemoImporter;
+        assert!(importer.reset().is_ok());
+
+        Ok(())
+    }
 }

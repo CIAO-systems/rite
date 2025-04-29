@@ -40,7 +40,7 @@ impl VariableMap<'_> for VariablesAndEnv {
 /// # Arguments
 /// * `text` - The text, that containes variables to be subsituted
 /// * `variables` - A [VariableMap] that contains variables to substitue placeholders in in `text`
-/// 
+///
 /// In case of any error, the `text` is returned as is
 fn substitute_with_env(text: &str, variables: &VariablesAndEnv) -> String {
     // Replace environment variables
@@ -51,10 +51,10 @@ fn substitute_with_env(text: &str, variables: &VariablesAndEnv) -> String {
 }
 
 /// Replaces all placeholders in `xml_contents` with values from `variables`
-/// 
+///
 /// # Arguments
 /// * `xml_contents` - The text with placeholders
-/// * `variables` - A key/value [HashMap] which contains values to replace 
+/// * `variables` - A key/value [HashMap] which contains values to replace
 ///     placeholders in `xml_contents`
 pub(crate) fn replace_env_variables(
     xml_contents: String,
@@ -110,7 +110,9 @@ mod tests {
         env::{remove_var, set_var},
     };
 
-    use crate::xml::file::substitute::replace_env_variables;
+    use crate::xml::file::substitute::{
+        replace_env_variables, substitute_with_env, VariablesAndEnv,
+    };
 
     #[test]
     fn test_subsitution() -> Result<(), Box<dyn std::error::Error>> {
@@ -141,4 +143,30 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_substitute_with_error() {
+        let text_with_error = "This text contains an incorrect variable: ${}. On parse error, the original text should be returned";
+        let empty_variables: HashMap<String, String> = HashMap::new();
+
+        // Call the function with input that will cause an error in the substitute function.
+        let result = substitute_with_env(text_with_error, &VariablesAndEnv::from(&empty_variables));
+
+        // Assert that the original text is returned when an error occurs.
+        assert_eq!(result, text_with_error);
+    }
+
+    #[test]
+    fn test_substitute_with_error_and_var() {
+        let text_with_error = "This text contains an incorrect variable: ${} and a correct one: ${KEY}";
+        let mut variables: HashMap<String, String> = HashMap::new();
+        variables.insert(String::from("KEY"), String::from("Value"));
+
+        // Call the function with input that will cause an error in the substitute function.
+        let result = substitute_with_env(text_with_error, &VariablesAndEnv::from(&variables));
+
+        // Assert that the original text is returned when an error occurs.
+        assert_eq!(result, text_with_error);
+    }
+
 }

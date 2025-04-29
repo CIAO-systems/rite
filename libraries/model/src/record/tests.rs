@@ -18,7 +18,7 @@ fn test_record_field_by_name() {
         .push(Field::new_value("name", Value::String("Alice".to_string())));
     record.fields.push(Field::new_value("age", Value::I32(30)));
 
-    assert!(record.field_by_name("unkown").is_none());
+    assert!(record.field_by_name("unknown").is_none());
     assert!(record.field_by_name("name").is_some());
     assert!(record.field_by_name("age").is_some());
 
