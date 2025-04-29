@@ -24,7 +24,7 @@
 				"--out",
 				"Html",
 				"--output-dir",
-				"${workspaceFolder}/coverage",
+				"${workspaceFolder}/target/coverage",
 				"--skip-clean"
 			],
 			"group": {
