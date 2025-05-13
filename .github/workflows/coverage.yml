@@ -1,0 +1,33 @@
+name: Deploy Coverage Report
+
+on:
+    push:
+      branches: [ main ]
+
+jobs:
+    deploy-coverage:
+       runs-on: ubuntu-latest
+       steps:
+        - uses: actions/checkout@v3
+        - uses: actions-rs/toolchain@v1
+          with:
+            profile: minimal
+            toolchain: stable
+            override: true
+        - name: Install cargo-tarpaulin
+          uses: actions-rs/install@v0.1
+          with:
+            crate: cargo-tarpaulin
+            version: latest
+            use-tool-cache: true
+            
+        - name: Generate HTML coverage report
+          run: |
+            cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Html
+
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./tarpaulin-report.html
+            destination_dir: coverage
