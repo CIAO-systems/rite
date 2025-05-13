@@ -60,12 +60,9 @@ jobs:
 
         - name: Install cargo-tarpaulin
           if: steps.check-tarpaulin.outputs.tarpaulin-installed != 'true'
-          uses: actions-rs/install@v0.1
-          with:
-            crate: cargo-tarpaulin
-            version: latest
-            use-tool-cache: true
-            
+          run: |
+            cargo install cargo-tarpaulin
+
         - name: Generate HTML coverage report
           run: |
             cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Html
