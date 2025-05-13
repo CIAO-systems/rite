@@ -65,7 +65,7 @@ jobs:
 
         - name: Generate HTML coverage report
           run: |
-            cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Html
+            cargo tarpaulin --all-features --workspace --timeout 240 --out Html
 
         - name: Deploy to GitHub Pages
           uses: peaceiris/actions-gh-pages@v3

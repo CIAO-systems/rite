@@ -130,7 +130,7 @@ mod tests {
     }
 
     #[test]
-    fn test_nromalize() {
+    fn test_normalize() {
         let path = Path::new("/home/user/../user/data/./filename.txt");
         let normalized = normalize_path(path);
         println!("{}", normalized.display());
