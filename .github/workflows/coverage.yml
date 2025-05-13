@@ -80,7 +80,7 @@ jobs:
             # First run tests to ensure they pass
             cargo test --verbose --all-features --workspace
 
-            cargo tarpaulin --all-features --workspace --timeout 300 --out Html --skip-clean --locked --continue-on-error
+            cargo tarpaulin --all-features --workspace --timeout 300 --out Html --skip-clean --locked
 
           # Don't fail the workflow if tarpaulin has issues
           continue-on-error: true
