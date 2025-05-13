@@ -6,6 +6,10 @@ on:
     pull_request:
         branches: [ "main" ]
 
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
+
 jobs:
     deploy-coverage:
        runs-on: ubuntu-latest
@@ -14,6 +18,11 @@ jobs:
           with:
             submodules: recursive
             token: ${{ secrets.ORG_GITHUB_PAT }}
+        # Install protobuf compiler using a dedicated GitHub Action
+        - name: Install Protobuf
+          uses: arduino/setup-protoc@v2
+          with:
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
 
         # Cache dependencies and tarpaulin
         - name: Cache cargo dependencies and tarpaulin
