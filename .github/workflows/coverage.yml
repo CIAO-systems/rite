@@ -15,12 +15,42 @@ jobs:
             submodules: recursive
             token: ${{ secrets.ORG_GITHUB_PAT }}
 
+        # Cache dependencies and tarpaulin
+        - name: Cache cargo dependencies and tarpaulin
+          id: cache-cargo
+          uses: actions/cache@v3
+          with:
+            path: |
+              ~/.cargo/bin/
+              ~/.cargo/registry/index/
+              ~/.cargo/registry/cache/
+              ~/.cargo/git/db/
+              target/
+            key: ${{ runner.os }}-cargo-tarpaulin-${{ hashFiles('**/Cargo.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-cargo-tarpaulin-
+              ${{ runner.os }}-cargo-
+
         - uses: actions-rs/toolchain@v1
           with:
             profile: minimal
             toolchain: stable
             override: true
+
+        # Check if tarpaulin is already installed
+        - name: Check for tarpaulin installation
+          id: check-tarpaulin
+          run: |
+            if [ -f ~/.cargo/bin/cargo-tarpaulin ]; then
+              echo "Tarpaulin found in cache"
+              echo "tarpaulin-installed=true" >> $GITHUB_OUTPUT
+            else
+              echo "Tarpaulin not found in cache"
+              echo "tarpaulin-installed=false" >> $GITHUB_OUTPUT
+            fi
+
         - name: Install cargo-tarpaulin
+          if: steps.check-tarpaulin.outputs.tarpaulin-installed != 'true'
           uses: actions-rs/install@v0.1
           with:
             crate: cargo-tarpaulin
