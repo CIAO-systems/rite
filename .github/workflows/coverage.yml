@@ -10,7 +10,11 @@ jobs:
     deploy-coverage:
        runs-on: ubuntu-latest
        steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v4
+          with:
+            submodules: recursive
+            token: ${{ secrets.ORG_GITHUB_PAT }}
+
         - uses: actions-rs/toolchain@v1
           with:
             profile: minimal
