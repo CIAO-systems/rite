@@ -27,3 +27,6 @@ impl Mapper {
             .cloned()
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -13,6 +13,8 @@ impl Values {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Value {
+    #[serde(rename = "@source")]
     pub source: String,
+    #[serde(rename = "@target")]
     pub target: String,
 }
