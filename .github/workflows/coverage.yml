@@ -10,6 +10,18 @@ env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: "-Dwarnings"
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
     deploy-coverage:
        runs-on: ubuntu-latest
@@ -65,22 +77,7 @@ jobs:
 
         - name: Generate HTML coverage report
           run: |
-            # Print environment information
-            echo "==== Environment Info ===="
-            rustc --version
-            cargo --version
-            cargo tarpaulin --version
-            echo "==== End Environment Info ===="
-          
-            # Show all targets that will be tested
-            echo "==== Test Targets ===="
-            cargo test --no-run --message-format=json | jq -r "select(.reason == \"compiler-artifact\") | select(.target.kind[] | contains(\"test\")) | .target.name"
-            echo "==== End Test Targets ===="
-
-            # First run tests to ensure they pass
-            cargo test --verbose --all-features --workspace
-
-            cargo tarpaulin --all-features --workspace --timeout 300 --out Html --skip-clean --locked
+            sh scripts/coverage.sh
 
           # Don't fail the workflow if tarpaulin has issues
           continue-on-error: true
@@ -94,9 +91,14 @@ jobs:
             path: |
               tarpaulin-report.html
 
-        # - name: Deploy to GitHub Pages
-        #   uses: peaceiris/actions-gh-pages@v3
-        #   with:
-        #     github_token: ${{ secrets.GITHUB_TOKEN }}
-        #     publish_dir: ./tarpaulin-report.html
-        #     destination_dir: coverage
+        - name: Setup Pages
+          uses: actions/configure-pages@v5
+
+        - name: Upload artifact
+          uses: actions/upload-pages-artifact@v3
+          with:
+            path: 'target/coverage/'
+
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4
