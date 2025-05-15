@@ -658,7 +658,7 @@ name = "example_import"
 version = "0.1.1"
 dependencies = [
  "helper",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "model",
 ]
 
@@ -1324,6 +1324,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "import"
+version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-import.git#48e234860f6bdc581769c831efefb621c7092cc7"
+dependencies = [
+ "model",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1956,7 +1964,7 @@ name = "plugin"
 version = "0.1.0"
 dependencies = [
  "export",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "libloading",
  "log",
  "log4rs",
@@ -2295,7 +2303,7 @@ dependencies = [
  "export",
  "gag",
  "helper",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "log4rs",
  "model",
@@ -2313,7 +2321,7 @@ dependencies = [
  "futures",
  "grpc-utils-rs",
  "helper",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
  "prost",
@@ -2336,7 +2344,7 @@ dependencies = [
  "export",
  "futures",
  "grpc-utils-rs",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
  "prost",
@@ -2369,7 +2377,7 @@ version = "0.1.0"
 dependencies = [
  "csv",
  "export",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
 ]
@@ -2380,7 +2388,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "chrono-tz 0.10.3",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
  "rand 0.9.1",
@@ -2394,7 +2402,7 @@ dependencies = [
 name = "rite_personio"
 version = "0.1.0"
 dependencies = [
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
  "personio-rs",
@@ -2409,7 +2417,7 @@ dependencies = [
  "chrono",
  "export",
  "helper",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "log4rs",
  "model",
@@ -2422,7 +2430,7 @@ dependencies = [
 name = "rite_rest"
 version = "0.1.1"
 dependencies = [
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "json_dotpath",
  "log",
  "mockito",
@@ -2437,7 +2445,7 @@ name = "rite_youtrack"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "import",
+ "import 0.1.0 (git+https://github.com/CIAO-systems/rite-lib-import.git)",
  "log",
  "model",
  "reqwest",

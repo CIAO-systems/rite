@@ -10,7 +10,7 @@ license = "Apache-2.0"
 
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { version="0.1.0", path="../../../libraries/import" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { version="0.1.0", path="../../../libraries/export" }
 helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 

@@ -11,7 +11,7 @@ license = "Apache-2.0"
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
 helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 plugin = { version="0.1.0", path="../../libraries/plugin" }
-import = { version="0.1.0", path="../../libraries/import" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { version="0.1.0", path="../../libraries/export" }
 transform = { version="0.1.0", path="../../libraries/transform" }
 gag = "1.0"

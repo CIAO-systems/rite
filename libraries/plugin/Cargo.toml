@@ -8,7 +8,7 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-import = { version="0.1.0", path="../import" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { version="0.1.0", path="../export" }
 transform = { version="0.1.0", path="../transform" }
 

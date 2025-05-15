@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { version="0.1.0", path="../../../libraries/import" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 
 chrono = { version="0.4"}
 uuid = { version = "1.13", features = ["v4"] }
