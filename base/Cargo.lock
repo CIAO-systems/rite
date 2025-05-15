@@ -496,6 +496,7 @@ dependencies = [
 [[package]]
 name = "export"
 version = "0.1.1"
+source = "git+https://github.com/CIAO-systems/rite-lib-export.git#e293159a230bd12664ad0d5abde27f8e63be1082"
 dependencies = [
  "model",
 ]
@@ -735,6 +736,7 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 [[package]]
 name = "helper"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-helper.git#15a481449250c20cec145e64d1bf2d45d7560c5c"
 dependencies = [
  "log",
 ]
@@ -1065,6 +1067,7 @@ dependencies = [
 [[package]]
 name = "import"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-import.git#48e234860f6bdc581769c831efefb621c7092cc7"
 dependencies = [
  "model",
 ]
@@ -1303,6 +1306,7 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git#b8dccbfb9830353609dd729fbeb5b8fcf9ed6151"
 dependencies = [
  "chrono",
  "serde",
@@ -1583,6 +1587,7 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 [[package]]
 name = "plugin"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-plugin.git#c90e2c87a634f5b97e532083bcc20a7b1f657154"
 dependencies = [
  "export",
  "import",
@@ -1875,7 +1880,8 @@ dependencies = [
  "model",
  "regex",
  "serde",
- "serde-xml-rs 0.7.0",
+ "serde-xml-rs 0.8.0",
+ "tempfile",
  "tera",
  "transform",
  "uuid",
@@ -2110,9 +2116,9 @@ dependencies = [
 
 [[package]]
 name = "serde-xml-rs"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12ef8209566c27b96b10a096e25abc534e08e9bbbcf8e444b92640f1416dd1c6"
+checksum = "176b7ff880ab6ead7a020e773e9c096467fe347615a3e22ac29300cbdef67a5d"
 dependencies = [
  "log",
  "serde",
@@ -2623,6 +2629,7 @@ dependencies = [
 [[package]]
 name = "transform"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-transform.git#d9078c008416127986ae8f4475abcceeea26b8ff"
 dependencies = [
  "model",
 ]

@@ -8,9 +8,9 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-model = { version="0.1", path="../../../libraries/model" }
-transform = { version="0.1", path="../../../libraries/transform" }
-export = { version="0.1", path="../../../libraries/export" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
+transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
+export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
 uuid = { version = "1.11", features = ["v4"] }
 gag = "1.0"
 chrono = "0.4"

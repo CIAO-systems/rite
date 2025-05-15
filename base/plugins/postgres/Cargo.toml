@@ -9,10 +9,10 @@ license = "Apache-2.0"
 
 
 [dependencies]
-model = { version="0.1", path="../../../libraries/model" }
-import = { version="0.1.0", path="../../../libraries/import" }
-export = { version="0.1.0", path="../../../libraries/export" }
-helper = { version="0.1.0", path="../../../libraries/helper" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
+export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
+helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.5"

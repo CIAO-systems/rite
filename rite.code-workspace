@@ -2,6 +2,24 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../rite-lib-helper"
+		},
+		{
+			"path": "../rite-lib-plugin"
+		},
+		{
+			"path": "../rite-lib-import"
+		},
+		{
+			"path": "../rite-lib-model"
+		},
+		{
+			"path": "../rite-lib-export"
+		},
+		{
+			"path": "../rite-lib-transform"
 		}
 	],
 	"settings": {

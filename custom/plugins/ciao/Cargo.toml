@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-model = { version="0.1", path="../../../libraries/model" }
-import = { version="0.1.0", path="../../../libraries/import" }
-export = { version="0.1.0", path="../../../libraries/export" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
+export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
 ciao-rs = {version = "0.1", path = "ciao-rs"}
 grpc-utils-rs = { git="https://github.com/CIAO-systems/grpc-utils-rs" }
 
