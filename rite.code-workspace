@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../rite-lib-export"
+		},
+		{
+			"path": "../rite-lib-transform"
 		}
 	],
 	"settings": {

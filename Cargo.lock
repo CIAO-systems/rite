@@ -3338,6 +3338,7 @@ dependencies = [
 [[package]]
 name = "transform"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-transform.git#d9078c008416127986ae8f4475abcceeea26b8ff"
 dependencies = [
  "model",
 ]

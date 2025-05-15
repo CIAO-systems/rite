@@ -9,7 +9,7 @@ license = "Apache-2.0"
 
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-transform = { version="0.1", path="../../../libraries/transform" }
+transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
 export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
 uuid = { version = "1.11", features = ["v4"] }
 gag = "1.0"

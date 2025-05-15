@@ -8,7 +8,7 @@ license = "Apache-2.0"
 
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-transform = { version="0.1", path="../../libraries/transform" }
+transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
 helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 
 

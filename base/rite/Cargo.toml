@@ -13,7 +13,7 @@ helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 plugin = { version="0.1.0", path="../../libraries/plugin" }
 import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
-transform = { version="0.1.0", path="../../libraries/transform" }
+transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
 gag = "1.0"
 log = "0.4"
 log4rs = "1.3"

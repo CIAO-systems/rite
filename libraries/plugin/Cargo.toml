@@ -10,7 +10,7 @@ license = "Apache-2.0"
 [dependencies]
 import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
-transform = { version="0.1.0", path="../transform" }
+transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
 
 libloading = "0.8"
 log = "0.4"
