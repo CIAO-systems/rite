@@ -9,7 +9,7 @@ license = "Apache-2.0"
 
 [dependencies]
 gag = "1.0.0"
-model = { version="0.1", path="../../libraries/model" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
 export = { version="0.1", path="../../libraries/export" }
 helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 

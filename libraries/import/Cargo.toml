@@ -8,4 +8,4 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-model = { version="0.1", path="../model" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }

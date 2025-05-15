@@ -17,7 +17,7 @@ This [library](libraries/transform/README.md) defines the traits for the transfo
 This [library](libraries/export/README.md) defines the traits for the export interface
 
 ## plugin
-A [library](libraries/plugin/README.md) for managing import/transfom/export dynamic libraries
+A [library](https://github.com/CIAO-systems/rite-lib-plugin) for managing import/transfom/export dynamic libraries
 
 ## helper
 A [library](https://github.com/CIAO-systems/rite-lib-helper) with some useful functions

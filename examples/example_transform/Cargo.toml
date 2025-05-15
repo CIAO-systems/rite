@@ -7,7 +7,7 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-model = { version="0.1", path="../../libraries/model" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
 transform = { version="0.1", path="../../libraries/transform" }
 helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 
