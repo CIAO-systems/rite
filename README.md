@@ -20,7 +20,7 @@ This [library](libraries/export/README.md) defines the traits for the export int
 A [library](libraries/plugin/README.md) for managing import/transfom/export dynamic libraries
 
 ## helper
-A [library](libraries/helper/README.md) with some useful functions
+A [library](https://github.com/CIAO-systems/rite-lib-helper) with some useful functions
 
 ## examples
 Some [example](examples/README.md) implementations for plugins
