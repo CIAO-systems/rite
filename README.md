@@ -5,16 +5,16 @@ rite is a framework for importing data from a datasource, optionally transform t
 For easy usage, there is a shell script to run the container. See [the documentation for the script](rite.sh.md)
 
 ## model
-This [library](libraries/model/README.md) describes the data model of the framework
+This [library](https://github.com/CIAO-systems/rite-lib-model) describes the data model of the framework
 
 ## import
-This [library](libraries/import/README.md) defines the traits for the import interface
+This [library](https://github.com/CIAO-systems/rite-lib-import) defines the traits for the import interface
 
 ## transform
-This [library](libraries/transform/README.md) defines the traits for the transformer interface
+This [library](https://github.com/CIAO-systems/rite-lib-transform) defines the traits for the transformer interface
 
 ## export
-This [library](libraries/export/README.md) defines the traits for the export interface
+This [library](https://github.com/CIAO-systems/rite-lib-export) defines the traits for the export interface
 
 ## plugin
 A [library](https://github.com/CIAO-systems/rite-lib-plugin) for managing import/transfom/export dynamic libraries
