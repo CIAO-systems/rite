@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "../rite-lib-model"
+		},
+		{
+			"path": "../rite-lib-export"
 		}
 	],
 	"settings": {
