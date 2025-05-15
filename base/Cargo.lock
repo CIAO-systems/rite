@@ -496,6 +496,7 @@ dependencies = [
 [[package]]
 name = "export"
 version = "0.1.1"
+source = "git+https://github.com/CIAO-systems/rite-lib-export.git#e293159a230bd12664ad0d5abde27f8e63be1082"
 dependencies = [
  "model",
 ]
@@ -1066,6 +1067,7 @@ dependencies = [
 [[package]]
 name = "import"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-import.git#48e234860f6bdc581769c831efefb621c7092cc7"
 dependencies = [
  "model",
 ]
@@ -1304,6 +1306,7 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git#b8dccbfb9830353609dd729fbeb5b8fcf9ed6151"
 dependencies = [
  "chrono",
  "serde",
@@ -1584,6 +1587,7 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 [[package]]
 name = "plugin"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-plugin.git#c90e2c87a634f5b97e532083bcc20a7b1f657154"
 dependencies = [
  "export",
  "import",
@@ -2625,6 +2629,7 @@ dependencies = [
 [[package]]
 name = "transform"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-transform.git#d9078c008416127986ae8f4475abcceeea26b8ff"
 dependencies = [
  "model",
 ]
