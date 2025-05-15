@@ -23,7 +23,6 @@ ENV CARGO_HOME=/workdir/.cargo
 COPY ./.cargo ./.cargo
 
 # Copy the projects into the image
-COPY ./libraries /build/libraries
 COPY ./extended /build/extended
 COPY ./data /build/data
 
