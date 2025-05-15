@@ -9,7 +9,7 @@ license = "Apache-2.0"
 
 [dependencies]
 model = { version="0.1", path="../../libraries/model" }
-helper = { version="0.1.0", path="../../libraries/helper" }
+helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 plugin = { version="0.1.0", path="../../libraries/plugin" }
 import = { version="0.1.0", path="../../libraries/import" }
 export = { version="0.1.0", path="../../libraries/export" }

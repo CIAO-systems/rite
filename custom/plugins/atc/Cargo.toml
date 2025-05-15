@@ -29,5 +29,5 @@ path = "bin/reflection.rs"
 
 [build-dependencies]
 tonic-build = "0.12.3"
-helper = { version = "0.1.0", path = "../../../libraries/helper" }
+helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 prost-build = "0.13.5"
