@@ -735,6 +735,7 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 [[package]]
 name = "helper"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-helper.git#15a481449250c20cec145e64d1bf2d45d7560c5c"
 dependencies = [
  "log",
 ]
@@ -1875,7 +1876,8 @@ dependencies = [
  "model",
  "regex",
  "serde",
- "serde-xml-rs 0.7.0",
+ "serde-xml-rs 0.8.0",
+ "tempfile",
  "tera",
  "transform",
  "uuid",
@@ -2110,9 +2112,9 @@ dependencies = [
 
 [[package]]
 name = "serde-xml-rs"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12ef8209566c27b96b10a096e25abc534e08e9bbbcf8e444b92640f1416dd1c6"
+checksum = "176b7ff880ab6ead7a020e773e9c096467fe347615a3e22ac29300cbdef67a5d"
 dependencies = [
  "log",
  "serde",

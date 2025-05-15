@@ -157,6 +157,7 @@ dependencies = [
 [[package]]
 name = "helper"
 version = "0.1.0"
+source = "git+https://github.com/CIAO-systems/rite-lib-helper.git#15a481449250c20cec145e64d1bf2d45d7560c5c"
 dependencies = [
  "log",
 ]
