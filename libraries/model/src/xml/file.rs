@@ -12,8 +12,8 @@ mod substitute;
 ///
 /// # Arguments
 /// * `xml_file` - The filename for the XML file to be loaded. Must be a \<rite\> XML
-/// * `variables` -  Additional variables that can be substituted. 
-/// 
+/// * `variables` -  Additional variables that can be substituted.
+///
 /// # Example
 /// ```
 /// use std::collections::HashMap;
@@ -41,13 +41,13 @@ pub fn create_rite(
 ///
 /// # Arguments
 /// * `xml_file` - The filename for the XML file to be loaded. Must be a \<rite\> XML
-/// * `variables` -  Additional variables that can be substituted. 
-/// 
+/// * `variables` -  Additional variables that can be substituted.
+///
 /// # Example
 /// ```
 /// use std::collections::HashMap;
 /// use model::xml::file::load_and_substitute_from_env;
-/// 
+///
 /// if let Ok(xml_contents) = load_and_substitute_from_env("example.xml", &HashMap::new()) {
 ///     println!("{}", xml_contents);
 /// }
@@ -68,4 +68,49 @@ pub fn load_and_substitute_from_env(
     }
     let xml_contents = replace_env_variables(xml_contents, variables)?;
     Ok(xml_contents)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use super::{create_rite, load_and_substitute_from_env};
+
+    #[test]
+    fn test_create_rite_ok() {
+        let xml_file = "../../data/test/test-example.xml";
+        let variables = &HashMap::new();
+        let rite = create_rite(xml_file, variables);
+        assert!(rite.is_ok());
+
+        let rite = rite.unwrap();
+        let process = rite.processes.processes.first();
+        assert!(process.is_some());
+        let process = process.unwrap();
+        assert_eq!("text-uppercase-console", process.id);
+    }
+
+    #[test]
+    fn test_create_rite_err() {
+        let xml_file = "../../data/test/testfile.txt";
+        let variables = &HashMap::new();
+        let rite = create_rite(xml_file, variables);
+        assert!(rite.is_err());
+
+        let err = rite.unwrap_err();
+        assert_eq!(
+            "1:1 Unexpected characters outside the root element: L",
+            err.to_string()
+        )
+    }
+
+    #[test]
+    fn test_load_and_substitute_from_env_err_file() {
+        let r = load_and_substitute_from_env("file does not exist", &HashMap::new());
+        assert!(r.is_err());
+        assert_eq!(
+            "Cannot open file does not exist: No such file or directory (os error 2)",
+            r.unwrap_err().to_string()
+        );
+    }
 }

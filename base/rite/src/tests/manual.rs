@@ -38,6 +38,7 @@ fn create_test_importer_config() -> xml::config::Configuration {
 }
 
 #[test]
+#[ignore = "for manual testing"]
 fn test_importer() -> Result<(), Box<dyn std::error::Error>> {
     helper::pwd();
 

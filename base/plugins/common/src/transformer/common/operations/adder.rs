@@ -3,11 +3,13 @@ use std::{cell::RefCell, collections::HashMap};
 use model::value::Value;
 use uuid::Uuid;
 
+#[derive(Debug)]
 enum AdderType {
     AutoInc,
     Uuid,
 }
 
+#[derive(Debug)]
 pub struct Adder {
     name: String,
     adder_type: AdderType,
@@ -44,7 +46,8 @@ impl Adder {
                     .auto_inc_last_value
                     .borrow()
                     .get(&self.name)
-                    .unwrap_or(&0) + 1;
+                    .unwrap_or(&0)
+                    + 1;
 
                 let mut map = self.auto_inc_last_value.borrow_mut();
                 map.insert(self.name.clone(), value);
@@ -57,7 +60,22 @@ impl Adder {
 
 #[cfg(test)]
 mod tests {
+    use regex::Regex;
+
     use super::*;
+
+    #[test]
+    fn test_adder_invalid_parameter() -> Result<(), Box<dyn std::error::Error>> {
+        let adder = Adder::new("number:autoinc:additional_parameter");
+        assert!(adder.is_err());
+        let err = adder.unwrap_err();
+
+        assert_eq!(
+            "Invalid parameter: number:autoinc:additional_parameter",
+            err.to_string()
+        );
+        Ok(())
+    }
 
     #[test]
     fn test_adder() -> Result<(), Box<dyn std::error::Error>> {
@@ -79,6 +97,50 @@ mod tests {
         // Ensure original adder still increments correctly
         assert_eq!(adder.value(), Value::I32(4));
 
+        Ok(())
+    }
+
+    fn is_valid_uuid_format(input: &str) -> bool {
+        let uuid_regex =
+            Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+        uuid_regex.is_match(input)
+    }
+
+    #[test]
+    fn test_uuid() -> Result<(), Box<dyn std::error::Error>> {
+        let adder = Adder::new("number:uuid")?;
+
+        // Test UUID format
+        let value1 = adder.value();
+        if let Value::String(uuid) = value1.clone() {
+            assert!(is_valid_uuid_format(&uuid));
+        } else {
+            panic!("Wrong data type");
+        }
+
+        let value2 = adder.value();
+        assert_ne!(value1, value2);
+        Ok(())
+    }
+
+    #[test]
+    fn test_unknown_function() -> Result<(), Box<dyn std::error::Error>> {
+        let adder = Adder::new("number:unknown_function");
+
+        assert!(adder.is_err());
+        let err = adder.unwrap_err();
+
+        assert_eq!(
+            "Unknown type: unknown_function",
+            err.to_string()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn test_name() -> Result<(), Box<dyn std::error::Error>> {
+        let adder = Adder::new("number:uuid")?;
+        assert_eq!("number", adder.name());
         Ok(())
     }
 }

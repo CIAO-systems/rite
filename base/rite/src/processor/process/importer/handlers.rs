@@ -67,3 +67,68 @@ fn import_read_handler<'a>(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{cell::RefCell, rc::Rc};
+
+    use export::{Exporter, Signal};
+    use model::Initializable;
+
+    use super::TransformAndExportRecordHandler;
+
+    #[derive(Clone)]
+    struct SignalTestExporter {
+        pub signals: Rc<RefCell<Vec<Signal>>>,
+    }
+
+    impl SignalTestExporter {
+        pub fn new() -> Self {
+            Self {
+                signals: Rc::new(RefCell::new(Vec::new())),
+            }
+        }
+    }
+
+    impl Initializable for SignalTestExporter {
+        fn init(
+            &mut self,
+            _config: Option<model::xml::config::Configuration>,
+        ) -> Result<(), model::BoxedError> {
+            Ok(())
+        }
+    }
+
+    impl Exporter for SignalTestExporter {
+        fn write(&mut self, _record: &model::record::Record) -> Result<(), model::BoxedError> {
+            Ok(())
+        }
+
+        fn event(
+            &mut self,
+            #[allow(unused_variables)] signal: export::Signal,
+        ) -> Result<(), model::BoxedError> {
+            self.signals.borrow_mut().push(signal);
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn test_signaling() {
+        use crate::processor::process::exporter::Exporter;
+
+        let mock = SignalTestExporter::new();
+
+        let transformer = None;
+        let mut v: Vec<Box<dyn export::Exporter>> = Vec::new();
+        let b: Box<dyn export::Exporter> = Box::new(mock.clone());
+        v.push(b);
+        let mut exporter = Some(Exporter::new(&mut v));
+        let mut subject = TransformAndExportRecordHandler::new(&transformer, &mut exporter);
+        assert!(subject.event(Signal::Start).is_ok());
+        assert!(subject.event(Signal::End).is_ok());
+        assert_eq!(mock.signals.borrow().len(), 2);
+        assert_eq!(mock.signals.borrow()[0], Signal::Start );
+        assert_eq!(mock.signals.borrow()[1], Signal::End );
+    }
+}
