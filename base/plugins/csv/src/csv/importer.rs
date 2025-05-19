@@ -43,11 +43,13 @@ mod tests {
 
     use super::{CFG_FILENAME, CSV};
 
+    static EXAMPLE_CSV: &str = "../../data/test/csv/example.csv";
+
     #[test]
     fn test_importer() -> Result<(), Box<dyn std::error::Error>> {
         let mut importer = CSV::new();
         let mut config = Configuration::new();
-        config.insert_str(CFG_FILENAME, "../../../data/csv/example.csv");
+        config.insert_str(CFG_FILENAME, EXAMPLE_CSV);
         importer.init(Some(config))?;
 
         let mut records = Vec::new();

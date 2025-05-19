@@ -27,6 +27,7 @@
 			"options": [
 				"--proto_path=plugins/atc/bin/proto",
 			]
-		}
+		},
+		"rust-analyzer.checkOnSave": true
 	}
 }

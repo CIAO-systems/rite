@@ -8,7 +8,7 @@ static PLUGIN_PATH: &str = if cfg!(debug_assertions) {
     "../target/release"
 };
 static IMPORT_PLUGIN_NAME: &str = "rite_csv";
-static TEST_DATA: &str = "../../data/test/testfile.txt";
+static TEST_DATA: &str = "../data/test/testfile.txt";
 
 fn load_importer() -> Result<Plugin, Box<dyn std::error::Error>> {
     Plugin::new(Some(PLUGIN_PATH), IMPORT_PLUGIN_NAME)

@@ -88,10 +88,11 @@ mod tests {
 
     use super::Faker;
 
+    static CONFIGURATION: &str = "../../data/test/faker/fake-records-generator.xml";
     #[test]
     fn test_importer() -> Result<(), Box<dyn std::error::Error>> {
         let mut faker = Faker::new();
-        let config = Configuration::with_xml("../../../data/ciao/fake-records-generator.xml");
+        let config = Configuration::with_xml(CONFIGURATION);
         faker.init(Some(config))?;
         let mut records = Vec::new();
         let mut handler = CollectingRecordHandler::new(&mut records);

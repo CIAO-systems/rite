@@ -75,7 +75,7 @@ fn test_record_from_json() {
 #[test]
 fn test_records_in_results() -> Result<(), Box<dyn std::error::Error>> {
     let json: serde_json::Value = serde_json::from_str(&fs::read_to_string(
-        "../../../data/test/records-in-results.json",
+        "../../data/test/records-in-results.json",
     )?)?;
     let results = &json["results"];
 
@@ -87,7 +87,7 @@ fn test_records_in_results() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn test_records_in_root() -> Result<(), Box<dyn std::error::Error>> {
     let json: serde_json::Value =
-        serde_json::from_str(&fs::read_to_string("../../../data/test/records-in-root.json")?)?;
+        serde_json::from_str(&fs::read_to_string("../../data/test/records-in-root.json")?)?;
 
     assert_results(EXPECTED, &json);
 

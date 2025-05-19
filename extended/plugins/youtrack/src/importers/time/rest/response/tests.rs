@@ -366,7 +366,7 @@ fn test_handle_json_response() -> Result<(), Box<dyn std::error::Error>> {
     let mut records = Vec::new();
     let mut handler = CollectingRecordHandler::new(&mut records);
 
-    let content = std::fs::read_to_string("../../../data/test/time/tracking.json")?;
+    let content = std::fs::read_to_string("../../data/youtrack/time/tracking.json")?;
     let json: serde_json::Value = serde_json::from_str(&content)?;
 
     // Act
