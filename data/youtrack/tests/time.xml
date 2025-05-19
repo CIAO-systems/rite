@@ -1,6 +1,0 @@
-<rite-youtrack-import-time>
-    <!-- Dates in format YYYY-MM-DD, empty for open interval -->
-    <time-tracking
-        start-date="2025-01-01"
-        end-date=""/>
-</rite-youtrack-import-time>
