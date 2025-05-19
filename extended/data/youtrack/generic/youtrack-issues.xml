@@ -1,0 +1,16 @@
+<rite-youtrack-import>
+    <dataset path="issues"> 
+        <query>for: me</query>
+        <fields>
+            <field id="id" />
+            <field id="idReadable" />
+            <field id="numberInProject" />
+            <field id="project(id,name)" />
+            <field id="commentsCount" />
+            <field id="created" />
+            <field id="summary" />
+            <field id="draftOwner(id,name)" />
+            <field id="isDraft" />
+        </fields>
+    </dataset>
+</rite-youtrack-import>

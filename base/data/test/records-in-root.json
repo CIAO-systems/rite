@@ -1,0 +1,27 @@
+[
+    {
+      "episode_id": 4,
+      "title": "A New Hope"
+    },
+    {
+      "episode_id": 5,
+      "title": "The Empire Strikes Back"
+    },
+    {
+      "episode_id": 6,
+      "title": "Return of the Jedi"
+    },
+    {
+      "episode_id": 1,
+      "title": "The Phantom Menace"
+    },
+    {
+      "episode_id": 2,
+      "title": "Attack of the Clones"
+    },
+    {
+      "episode_id": 3,
+      "title": "Revenge of the Sith"
+    }
+  ]
+  

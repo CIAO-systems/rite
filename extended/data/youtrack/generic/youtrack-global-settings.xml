@@ -1,0 +1,15 @@
+<rite-youtrack-import>
+    <!--
+        see 
+        https://www.jetbrains.com/help/youtrack/devportal/resource-api-admin-globalSettings.html
+     -->
+    <dataset path="admin/globalSettings"> 
+        <fields>
+            <field id="id" />
+            <!-- <field id="systemSettings(id,baseUrl,maxUploadFileSize,maxExportItems,administratorEmail,allowStatisticsCollection,isApplicationReadOnly)" /> -->
+            <field id="license(id,username,license,error)" />
+            <field id="" />
+            <field id="" />
+        </fields>
+    </dataset>
+</rite-youtrack-import>

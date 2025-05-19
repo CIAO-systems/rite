@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_test_file() {
-        match RiteYoutrackImportTime::from(&"../../../data/youtrack/tests/time.xml".to_string()) {
+        match RiteYoutrackImportTime::from(&"../../data/youtrack/tests/time.xml".to_string()) {
             Ok(cfg) => {
                 assert_eq!(
                     cfg.time_tracking.start_date,
