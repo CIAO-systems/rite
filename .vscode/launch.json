@@ -35,7 +35,7 @@
             },
             "args": [
                 "-f",
-                "data/csv/write-csv.xml"
+                "base/data/csv/write-csv.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -56,7 +56,7 @@
             },
             "args": [
                 "-f",
-                "data/postgres.xml"
+                "base/data/postgres.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -77,7 +77,7 @@
             },
             "args": [
                 "-f",
-                "data/star-wars.xml"
+                "base/data/star-wars.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -98,7 +98,7 @@
             },
             "args": [
                 "-f",
-                "data/youtrack/generic/youtrack-example.xml"
+                "extended/data/youtrack/generic/youtrack-example.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -119,7 +119,7 @@
             },
             "args": [
                 "-f",
-                "data/youtrack/time/youtrack-example.xml"
+                "extended/data/youtrack/time/youtrack-example.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -161,7 +161,7 @@
             },
             "args": [
                 "-f",
-                "data/star-wars-mapper.xml"
+                "base/data/star-wars-mapper.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -182,7 +182,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/projects.xml"
+                "custom/data/ciao/projects.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -203,7 +203,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/projects-printer.xml"
+                "custom/data/ciao/projects-printer.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -224,7 +224,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/time_types.xml"
+                "custom/data/ciao/time_types.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -245,7 +245,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/clock_entries.xml"
+                "custom/data/ciao/clock_entries.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -266,7 +266,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/devices.xml"
+                "custom/data/ciao/devices.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -287,7 +287,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/clock_exporter.xml"
+                "custom/data/ciao/clock_exporter.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -308,7 +308,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/random_cost_centers.xml"
+                "custom/data/ciao/random_cost_centers.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -329,7 +329,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/account_exporter.xml"
+                "custom/data/ciao/account_exporter.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -350,7 +350,7 @@
             },
             "args": [
                 "-f",
-                "data/atc/projects-printer.xml"
+                "custom/data/atc/projects-printer.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -371,7 +371,7 @@
             },
             "args": [
                 "-f",
-                "data/atc/time-account-printer.xml"
+                "custom/data/atc/time-account-printer.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -392,7 +392,7 @@
             },
             "args": [
                 "-f",
-                "data/atc/clockins-printer.xml"
+                "custom/data/atc/clockins-printer.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -413,7 +413,7 @@
             },
             "args": [
                 "-f",
-                "data/rest/gorest-users.xml"
+                "base/data/rest/gorest-users.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -434,7 +434,7 @@
             },
             "args": [
                 "-f",
-                "data/rest/key-manager.xml"
+                "base/data/rest/key-manager.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -455,7 +455,7 @@
             },
             "args": [
                 "-f",
-                "data/ciao/time_type/time_types.xml"
+                "custom/data/ciao/time_type/time_types.xml"
             ],
             "cwd": "${workspaceFolder}"
         },
@@ -476,7 +476,7 @@
             },
             "args": [
                 "-f",
-                "data/common/mapper/star-wars.xml"
+                "base/data/common/mapper/star-wars.xml"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: cargo build",
@@ -501,7 +501,7 @@
             },
             "args": [
                 "-f",
-                "data/personio/personio-employees.xml"
+                "extended/data/personio/personio-employees.xml"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: cargo build",
@@ -526,7 +526,7 @@
             },
             "args": [
                 "-f",
-                "data/personio/personio-projects.xml"
+                "extended/data/personio/personio-projects.xml"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: cargo build",
@@ -551,7 +551,7 @@
             },
             "args": [
                 "-f",
-                "data/personio/personio-attendances.xml"
+                "extended/data/personio/personio-attendances.xml"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: cargo build",
@@ -576,7 +576,7 @@
             },
             "args": [
                 "-f",
-                "data/personio/personio-absences.xml"
+                "extended/data/personio/personio-absences.xml"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: cargo build",
