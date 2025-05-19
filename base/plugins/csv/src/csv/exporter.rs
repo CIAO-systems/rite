@@ -1,6 +1,7 @@
 use export::Exporter;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
+use std::path::Path;
 
 use super::CSV;
 
@@ -8,9 +9,11 @@ impl Exporter for CSV {
     fn write(&mut self, record: &model::record::Record) -> Result<(), model::BoxedError> {
         if let Some(ref path) = self.filename {
             if !self.export_header_written && self.export_override {
-                // If file should be overwritten, and this is the first time
-                // the write function is called, delete the file
-                fs::remove_file(path)?;
+                if Path::new(path).exists() {
+                    // If file should be overwritten, and this is the first time
+                    // the write function is called, delete the file
+                    fs::remove_file(path)?;
+                }
             }
 
             // Open the file in append mode
@@ -46,15 +49,14 @@ impl Exporter for CSV {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{fs, path::Path};
 
     use export::Exporter;
     use model::{
-        field::add_field, record::Record, value::Value, xml::config::Configuration,
-        Initializable,
+        field::add_field, record::Record, value::Value, xml::config::Configuration, Initializable,
     };
 
-    use crate::csv::{CFG_FILENAME, CSV};
+    use crate::csv::{CFG_EXPORT_OVERWRITE, CFG_FILENAME, CSV};
 
     #[test]
     fn test_exporter() -> Result<(), Box<dyn std::error::Error>> {
@@ -82,6 +84,41 @@ mod tests {
 
         let expected = format!("field1,field2\nvalue1,value2\nvalue1,value2\n");
         assert_eq!(contents, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_rit_47() -> Result<(), Box<dyn std::error::Error>> {
+        let mut csv = CSV::new();
+        let mut config = Configuration::new();
+        let output_file = "/tmp/this.file.does.not.exist.csv";
+        config.insert_str(CFG_FILENAME, output_file);
+        config.insert_str(CFG_EXPORT_OVERWRITE, "true");
+
+        csv.init(Some(config))?;
+
+        // Make sure, the file does not exist
+        if Path::new(output_file).exists() {
+            fs::remove_file(output_file)?;
+        }
+
+        let mut record = Record::new();
+        for i in 1..=2 {
+            add_field(
+                record.fields_as_mut(),
+                &format!("field{i}"),
+                Value::String(format!("value{i}")),
+            );
+        }
+        for _ in 1..=2 {
+            csv.write(&record)?;
+        }
+
+        let expected = format!("field1,field2\nvalue1,value2\nvalue1,value2\n");
+        let contents = fs::read_to_string(output_file)?;
+        fs::remove_file(output_file)?;
+        assert_eq!(contents, expected);
+
         Ok(())
     }
 }
