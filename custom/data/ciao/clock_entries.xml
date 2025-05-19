@@ -1,0 +1,27 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="ciao" path="target/debug" name="rite_ciao"/>
+    </plugins>
+    <processes>
+        <process id="Clock entries example">
+            <importer plugin="ciao" name="clock_entries">
+                <configuration>
+                    <config key="url" value="$CIAO_URL" />
+                    <config key="api-key" value="$CIAO_API_KEY" />
+                    <!-- Filter parameter -->
+                    <config key="filter.timeRange.startTime" value="2024-01-01T00:00:00Z" />
+                    <config key="filter.timeRange.endTime" value="2024-01-02T00:00:00Z" />
+                    <!--
+                    <config key="filter.userId" value="" />
+                    <config key="filter.creatorId" value="" />
+                    <config key="filter.timeTypeId" value="" />
+                    -->
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

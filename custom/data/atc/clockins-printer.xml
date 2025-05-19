@@ -1,0 +1,32 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="atc" path="target/debug" name="rite_atc"/>
+    </plugins>
+    <processes>
+        <process id="Clockin example">
+            <importer plugin="atc" name="clock_records">
+                <configuration>
+                    <config key="url" value="$ATC_URL" />
+                    <config key="auth-token" value="rite" />
+                    <config key="user" value="$ATC_USER" />
+                    <config key="password" value="$ATC_PASSWORD" />
+                    <!-- Filters -->
+                    <config key="filter.employee" value="19" />
+                    <config key="filter.period" value="2025-01-01:" />
+                    <config key="filter.fields" value="employee,timestamp" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="{" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" /> 
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>
