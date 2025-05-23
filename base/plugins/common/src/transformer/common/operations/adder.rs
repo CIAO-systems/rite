@@ -143,4 +143,17 @@ mod tests {
         assert_eq!("number", adder.name());
         Ok(())
     }
+
+    #[test]
+    fn test_empty() -> Result<(), Box<dyn std::error::Error>> {
+        let adder = Adder::new("field:empty")?;
+
+        let value = adder.value();
+        if let Value::String(s) = value {
+            assert!(s.is_empty());
+        } else {
+            panic!("Empty value is not a string");
+        }
+        Ok(())
+    }
 }
