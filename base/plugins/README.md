@@ -1,6 +1,8 @@
 # Plugins for RITE
 ## Common
 See the [documentation](common/README.md)
+## CSV
+See the [documentation](csv/README.md)
 ## Faker
 See the [documentation](faker/README.md)
 ## Postgres
