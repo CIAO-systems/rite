@@ -94,25 +94,26 @@ fn account_from_record(record: &model::record::Record) -> ciao_rs::ciao::account
 
 fn avatar_from_record(record: &model::record::Record) -> Option<ciao_rs::ciao::common::Image> {
     let id = record.field_by_name("avatar.id");
-    let updated_at = match get_timestamp(record, "avatar.updatedAt") {
-        Ok(updated_at) => Some(updated_at),
-        Err(e) => {
-            eprintln!("{e}");
-            log::error!("{e}");
-            None
-        }
-    };
+    if id.is_some() {
+        let updated_at = match get_timestamp(record, "avatar.updatedAt") {
+            Ok(updated_at) => Some(updated_at),
+            Err(e) => {
+                eprintln!("{e}");
+                log::error!("{e}");
+                None
+            }
+        };
 
-    if id.is_some() || updated_at.is_some() {
-        Some(Image {
-            id: id
-                .map(|field| field.value().to_string())
-                .unwrap_or_default(),
-            updated_at,
-        })
-    } else {
-        None
+        if updated_at.is_some() {
+            return Some(Image {
+                id: id
+                    .map(|field| field.value().to_string())
+                    .unwrap_or_default(),
+                updated_at,
+            });
+        }
     }
+    None
 }
 
 fn address_from_record(record: &model::record::Record) -> Option<ciao_rs::ciao::common::Address> {
@@ -379,10 +380,7 @@ mod tests {
         );
 
         let avatar = avatar_from_record(&record);
-        assert!(avatar.is_some());
-        let avatar = avatar.unwrap();
-        assert_eq!(avatar.id, "67890");
-        assert_eq!(avatar.updated_at, None);
+        assert!(avatar.is_none());
     }
 
     #[test]
@@ -396,14 +394,7 @@ mod tests {
         )?;
 
         let avatar = avatar_from_record(&record);
-        assert!(avatar.is_some());
-        let avatar = avatar.unwrap();
-        assert_eq!(avatar.id, "");
-
-        let updated_at = avatar.updated_at.unwrap();
-        assert_eq!(updated_at.time_utc.unwrap().seconds, 1739347200);
-        assert_eq!(updated_at.time_utc.unwrap().nanos, 0);
-        assert_eq!(updated_at.time_zone, "Europe/Berlin");
+        assert!(avatar.is_none());
 
         Ok(())
     }
@@ -431,10 +422,7 @@ mod tests {
         ); // Invalid timestamp
 
         let avatar = avatar_from_record(&record);
-        assert!(avatar.is_some());
-        let avatar = avatar.unwrap();
-        assert_eq!(avatar.id, "12345");
-        assert_eq!(avatar.updated_at, None);
+        assert!(avatar.is_none());
     }
 
     #[test]
