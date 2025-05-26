@@ -8,6 +8,13 @@ To use one of the importers or exporters, include the plugin in the rite-XML:
     </plugins>
 </rite>
 ```
+## Common configuration
+For the exporter and the importer, the following configuration is available:
+
+| Key | Type | Description | Default
+| --- | --- | --- | --- |
+| filename | String | The path to the .csv file | |
+| delimiter | Char | The field delimiter to be used. | `,`
 
 ## Importer
 The CSV importer reads from a CSV file
@@ -20,12 +27,6 @@ To use it, define a process and add the importer (without name) to your project:
     </configuration>
 </importer>
 ```
-Currently, the CSV file has to have a header row with the names of the fields as first line and must use `,` as delimiter
-
-### Configuration
-| Key | Description |
-| --- | --- |
-| filename | The path to the .csv file
 
 ## Exporter
 The CSV exporter writes a CSV file
@@ -38,10 +39,9 @@ To use it, define a process and add the importer (without name) to your project:
     </configuration>
 </exporter>
 ```
-Currently, the CSV file has a header row with the names of the fields as first line and uses `,` as delimiter
+Currently, the CSV file has a header row with the names of the fields as first line 
 
 ### Configuration
-| Key | Description |
-| --- | --- |
-| filename | The path to the .csv file
-| overwrite | A boolean value, that indicates, if the file should be overwritten
+| Key | Type | Description | Default
+| --- | --- | --- | --- |
+| overwrite | bool | A boolean value, that indicates, if the file should be overwritten | false
