@@ -22,7 +22,7 @@ impl Exporter for CSV {
                 let mut header = String::new();
                 for field in record.fields() {
                     if !header.is_empty() {
-                        header.push(',');
+                        self.push_delimiter(&mut header);
                     }
                     header.push_str(field.name());
                 }
@@ -33,7 +33,7 @@ impl Exporter for CSV {
             let mut line = String::new();
             for field in record.fields() {
                 if !line.is_empty() {
-                    line.push(',');
+                    self.push_delimiter(&mut line);
                 }
                 line.push_str(&field.value().to_string());
             }

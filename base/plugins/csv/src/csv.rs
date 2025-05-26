@@ -21,6 +21,10 @@ impl CSV {
             export_override: false,
         }
     }
+
+    fn push_delimiter(&self, s: &mut String) {
+        s.push(self.delimiter.unwrap_or(b',') as char);
+    }
 }
 
 impl Initializable for CSV {
@@ -46,3 +50,40 @@ impl Initializable for CSV {
 
 mod exporter;
 mod importer;
+
+#[cfg(test)]
+mod tests {
+    use model::{xml::config::Configuration, BoxedError};
+
+    use super::*;
+
+    #[test]
+    fn test_push_delimiter_with_some_delimiter() -> Result<(), BoxedError> {
+        let mut csv = CSV::new();
+        let mut config = Configuration::new();
+        config.insert_str(CFG_DELIMITER, ";");
+        csv.init(Some(config))?;
+
+        let mut s = String::new();
+        s.push_str("field1");
+        csv.push_delimiter(&mut s);
+        s.push_str("field2");
+
+        assert_eq!("field1;field2", s, "Delimiter should be ;");
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_push_delimiter_without_delimiter() -> Result<(), BoxedError> {
+        let csv = CSV::new();
+        let mut s = String::new();
+        s.push_str("field1");
+        csv.push_delimiter(&mut s);
+        s.push_str("field2");
+
+        assert_eq!("field1,field2", s, "Delimiter should be ,");
+
+        Ok(())
+    }
+}
