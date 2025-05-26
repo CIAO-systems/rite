@@ -27,14 +27,18 @@ mod tests {
     use crate::LLMResponse;
 
     #[tokio::test]
+    #[ignore = "for manual testing, because it is too slow and it needs an Ollama running"]
     async fn test_rig() -> Result<(), Box<dyn std::error::Error>> {
         // Create a new Ollama client (defaults to http://localhost:11434)
         let client = ollama::Client::new();
 
         // Create an agent
-        let agent = client.agent("deepseek-r1:7b").build();
+        let agent = client
+            .agent("deepseek-r1:7b")
+            .preamble("Always answer in form of a raw (no markdown) JSON list of records with key/value pairs. Do not add any notes!")
+            .build();
 
-        let response = agent.prompt("Translate 'Hello, world!' to German.").await?;
+        let response = agent.prompt("List ten European cities with the number of people living there.").await?;
         let response = LLMResponse::new(&response)?;
         if let Some(thinking) = response.thinking {
             println!("LLM was thinking about this:\n{thinking}\n\n")
