@@ -15,3 +15,6 @@ regex = "1.11.1"
 name = "rite_llm"
 crate-type = ["dylib"]
 
+[dev-dependencies]
+dotenv = "0.15.0"
+

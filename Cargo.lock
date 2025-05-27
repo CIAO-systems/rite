@@ -2425,6 +2425,7 @@ dependencies = [
 name = "rite_llm"
 version = "0.1.0"
 dependencies = [
+ "dotenv",
  "import",
  "log",
  "model",
