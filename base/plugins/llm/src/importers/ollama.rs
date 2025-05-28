@@ -79,6 +79,10 @@ fn handle_response(
     response: String,
     handler: &mut dyn import::RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let objects = extract_json_structures(&response);
+    for object in objects {
+        println!("{:?}", object);
+    }
     let mut record = Record::new();
 
     add_field(record.fields_as_mut(), "response", Value::String(response));
