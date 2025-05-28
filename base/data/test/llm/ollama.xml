@@ -1,0 +1,19 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="llm" name="rite_llm"/>
+    </plugins>
+    <processes>
+        <process id="llm.ollama">
+            <importer plugin="llm" name="ollama">
+                <configuration>
+                    <config key="agent" value="deepseek-r1:7b" />
+                    <config key="prompt" value="List some random German last names" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

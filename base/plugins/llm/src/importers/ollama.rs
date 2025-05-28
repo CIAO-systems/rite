@@ -1,32 +1,29 @@
+use config::OllamaConnection;
 use import::Importer;
-use rig::providers::ollama::Client;
+use model::{field::add_field, record::Record, value::Value};
 
 pub mod config;
 pub mod response;
 
+#[derive(Default)]
 pub struct OllamaImporter {
-    client: Option<Client>,
-    url: Option<String>,
-    agent: Option<String>,
     prompt: Option<String>,
-}
-
-impl OllamaImporter {
-    pub(crate) fn new() -> Self {
-        Self {
-            client: None,
-            url: None,
-            agent: None,
-            prompt: None,
-        }
-    }
+    connection: Option<OllamaConnection>,
 }
 
 impl Importer for OllamaImporter {
     fn read(
         &mut self,
-        _handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "info",
+            Value::String("Not implemented yet".to_string()),
+        );
+
+        handler.handle_record(&mut record)?;
         Ok(())
     }
 }

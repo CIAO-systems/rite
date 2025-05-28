@@ -8,7 +8,7 @@ pub mod importers;
 #[unsafe(no_mangle)]
 pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
     match name {
-        "ollama" => Ok(Box::new(OllamaImporter::new())),
+        "ollama" => Ok(Box::new(OllamaImporter::default())),
         _ => Err(format!("Unknown importer '{name}'").into()),
     }
 }
