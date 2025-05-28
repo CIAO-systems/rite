@@ -1,7 +1,7 @@
 use model::{BoxedError, Initializable, xml::config::Configuration};
 use rig::{
     agent::Agent,
-    providers::ollama::{self, Client, CompletionModel},
+    providers::ollama::{self, CompletionModel},
 };
 use tokio::runtime::Runtime;
 
@@ -12,9 +12,8 @@ const CFG_OLLAMA_AGENT: &str = "agent";
 const CFG_OLLAMA_PROMPT: &str = "prompt";
 
 pub struct OllamaConnection {
-    runtime: Runtime,
-    client: Client,
-    agent: Agent<CompletionModel>,
+    pub runtime: Runtime,
+    pub agent: Agent<CompletionModel>,
 }
 
 impl OllamaConnection {
@@ -37,14 +36,13 @@ impl OllamaConnection {
 
         Ok(OllamaConnection {
             runtime,
-            client,
             agent,
         })
     }
 }
 
 fn system_prompt() -> &'static str {
-    "Always answer in form of a raw (no markdown) JSON list of records with key/value pairs. Do not add any notes!"
+    "You are a JSON generator that always returns a raw JSON array with JSON records of key/value pairs. Do not use markdown and give no comments."
 }
 
 impl Initializable for OllamaImporter {

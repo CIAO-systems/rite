@@ -8,7 +8,7 @@
             <importer plugin="llm" name="ollama">
                 <configuration>
                     <config key="agent" value="deepseek-r1:7b" />
-                    <config key="prompt" value="List some random German last names" />
+                    <config key="prompt" value="List some random German last and first names. Fieldnames should be 'first' and 'last'" />
                 </configuration>
             </importer>
             <exporters>

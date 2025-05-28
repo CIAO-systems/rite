@@ -2431,6 +2431,7 @@ dependencies = [
  "model",
  "regex",
  "rig-core",
+ "serde_json",
  "tokio",
 ]
 
