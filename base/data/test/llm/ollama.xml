@@ -7,7 +7,7 @@
         <process id="llm.ollama">
             <importer plugin="llm" name="ollama">
                 <configuration>
-                    <config key="agent" value="devstral" />
+                    <config key="agent" value="qwen2.5:7b" />
                     <config key="prompt" value="List ten random German last and first names. Fieldnames should be 'first' and 'last'" />
                 </configuration>
             </importer>
