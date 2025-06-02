@@ -31,9 +31,6 @@ loggers:
       - stderr
     additive: false
 
-
-
-# loggers:
 #   rite::processor:
 #     level: debug
 #     appenders:

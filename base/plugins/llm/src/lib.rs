@@ -7,6 +7,7 @@ pub mod importers;
 ///
 #[unsafe(no_mangle)]
 pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
+    log::info!("Loading importer {name}");
     match name {
         "ollama" => Ok(Box::new(OllamaImporter::default())),
         _ => Err(format!("Unknown importer '{name}'").into()),
