@@ -8,7 +8,7 @@
             <importer plugin="llm" name="ollama">
                 <configuration>
                     <config key="agent" value="qwen2.5:7b" />
-                    <config key="prompt" value="List ten random German last and first names. Fieldnames should be 'first' and 'last'" />
+                    <config key="prompt-file" value="$RITE_CONFIG_PATH/prompt.txt" />
                 </configuration>
             </importer>
             <exporters>

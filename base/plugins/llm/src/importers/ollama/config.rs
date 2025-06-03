@@ -9,6 +9,7 @@ use super::OllamaImporter;
 
 const CFG_OLLAMA_URL: &str = "url";
 const CFG_OLLAMA_AGENT: &str = "agent";
+const CFG_OLLAMA_PROMPT_FILE: &str = "prompt-file";
 const CFG_OLLAMA_PROMPT: &str = "prompt";
 
 pub struct OllamaConnection {
@@ -34,15 +35,15 @@ impl OllamaConnection {
 
         let runtime = Runtime::new()?;
 
-        Ok(OllamaConnection {
-            runtime,
-            agent,
-        })
+        Ok(OllamaConnection { runtime, agent })
     }
 }
 
 fn system_prompt() -> &'static str {
-    "You are a JSON generator that always returns a raw JSON array with JSON records of key/value pairs. Do not use markdown and give no comments."
+    r#"
+    You are a JSON generator that always returns a raw JSON array with JSON 
+    records of key/value pairs. Do not use markdown and give no comments.
+    "#
 }
 
 impl Initializable for OllamaImporter {
@@ -53,6 +54,11 @@ impl Initializable for OllamaImporter {
         if let Some(config) = config {
             self.connection = Some(OllamaConnection::from_config(&config)?);
             self.prompt = config.get(CFG_OLLAMA_PROMPT);
+            if let Some(prompt_file) = config.get(CFG_OLLAMA_PROMPT_FILE) {
+                if let Ok(prompt) = std::fs::read_to_string(prompt_file) {
+                    self.prompt = Some(prompt);
+                }
+            }
         }
 
         Ok(())
