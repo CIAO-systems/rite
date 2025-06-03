@@ -1,9 +1,10 @@
 use config::OllamaConnection;
 use import::Importer;
-use model::{BoxedError, field::add_field, record::Record, value::Value};
+use model::BoxedError;
 use response::OllamaResponse;
 use rig::completion::Prompt;
-use serde_json::Value as JSONValue;
+
+use crate::common::handle_response;
 
 pub mod config;
 pub mod response;
@@ -46,81 +47,6 @@ impl Importer for OllamaImporter {
         }
         Ok(())
     }
-}
-
-fn extract_json_structures(input: &str) -> Vec<JSONValue> {
-    let mut json_structures = Vec::new();
-    let mut stack = Vec::new();
-    let mut start_index = 0;
-
-    for (i, c) in input.chars().enumerate() {
-        match c {
-            '{' | '[' => {
-                if stack.is_empty() {
-                    start_index = i;
-                }
-                stack.push(c);
-            }
-            '}' | ']' => {
-                if let Some(_) = stack.pop() {
-                    if stack.is_empty() {
-                        let json_str = &input[start_index..=i + 1];
-                        match serde_json::from_str::<JSONValue>(json_str) {
-                            Ok(value) => {
-                                json_structures.push(value);
-                            }
-                            Err(e) => {
-                                log::error!("{e}");
-                                eprintln!("{e}");
-                            }
-                        }
-                    }
-                }
-            }
-            _ => (),
-        }
-    }
-
-    json_structures
-}
-
-fn handle_response(
-    response: String,
-    handler: &mut dyn import::RecordHandler,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let objects = extract_json_structures(&response);
-    log::debug!("Extracted {} JSON structures", objects.len());
-
-    for object in objects {
-        match object {
-            JSONValue::Array(values) => {
-                for value in values {
-                    if let Some(map) = value.as_object() {
-                        let mut record = extract_record(map);
-                        handler.handle_record(&mut record)?;
-                    }
-                }
-            }
-            JSONValue::Object(map) => {
-                let mut record = extract_record(&map);
-                handler.handle_record(&mut record)?;
-            }
-            _ => (),
-        }
-    }
-
-    Ok(())
-}
-
-fn extract_record(map: &serde_json::Map<String, serde_json::Value>) -> Record {
-    let mut record = Record::new();
-
-    for (key, value) in map.iter() {
-        log::debug!("{}={}", key, value);
-        add_field(record.fields_as_mut(), key, Value::from(value.clone()));
-    }
-
-    record
 }
 
 #[cfg(test)]

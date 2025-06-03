@@ -5,15 +5,15 @@ use rig::{
 };
 use tokio::runtime::Runtime;
 
+use crate::common::LLMConfiguration;
+
 use super::OllamaImporter;
 
 const CFG_OLLAMA_URL: &str = "url";
-const CFG_OLLAMA_AGENT: &str = "agent";
-const CFG_OLLAMA_PROMPT_FILE: &str = "prompt-file";
-const CFG_OLLAMA_PROMPT: &str = "prompt";
 
 pub struct OllamaConnection {
     pub runtime: Runtime,
+    pub config: LLMConfiguration,
     pub agent: Agent<CompletionModel>,
 }
 
@@ -24,18 +24,22 @@ impl OllamaConnection {
             None => ollama::Client::new(),
         };
 
-        let agent = match config.get(CFG_OLLAMA_AGENT) {
+        let llm_config = LLMConfiguration::from(config);
+
+        let agent = match llm_config.agent() {
             Some(agent) => client.agent(&agent).preamble(system_prompt()).build(),
             None => {
-                return Err(
-                    format!("Configuration variable '{CFG_OLLAMA_AGENT}' must be set").into(),
-                );
+                return Err(format!("Configuration variable 'agent' must be set").into());
             }
         };
 
         let runtime = Runtime::new()?;
 
-        Ok(OllamaConnection { runtime, agent })
+        Ok(OllamaConnection {
+            runtime,
+            agent,
+            config: llm_config,
+        })
     }
 }
 
@@ -52,13 +56,9 @@ impl Initializable for OllamaImporter {
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), model::BoxedError> {
         if let Some(config) = config {
-            self.connection = Some(OllamaConnection::from_config(&config)?);
-            self.prompt = config.get(CFG_OLLAMA_PROMPT);
-            if let Some(prompt_file) = config.get(CFG_OLLAMA_PROMPT_FILE) {
-                if let Ok(prompt) = std::fs::read_to_string(prompt_file) {
-                    self.prompt = Some(prompt);
-                }
-            }
+            let ollama_connection = OllamaConnection::from_config(&config)?;
+            self.prompt = ollama_connection.config.prompt();
+            self.connection = Some(ollama_connection);
         }
 
         Ok(())

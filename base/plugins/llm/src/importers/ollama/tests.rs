@@ -4,9 +4,9 @@ use import::handlers::CollectingRecordHandler;
 use rig::{completion::Prompt, providers::ollama};
 use serde_json::Value;
 
-use crate::importers::ollama::response::OllamaResponse;
+use crate::{common::extract_json_structures, importers::ollama::response::OllamaResponse};
 
-use super::{extract_json_structures, handle_response};
+use super::handle_response;
 
 const TEXT_WITH_JSON1: &str = r#"Here is a raw JSON array containing random German first and last names:
 

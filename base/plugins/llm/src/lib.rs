@@ -1,6 +1,7 @@
 use importers::ollama::OllamaImporter;
 use model::BoxedError;
 
+pub mod common;
 pub mod importers;
 
 /// This functions creates an importer for the fake record generator
