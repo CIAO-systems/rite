@@ -71,5 +71,5 @@ age=39, first=Hans, last=Klein
 ### Configuration
 | **Configuration key** | **Description** | **Required** | **Default** |
 | --- | --- | --- | --- |
-| url | The URL for the Ollama service | Yes | http://localhost:11434
+| url | The URL for the Ollama service | No | http://localhost:11434
 
