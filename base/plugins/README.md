@@ -9,3 +9,5 @@ See the [documentation](faker/README.md)
 See the [documentation](postgres/README.md)
 ## REST
 See the [documentation](rest/README.md)
+## LLM
+See the [documentation](llm/README.md)

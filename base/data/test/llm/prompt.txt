@@ -1,2 +1,2 @@
 List ten random German last and first names and add a random age.
-Fieldnames should be 'alter', 'first' and 'last'
+Fieldnames should be 'age', 'first' and 'last'

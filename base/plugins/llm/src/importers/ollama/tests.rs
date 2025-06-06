@@ -1,6 +1,7 @@
 use std::fs;
 
 use import::handlers::CollectingRecordHandler;
+use model::BoxedError;
 use rig::{completion::Prompt, providers::ollama};
 use serde_json::Value;
 
@@ -87,8 +88,8 @@ async fn test_ollama() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
-fn test_extract_json_array() {
-    let values = extract_json_structures(TEXT_WITH_JSON1);
+fn test_extract_json_array() -> Result<(), BoxedError> {
+    let values = extract_json_structures(TEXT_WITH_JSON1)?;
     assert_eq!(1, values.len());
     assert!(values[0].is_array());
 
@@ -108,14 +109,16 @@ fn test_extract_json_array() {
     } else {
         panic!("No JSON found in the input.");
     }
+
+    Ok(())
 }
 
 #[test]
-fn test_extract_json_structures() {
-    let objects = extract_json_structures(TEXT_WITH_JSON1);
+fn test_extract_json_structures() -> Result<(), BoxedError> {
+    let objects = extract_json_structures(TEXT_WITH_JSON1)?;
     assert_eq!(1, objects.len());
 
-    let objects = extract_json_structures(TEXT_WITH_JSON2);
+    let objects = extract_json_structures(TEXT_WITH_JSON2)?;
     assert_eq!(2, objects.len());
 
     // Element 0 is a object
@@ -135,6 +138,8 @@ fn test_extract_json_structures() {
             "Index should be value - 1"
         );
     }
+
+    Ok(())
 }
 
 static EXAMPLE_RESPONSE: &str = "../../data/test/llm/example-response.json";
