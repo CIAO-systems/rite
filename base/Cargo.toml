@@ -7,4 +7,5 @@ members = [
     "plugins/rest", 
     "plugins/faker", 
     "plugins/csv", 
+    "plugins/llm", 
 ]

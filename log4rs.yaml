@@ -18,6 +18,7 @@ appenders:
       pattern: "{d} - {l} - {m}{n}"
 
 root:
+  # level: debug
   level: error
   appenders:
     - stderr
@@ -30,9 +31,6 @@ loggers:
       - stderr
     additive: false
 
-
-
-# loggers:
 #   rite::processor:
 #     level: debug
 #     appenders:
