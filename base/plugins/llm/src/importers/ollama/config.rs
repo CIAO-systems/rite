@@ -18,7 +18,7 @@ pub struct OllamaConnection {
 }
 
 impl OllamaConnection {
-    fn from_config(config: &Configuration) -> Result<OllamaConnection, BoxedError> {
+    fn from(config: &Configuration) -> Result<OllamaConnection, BoxedError> {
         let client = match config.get(CFG_OLLAMA_URL) {
             Some(url) => ollama::Client::from_url(&url),
             None => ollama::Client::new(),
@@ -27,7 +27,10 @@ impl OllamaConnection {
         let llm_config = LLMConfiguration::from(config);
 
         let agent = match llm_config.agent() {
-            Some(agent) => client.agent(&agent).preamble(system_prompt()).build(),
+            Some(agent) => client
+                .agent(&agent)
+                .preamble(crate::common::system_prompt())
+                .build(),
             None => {
                 return Err(format!("Configuration variable 'agent' must be set").into());
             }
@@ -43,20 +46,13 @@ impl OllamaConnection {
     }
 }
 
-fn system_prompt() -> &'static str {
-    r#"
-    You are a JSON generator that always returns a raw JSON array with JSON 
-    records of key/value pairs. Do not use markdown and give no comments.
-    "#
-}
-
 impl Initializable for OllamaImporter {
     fn init(
         &mut self,
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), model::BoxedError> {
         if let Some(config) = config {
-            let ollama_connection = OllamaConnection::from_config(&config)?;
+            let ollama_connection = OllamaConnection::from(&config)?;
             self.prompt = ollama_connection.config.prompt();
             self.connection = Some(ollama_connection);
         }

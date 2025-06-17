@@ -1,20 +1,24 @@
-use config::OllamaConnection;
+use crate::{
+    common::{handle_response, response::LLMResponse},
+    importers::gemini::config::GeminiConnection,
+};
 use import::Importer;
 use model::BoxedError;
 use rig::completion::Prompt;
 
-use crate::common::{handle_response, response::LLMResponse};
-
-pub mod config;
+mod config;
 
 #[derive(Default)]
-pub struct OllamaImporter {
+pub struct GeminiImporter {
     prompt: Option<String>,
-    connection: Option<OllamaConnection>,
+    connection: Option<GeminiConnection>,
 }
 
-impl Importer for OllamaImporter {
-    fn read(&mut self, handler: &mut dyn import::RecordHandler) -> Result<(), BoxedError> {
+impl Importer for GeminiImporter {
+    fn read(
+        &mut self,
+        handler: &mut dyn import::RecordHandler,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let prompt = self.prompt.clone().ok_or("No 'prompt' configured")?;
 
         if let Some(ref connection) = self.connection {
@@ -46,6 +50,3 @@ impl Importer for OllamaImporter {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests;
