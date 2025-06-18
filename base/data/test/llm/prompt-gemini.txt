@@ -1,0 +1,3 @@
+List ten random Indian last and first names and add a random age. 
+Also add a fake google mail address.
+Fieldnames should be 'mail', 'age', 'first' and 'last'

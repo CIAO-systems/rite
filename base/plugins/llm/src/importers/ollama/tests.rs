@@ -5,7 +5,7 @@ use model::BoxedError;
 use rig::{completion::Prompt, providers::ollama};
 use serde_json::Value;
 
-use crate::{common::extract_json_structures, importers::ollama::response::OllamaResponse};
+use crate::common::{extract_json_structures, response::LLMResponse};
 
 use super::handle_response;
 
@@ -76,7 +76,7 @@ async fn test_ollama() -> Result<(), Box<dyn std::error::Error>> {
     let response = agent
         .prompt("List ten European cities with the number of people living there.")
         .await?;
-    let response = OllamaResponse::new(&response)?;
+    let response = LLMResponse::new(&response)?;
     if let Some(thinking) = response.thinking {
         println!("LLM was thinking about this:\n{thinking}\n\n")
     }

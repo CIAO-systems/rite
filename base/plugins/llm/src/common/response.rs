@@ -1,12 +1,12 @@
 use model::BoxedError;
 use regex::Regex;
 
-pub struct OllamaResponse {
+pub struct LLMResponse {
     pub thinking: Option<String>,
     pub response: Option<String>,
 }
 
-impl OllamaResponse {
+impl LLMResponse {
     pub fn new(input: &str) -> Result<Self, BoxedError> {
         let mut thinking: Option<String> = None;
         let response: Option<String>;
@@ -25,13 +25,13 @@ impl OllamaResponse {
 
 #[cfg(test)]
 mod tests {
-    use crate::importers::ollama::response::OllamaResponse;
+    use crate::common::response::LLMResponse;
 
     // Test case 1: Input with both <think> block and response
     #[test]
     fn test_with_think_and_response() {
         let input = "<think>I am thinking about the next step.</think>This is the actual response.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(
             result.thinking,
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn test_only_response() {
         let input = "This is just a direct response with no thinking.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, None);
         assert_eq!(
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn test_empty_think_block_with_response() {
         let input = "<think></think>Here is the response after an empty thought.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, Some("".to_string()));
         assert_eq!(
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn test_think_block_no_trailing_response() {
         let input = "<think>Just thinking, nothing more.</think>";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(
             result.thinking,
@@ -86,7 +86,7 @@ mod tests {
     #[test]
     fn test_empty_input() {
         let input = "";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, None);
         assert_eq!(result.response, Some("".to_string()));
@@ -101,7 +101,7 @@ This is line 2 of thought.
 </think>
 This is line 1 of response.
 This is line 2 of response.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(
             result.thinking,
@@ -117,7 +117,7 @@ This is line 2 of response.";
     #[test]
     fn test_leading_whitespace_before_think() {
         let input = "  <think>Thinking.</think>Response.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, Some("Thinking.".to_string()));
         assert_eq!(result.response, Some("Response.".to_string()));
@@ -127,7 +127,7 @@ This is line 2 of response.";
     #[test]
     fn test_text_before_think_block() {
         let input = "Some intro text.<think>Actual thought.</think>Response.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, Some("Actual thought.".to_string()));
         assert_eq!(result.response, Some("Response.".to_string()));
@@ -137,7 +137,7 @@ This is line 2 of response.";
     #[test]
     fn test_malformed_think_tag() {
         let input = "<think>Thinking.</thinkmissing>Response.";
-        let result = OllamaResponse::new(input).unwrap();
+        let result = LLMResponse::new(input).unwrap();
 
         assert_eq!(result.thinking, None);
         assert_eq!(

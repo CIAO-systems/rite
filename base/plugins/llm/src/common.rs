@@ -1,5 +1,7 @@
 use model::{BoxedError, field::add_field, record::Record, xml::config::Configuration};
 
+pub mod response;
+
 const CFG_AGENT: &str = "agent";
 const CFG_PROMPT_FILE: &str = "prompt-file";
 const CFG_PROMPT: &str = "prompt";
@@ -113,6 +115,13 @@ fn extract_record(map: &serde_json::Map<String, serde_json::Value>) -> Record {
     }
 
     record
+}
+
+pub fn system_prompt() -> &'static str {
+    r#"
+    You are a JSON generator that always returns a raw JSON array with JSON 
+    records of key/value pairs. Do not use markdown and give no comments.
+    "#
 }
 
 #[cfg(test)]

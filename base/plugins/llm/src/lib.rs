@@ -1,5 +1,7 @@
 use importers::ollama::OllamaImporter;
+use importers::gemini::GeminiImporter;
 use model::BoxedError;
+
 
 pub mod common;
 pub mod importers;
@@ -11,6 +13,7 @@ pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedErr
     log::info!("Loading importer {name}");
     match name {
         "ollama" => Ok(Box::new(OllamaImporter::default())),
+        "gemini" => Ok(Box::new(GeminiImporter::default())),
         _ => Err(format!("Unknown importer '{name}'").into()),
     }
 }

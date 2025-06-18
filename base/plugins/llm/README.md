@@ -73,3 +73,60 @@ age=39, first=Hans, last=Klein
 | --- | --- | --- | --- |
 | url | The URL for the Ollama service | No | http://localhost:11434
 
+
+### Gemini
+To use Google Gemini, in the configuration add an importer with the name `gemini`:
+```xml
+<importer plugin="llm" name="gemini">
+```
+### Example
+```xml
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="llm" name="rite_llm"/>
+    </plugins>
+    <processes>
+        <process id="llm.gemini">
+            <importer plugin="llm" name="gemini">
+                <configuration>
+                    <config key="agent" value="gemini-1.5-flash" />
+                    <config key="prompt-file" value="$RITE_CONFIG_PATH/prompt.txt" />
+                    <config key="api_key" value="$GEMINI_API_KEY" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>
+```
+
+#### Example prompt file
+```text
+List ten random German last and first names and add a random age.
+Fieldnames should be 'age', 'first' and 'last'
+```
+
+##### Output
+Since the system prompt instructs the model to always return a JSON array of 
+record, the output for the above configuration might look something like this:
+```
+age=37, first=Max, last=Mustermann
+age=29, first=Franz, last=Hansen
+age=45, first=Sabine, last=Meier
+age=53, first=Egon, last=Schlomer
+age=61, first=Helga, last=Kremer
+age=31, first=Johannes, last=Müller
+age=24, first=Lena, last=Werner
+age=48, first=Uwe, last=Neumann
+age=57, first=Monika, last=Stenzel
+age=39, first=Hans, last=Klein
+```
+
+### Configuration
+| **Configuration key** | **Description** | **Required** | **Default** |
+| --- | --- | --- | --- |
+| api_key | The Google API key for Gemini (see [here](https://ai.google.dev/gemini-api/docs/api-key)) | Yes | 
+
