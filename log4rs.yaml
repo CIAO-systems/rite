@@ -18,8 +18,8 @@ appenders:
       pattern: "{d} - {l} - {m}{n}"
 
 root:
-  # level: debug
-  level: error
+  level: debug
+  # level: error
   appenders:
     - stderr
     - file

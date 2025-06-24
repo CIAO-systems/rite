@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package rite.v1;
+
+service RiteService {
+    // Process a rite import/transform/export
+    rpc Process(ProcessRequest) returns (ProcessResponse);
+}
+
+message ProcessRequest {
+    string msg = 1;
+}
+
+message ProcessResponse {
+    
+}

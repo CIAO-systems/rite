@@ -1,6 +1,6 @@
 [package]
 name = "rite"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 description = "RITE - rust import/transform/export"
 readme = "README.md"
@@ -14,10 +14,31 @@ plugin = { git = "https://github.com/CIAO-systems/rite-lib-plugin.git" }
 import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
 transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
+grpc-utils-rs = { git = "https://github.com/CIAO-systems/grpc-utils-rs" }
 gag = "1.0"
 log = "0.4"
 log4rs = "1.3"
 moka = {version="0.12", features = ["sync"]}
 clap = { version= "4.5", features = ["derive"] }
-dotenv = "0.15.0"
-colored = "3.0.0"
+dotenv = "0.15"
+colored = "3.0"
+tonic = "0.13"
+prost = "0.13"
+prost-types = "0.13"
+tokio = { version = "1.45", features = ["full"] }
+once_cell = "1.21"
+anyhow = "1.0"
+tonic-reflection = "0.13"
+
+[build-dependencies]
+prost-build = "0.13"
+tonic-build = "0.13"
+
+
+[[bin]]
+name ="rite"
+path = "src/main.rs"
+
+[[bin]]
+name ="rite-server"
+path = "src/server/main.rs"
