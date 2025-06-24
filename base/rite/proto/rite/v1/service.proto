@@ -3,14 +3,10 @@ syntax = "proto3";
 package rite.v1;
 
 service RiteService {
-    // Process a rite import/transform/export
-    rpc Process(ProcessRequest) returns (ProcessResponse);
+  // Process a rite import/transform/export
+  rpc Process(ProcessRequest) returns (ProcessResponse);
 }
 
-message ProcessRequest {
-    string msg = 1;
-}
+message ProcessRequest { bytes zipped_configuration = 1; }
 
-message ProcessResponse {
-    
-}
+message ProcessResponse { repeated string files = 1; }

@@ -1,0 +1,16 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="csv" name="rite_csv"/>
+    </plugins>
+    <processes>
+        <process id="csv.print">
+            <importer plugin="csv">
+                <config key="filename" value="$RITE_CONFIG_PATH/example.csv" />
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>
