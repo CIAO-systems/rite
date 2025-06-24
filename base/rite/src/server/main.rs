@@ -1,38 +1,17 @@
 use dotenv::dotenv;
 use log::info;
-use tonic::{transport::Server, Request, Response, Status};
-use tonic_reflection::server::Builder;
+use tonic::transport::Server;
 
-use crate::rite::v1::{
-    rite_service_server::{RiteService, RiteServiceServer},
-    ProcessRequest, ProcessResponse,
+use crate::{
+    proto::rite::v1::rite_service_server::RiteServiceServer, rite_service::RiteServiceImpl,
 };
 
+mod reflection;
+
 // Include the generated protobuf code
-pub mod rite {
-    pub mod v1 {
-        tonic::include_proto!("rite.v1");
-    }
-}
-
-#[derive(Debug, Default)]
-pub struct RiteServiceImpl;
-
-#[tonic::async_trait]
-impl RiteService for RiteServiceImpl {
-    async fn process(
-        &self,
-        request: Request<ProcessRequest>,
-    ) -> Result<Response<ProcessResponse>, Status> {
-        let x = request.into_inner();
-        println!("Received process request: {:?}", x);
-
-        // For now, returning an empty response
-        let response = ProcessResponse {};
-
-        Ok(Response::new(response))
-    }
-}
+pub mod proto;
+// Include the service implementation
+pub mod rite_service;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,38 +30,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Server::builder()
         .add_service(RiteServiceServer::new(rite_service))
-        .add_service(reflection_v1()?)
-        .add_service(reflection_v1alpha()?)
+        .add_service(reflection::v1()?)
+        .add_service(reflection::v1alpha()?)
         .serve(addr)
         .await?;
 
     Ok(())
-}
-
-fn reflection_v1() -> Result<
-    tonic_reflection::server::v1::ServerReflectionServer<
-        impl tonic_reflection::server::v1::ServerReflection,
-    >,
-    tonic_reflection::server::Error,
-> {
-    Builder::configure()
-        .register_encoded_file_descriptor_set(include_bytes!(concat!(
-            env!("OUT_DIR"),
-            "/service_descriptor.bin"
-        )))
-        .build_v1()
-}
-
-fn reflection_v1alpha() -> Result<
-    tonic_reflection::server::v1alpha::ServerReflectionServer<
-        impl tonic_reflection::server::v1alpha::ServerReflection,
-    >,
-    tonic_reflection::server::Error,
-> {
-    Builder::configure()
-        .register_encoded_file_descriptor_set(include_bytes!(concat!(
-            env!("OUT_DIR"),
-            "/service_descriptor.bin"
-        )))
-        .build_v1alpha()
 }
