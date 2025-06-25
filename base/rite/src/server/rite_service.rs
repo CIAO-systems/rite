@@ -1,8 +1,10 @@
-use std::io::Cursor;
-
-use crate::proto::rite::v1::{rite_service_server::RiteService, ProcessRequest, ProcessResponse};
+use crate::{
+    proto::rite::v1::{rite_service_server::RiteService, ProcessRequest, ProcessResponse},
+    rite_service::processor::ServiceProcessor,
+};
 use tonic::{Request, Response, Status};
-use zip::ZipArchive;
+
+pub mod processor;
 
 #[derive(Debug, Default)]
 pub struct RiteServiceImpl;
@@ -14,29 +16,19 @@ impl RiteService for RiteServiceImpl {
         request: Request<ProcessRequest>,
     ) -> Result<Response<ProcessResponse>, Status> {
         let request = request.into_inner();
-        println!("Received process request: {:?}", request);
 
         // Extract the zipped_configuration bytes
-        let data = request.zipped_configuration;
+        let service_processor =
+            ServiceProcessor::new(&request.zipped_configuration, request.main_config).map_err(
+                |e| Status::invalid_argument(format!("Failed to read zip archive: {}", e)),
+            )?;
 
-        // Use a Cursor to allow ZipArchive to read from the byte array
-        let reader = Cursor::new(data);
-
-        // Try to open the zip archive
-        let mut zip = ZipArchive::new(reader)
-            .map_err(|e| Status::invalid_argument(format!("Failed to read zip archive: {}", e)))?;
-
-        // Collect file names
-        let mut files = Vec::new();
-        for i in 0..zip.len() {
-            let file = zip
-                .by_index(i)
-                .map_err(|e| Status::internal(format!("Failed to access file in zip: {}", e)))?;
-            files.push(file.name().to_string());
-        }
+        let success = service_processor
+            .process()
+            .map_err(|e| Status::internal(format!("Failed to process configuration: {}", e)))?;
 
         // For now, returning an empty response
-        let response = ProcessResponse { files };
+        let response = ProcessResponse { success };
 
         Ok(Response::new(response))
     }

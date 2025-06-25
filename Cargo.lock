@@ -2562,7 +2562,6 @@ dependencies = [
  "dotenv",
  "export",
  "gag",
- "grpc-utils-rs",
  "helper",
  "import",
  "log",
@@ -2579,6 +2578,7 @@ dependencies = [
  "tonic-build 0.13.1",
  "tonic-reflection 0.13.1",
  "transform",
+ "uuid",
  "zip",
 ]
 

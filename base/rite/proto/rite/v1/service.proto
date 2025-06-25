@@ -7,6 +7,11 @@ service RiteService {
   rpc Process(ProcessRequest) returns (ProcessResponse);
 }
 
-message ProcessRequest { bytes zipped_configuration = 1; }
+message ProcessRequest {
+  bytes zipped_configuration = 1;
+  string main_config = 2;
+}
 
-message ProcessResponse { repeated string files = 1; }
+message ProcessResponse {
+  bool success = 1;
+}
