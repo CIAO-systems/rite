@@ -50,6 +50,14 @@ if [ ! -d "$DIR" ]; then
     exit 1
 fi
 
+# Check if config file exists in the directory
+if [ ! -f "$DIR/$CONFIG_FILENAME" ]; then
+    echo "Error: Config file '$CONFIG_FILENAME' does not exist in directory '$DIR'."
+    echo "Available files in directory:"
+    ls -la "$DIR"
+    exit 1
+fi
+
 ZIPFILE="/tmp/rite-server.$RANDOM.zip"
 B64FILE="/tmp/rite-server.$RANDOM.b64"
 GRPC_SERVER="localhost:50051"
@@ -57,8 +65,10 @@ GRPC_METHOD="rite.v1.RiteService/Process"
 
 source .env
 
-# Zip the directory
-zip -j -r "$ZIPFILE" "$DIR" > /dev/null
+# Zip the directory (preserving directory structure, with given directory as root)
+cd "$DIR"
+zip -r "$ZIPFILE" . > /dev/null
+cd - > /dev/null
 
 # Base64 encode the zip file (no line wrapping)
 if base64 --help 2>&1 | grep -q -- '-w '; then
