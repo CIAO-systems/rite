@@ -72,6 +72,8 @@ usage() {
   echo "     Start a bash shell instead of the rite application"
   echo "  --silent "
   echo "     Do not print anything from this script"
+  echo "  --pull "
+  echo "     Pull the latest image before execution"
   echo ""
   echo "Examples:"
   echo "  $(basename "$0") -f /path/to/config.xml"
