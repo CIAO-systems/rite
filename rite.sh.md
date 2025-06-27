@@ -1,14 +1,18 @@
 # Script to run a rite import/transform/export
-The script takes a local file to run `rite` with it. Since there need to be more files for such a run, the script mounts the direcotry, where the given file is located into the container.
+The script takes a local file to run `rite` with it. Since there need to be more files for such a run, the script mounts the directory, where the given file is located into the container.
 The script also makes sure, that a `logs` directory exists in the directory of the configuration file.
+
+> [!IMPORTANT]
+> Make sure all file parameters are absolute paths
 
 It can be downloaded from the [GitHub repository](https://github.com/CIAO-systems/rite/blob/main/rite.sh)
 
 ## Parameters
 | Parameter | Description | Default |
 | --- | --- | --- |
-| -f, --file | The local rite configuration XML file | - |
+| -f, --file | The local rite configuration XML file. It must be an absolute path, otherwise it cannot be mounted into the container | - |
 | -ci, --container-image | An alternative container image | `ghcr.io/ciao-systems/rite:main` |
+| -e, --env | An environment file for the container execution | - |
 | -h, --help | Shows the usage of the script | - |
 | --debug | When given, the container is started with a bash shell | `false` |
 | --silent | When given, the script does not print anything | `false` |

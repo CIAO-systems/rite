@@ -1,0 +1,13 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+    </plugins>
+    <processes>
+        <process id="print.env">
+            <importer plugin="common" name="env" />
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>
