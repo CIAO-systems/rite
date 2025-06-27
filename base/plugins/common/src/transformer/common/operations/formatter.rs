@@ -35,7 +35,6 @@ impl Formatter {
 
 /// Converts an ISO 8601 date time string to an integer
 fn convert_unixtime(field: &Field) -> Option<Value> {
-    // Here is a more robust parser for different ISO 8601 formats
     use chrono::NaiveDateTime;
     use chrono::TimeZone;
     use chrono::prelude::*;
