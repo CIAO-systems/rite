@@ -104,7 +104,7 @@ local_logs_directory="$local_directory/logs"
 # Create logs directory, so the container does not create it with root
 mkdir -p "$local_logs_directory"
 
-# Cooman arguments
+# Common arguments
 args=(
     run
     -u $(id -u):$(id -g)
