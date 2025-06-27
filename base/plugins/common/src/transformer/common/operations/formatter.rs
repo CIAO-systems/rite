@@ -24,12 +24,48 @@ impl Formatter {
             match self.format.as_str() {
                 "isodatetime" => convert_isodatetime(field),
                 "isodate" => convert_isodate(field),
+                "unixtime" => convert_unixtime(field),
                 _ => None,
             }
         } else {
             None
         }
     }
+}
+
+/// Converts an ISO 8601 date time string to an integer
+fn convert_unixtime(field: &Field) -> Option<Value> {
+    use chrono::NaiveDateTime;
+    use chrono::TimeZone;
+    use chrono::prelude::*;
+
+    if let Value::String(datetime_str) = field.value() {
+        // Attempt to parse with timezone first (e.g., "Z" or "+02:00")
+        if let Ok(datetime) = DateTime::parse_from_rfc3339(&datetime_str) {
+            return Some(Value::I64(datetime.timestamp_millis()));
+        }
+
+        // Then, attempt to parse as a NaiveDateTime with a timezone assumed
+        // This is useful for strings like "2023-05-15T10:30:00" without a timezone.
+        // We'll assume UTC for these cases.
+        if let Ok(naive_datetime) =
+            NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%dT%H:%M:%S")
+        {
+            let datetime_utc = Utc.from_utc_datetime(&naive_datetime);
+            return Some(Value::I64(datetime_utc.timestamp_millis()));
+        }
+
+        // Finally, attempt to parse as a date-only string and assume midnight UTC
+        if let Ok(naive_date) = chrono::NaiveDate::parse_from_str(&datetime_str, "%Y-%m-%d") {
+            if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
+                let datetime_utc = Utc.from_utc_datetime(&naive_datetime);
+                return Some(Value::I64(datetime_utc.timestamp_millis()));
+            }
+        }
+    }
+
+    // If none of the parsing attempts succeed, return None.
+    None
 }
 
 /// Converts an integer or a float to an ISO 8601 date time string
@@ -165,10 +201,7 @@ mod tests {
 
     #[test]
     fn test_convert_unsupported_type() {
-        let field = Field::new_value(
-            "name",
-            Value::String("not a timestamp".to_string()),
-        );
+        let field = Field::new_value("name", Value::String("not a timestamp".to_string()));
         let result = convert_isodatetime(&field);
         assert_eq!(result, None);
     }
@@ -220,6 +253,76 @@ mod tests {
         assert_eq!(
             result,
             Some(Value::String("1970-01-01T00:00:00.073+00:00".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_convert_unixtime_valid_iso8601() {
+        // GIVEN a valid ISO 8601 date-time string in a Field
+        let iso8601_string = "2023-05-15T10:30:00.000Z";
+        let field = Field::new_value("field", iso8601_string.into());
+
+        // WHEN the convert_unixtime function is called
+        let result = convert_unixtime(&field);
+
+        // THEN the function should return the correct UNIX timestamp in milliseconds
+        // The expected value for "2023-05-15T10:30:00.000Z" is 1684146600000.
+        let expected_value = Some(Value::I64(1684146600000));
+        assert_eq!(
+            result, expected_value,
+            "The conversion from ISO 8601 to UNIX time should be correct."
+        );
+    }
+
+    #[test]
+    fn test_convert_unixtime_invalid_string() {
+        // GIVEN an invalid date-time string in a Field
+        let invalid_string = "not-a-date";
+        let field = Field::new_value("timestamp", invalid_string.into());
+
+        // WHEN the convert_unixtime function is called
+        let result = convert_unixtime(&field);
+
+        // THEN the function should return None
+        let expected_value = None;
+        assert_eq!(
+            result, expected_value,
+            "The function should return None for invalid input strings."
+        );
+    }
+
+    #[test]
+    fn test_convert_unixtime_empty_string() {
+        // GIVEN an empty string in a Field
+        let empty_string = "";
+        let field = Field::new_value("timestamp", empty_string.into());
+
+        // WHEN the convert_unixtime function is called
+        let result = convert_unixtime(&field);
+
+        // THEN the function should return None
+        let expected_value = None;
+        assert_eq!(
+            result, expected_value,
+            "The function should return None for an empty string."
+        );
+    }
+
+    #[test]
+    fn test_convert_unixtime_date_only() {
+        // GIVEN a date-only string in a Field
+        let date_string = "2023-05-15";
+        let field = Field::new_value("birthdate", date_string.into());
+
+        // WHEN the convert_unixtime function is called
+        let result = convert_unixtime(&field);
+
+        // THEN the function should parse it as midnight (00:00:00.000) UTC on that date.
+        // The expected value for "2023-05-15T00:00:00.000Z" is 1684108800000.
+        let expected_value = Some(Value::I64(1684108800000));
+        assert_eq!(
+            result, expected_value,
+            "The conversion of a date-only string should be correct (midnight UTC)."
         );
     }
 }
