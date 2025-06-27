@@ -1,19 +1,29 @@
-use console::ConsoleExporter;
-use template::TemplateExporter;
+use exporter::{console::ConsoleExporter, template::TemplateExporter};
+use model::BoxedError;
 use transformer::{common::CommonTransformer, mapper::MapperTransformer};
 
-pub mod console;
+use crate::importer::env::EnvImporter;
+
+pub mod exporter;
+pub mod importer;
 pub mod transformer;
-pub mod template;
+
+/// This function creates an importer for the given name
+///
+#[unsafe(no_mangle)]
+pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
+    match name {
+        "env" => Ok(Box::new(EnvImporter::new())),
+        _ => Err(format!("Unknown importer '{name}'").into()),
+    }
+}
 
 /// Plugin entry function to create an instance of an [Transformer]
-#[no_mangle]
-pub fn create_transformer(
-    name: &str,
-) -> Result<Box<dyn transform::Transformer>, Box<dyn std::error::Error>> {
+#[unsafe(no_mangle)]
+pub fn create_transformer(name: &str) -> Result<Box<dyn transform::Transformer>, BoxedError> {
     match name {
         "mapper" => Ok(Box::new(MapperTransformer::new())),
-        _ => Ok(Box::new(CommonTransformer::new()))
+        _ => Ok(Box::new(CommonTransformer::new())),
     }
 }
 
@@ -23,10 +33,8 @@ pub fn create_transformer(
 ///     to determined, what exporter to return
 /// # Available exporters
 /// * `console` - An [Exporter] to write to the stdout
-#[no_mangle]
-pub fn create_exporter(
-    name: &str,
-) -> Result<Box<dyn export::Exporter>, Box<dyn std::error::Error>> {
+#[unsafe(no_mangle)]
+pub fn create_exporter(name: &str) -> Result<Box<dyn export::Exporter>, BoxedError> {
     match name {
         "console" => Ok(Box::new(ConsoleExporter::new())),
         "template" => Ok(Box::new(TemplateExporter::new())),

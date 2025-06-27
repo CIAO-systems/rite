@@ -1,7 +1,7 @@
 use model::{field::add_field, record::Record};
 use tera::{Number, Value};
 
-use crate::template::tera::record_to_tera_object;
+use crate::exporter::template::tera::record_to_tera_object;
 
 use super::model_to_tera;
 
