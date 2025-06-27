@@ -8,7 +8,7 @@ pub mod exporter;
 pub mod importer;
 pub mod transformer;
 
-/// This functions creates an importer for the given name
+/// This function creates an importer for the given name
 ///
 #[unsafe(no_mangle)]
 pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
