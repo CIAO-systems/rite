@@ -1,7 +1,7 @@
 [package]
 name = "rite_common"
-version = "0.1.2"
-edition = "2021"
+version = "0.1.3"
+edition = "2024"
 description = "RITE common transformers/exporters"
 readme = "README.md"
 repository = "https://github.com/CIAO-systems/rite"
@@ -9,6 +9,7 @@ license = "Apache-2.0"
 
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
+import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
 export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
 uuid = { version = "1.11", features = ["v4"] }

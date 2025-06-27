@@ -1,13 +1,15 @@
 use export::{Exporter, Signal};
-use model::{field::add_field, record::Record, xml::config::Configuration, Initializable};
+use model::{Initializable, field::add_field, record::Record, xml::config::Configuration};
 use tera::{Context, Tera};
 use uuid::Uuid;
 
-use super::{TemplateExporter, CFG_OUTPUT_FILE, CFG_TEMPLATE_FILE};
+use super::{CFG_OUTPUT_FILE, CFG_TEMPLATE_FILE, TemplateExporter};
 
 static TEST_TEMPLATE: &str = "../../data/test/common/templates/test_template.txt";
-static TEST_TEMPLATE_WITH_RECORD: &str = "../../data/test/common/templates/test_template_with_record.txt";
-static TEST_TEMPLATE_WITH_COLLECTION: &str = "../../data/test/common/templates/test_template_with_collection.txt";
+static TEST_TEMPLATE_WITH_RECORD: &str =
+    "../../data/test/common/templates/test_template_with_record.txt";
+static TEST_TEMPLATE_WITH_COLLECTION: &str =
+    "../../data/test/common/templates/test_template_with_collection.txt";
 
 #[test]
 fn test_tera() -> Result<(), model::BoxedError> {
@@ -50,7 +52,9 @@ Record: {{ record.recordField.fieldName }}
         model::value::Value::Record(sub_record),
     );
 
-    records.push(crate::template::tera::record_to_tera_object(&record));
+    records.push(crate::exporter::template::tera::record_to_tera_object(
+        &record,
+    ));
 
     context.insert("records", &records);
 
@@ -69,10 +73,7 @@ Record: {{ record.recordField.fieldName }}
 fn test_exporter() -> Result<(), model::BoxedError> {
     let mut exporter = TemplateExporter::new();
     let mut config = Configuration::new();
-    config.insert_str(
-        CFG_TEMPLATE_FILE,
-        TEST_TEMPLATE,
-    );
+    config.insert_str(CFG_TEMPLATE_FILE, TEST_TEMPLATE);
     const TMP_FILE: &str = "/tmp/template_output.txt";
     config.insert_str(CFG_OUTPUT_FILE, TMP_FILE);
 
@@ -99,10 +100,7 @@ fn test_exporter() -> Result<(), model::BoxedError> {
 fn test_exporter_with_record() -> Result<(), model::BoxedError> {
     let mut exporter = TemplateExporter::new();
     let mut config = Configuration::new();
-    config.insert_str(
-        CFG_TEMPLATE_FILE,
-        TEST_TEMPLATE_WITH_RECORD,
-    );
+    config.insert_str(CFG_TEMPLATE_FILE, TEST_TEMPLATE_WITH_RECORD);
     const TMP_FILE: &str = "/tmp/template_with_record_output.txt";
     config.insert_str(CFG_OUTPUT_FILE, TMP_FILE);
 
@@ -141,10 +139,7 @@ fn test_exporter_with_record() -> Result<(), model::BoxedError> {
 fn test_exporter_with_collection() -> Result<(), model::BoxedError> {
     let mut exporter = TemplateExporter::new();
     let mut config = Configuration::new();
-    config.insert_str(
-        CFG_TEMPLATE_FILE,
-        TEST_TEMPLATE_WITH_COLLECTION,
-    );
+    config.insert_str(CFG_TEMPLATE_FILE, TEST_TEMPLATE_WITH_COLLECTION);
     const TMP_FILE: &str = "/tmp/template_with_collection_output.txt";
     config.insert_str(CFG_OUTPUT_FILE, TMP_FILE);
 

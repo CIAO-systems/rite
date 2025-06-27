@@ -1973,11 +1973,12 @@ dependencies = [
 
 [[package]]
 name = "rite_common"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "chrono",
  "export",
  "gag",
+ "import",
  "log",
  "model",
  "regex",
