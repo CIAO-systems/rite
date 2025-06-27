@@ -29,7 +29,7 @@ import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
 
 To create an importer, the library needs to provide the function `create_importer` which has this signature:
 ```rust
-/// This functions creates an importer
+/// This function creates an importer
 ///
 #[unsafe(no_mangle)]
 pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError>;
