@@ -100,6 +100,31 @@ a comma separated list of field names.
 In this case only the field with name `field1` or `field2` will be part of the 
 resulting record
 
+##### format_field
+This modifier converts the original field value into a new format. The 
+configuration value is a colon separated value. The first part is the fieldname,
+the second part is the formatting function.
+###### Formatting functions
+| Function | Description |
+| --- | --- |
+| isodatetime | Takes a value in **UNIX time** (milliseconds since Jan 1st 1970) and replaces it with a string in **ISO 8601** format with date and time |
+| isodate | Takes a value in **UNIX time** (milliseconds since Jan 1st 1970) and replaces it with a string in **ISO 8601** format with only date |
+| unixtime | Takes a value in **ISO 8601** format and replaces it with UNIX time (milliseconds since Jan 1st 1970) |
+
+###### Example
+```xml
+    <config key="format_field" value="created:isodatetime" />
+    <config key="format_field" value="birthdate:isodate" />
+    <config key="format_field" value="timestamp:unixtime" />
+```
+
+In the above examples the values would be converted as follows:
+| Field | Original value | Resulting value |
+| --- | --- | --- |
+| created | 1672531200000 | 2023-01-01T00:00:00.000Z |
+| birthdate | 1020304800000 | 2002-05-01 |
+| timestamp | 2023-05-15T10:30:00.000Z | 1684146600000 |
+
 ### Mapper
 This transformer is returned, when the `name` is `mapper`. 
 ```xml
