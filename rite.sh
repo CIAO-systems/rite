@@ -143,7 +143,11 @@ if [[ "$SILENT" == "false" ]]; then
 fi
 
 if [[ "$PULL" == "true" ]]; then
-  docker pull $CONTAINER_IMAGE
+  if [[ "$SILENT" == "false" ]]; then
+    docker pull $CONTAINER_IMAGE
+  else
+    docker pull $CONTAINER_IMAGE > /dev/null 2>&1
+  fi
 fi
 # Execute the container image
 docker "${args[@]}"
