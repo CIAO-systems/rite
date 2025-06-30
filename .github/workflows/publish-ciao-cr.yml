@@ -1,0 +1,52 @@
+name: Copy GHCR Image to CIAO container registry
+
+on:
+  # Trigger the workflow when a package is published.
+  # This event is triggered for container images pushed to GHCR.
+  registry_package: 
+    types: [published]
+
+  # To trigger manually
+  workflow_dispatch: 
+
+env:
+    CIAO_REGISTRY: ccr.ciao-cloud.com
+    GHCR_PACKAGE: ghcr.io/ciao-systems/rite:main
+    CCR_PACKAGE: ${CIAO_REGISTRY}/ciao-systems/rite:main
+jobs:
+    copy-image:
+        if: github.event.package.name == 'rite'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write # Grant permission to read packages from GHCR
+    
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Log in to CIAO CR
+              uses: docker/login-action@v3
+              with:
+                registry: ${CIAO_REGISTRY}
+                username: ${{ secrets.CCR_USER }}
+                password: ${{ secrets.CCR_PASSWORD }}
+
+            - name: Pull image from GHCR
+              run: docker pull ${GHCR_PACKAGE}
+
+            - name: Tag the image for the ciao registry
+              run: |
+                docker tag ${GHCR_PACKAGE} ${CCR_PACKAGE}
+
+            - name: Push the tagged image to the ciao registry
+              run: |
+                docker push ${CCR_PACKAGE}
+
