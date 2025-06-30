@@ -37,18 +37,18 @@ jobs:
             - name: Log in to CIAO CR
               uses: docker/login-action@v3
               with:
-                registry: ${CIAO_REGISTRY}
+                registry: ${{ env.CIAO_REGISTRY }}
                 username: ${{ secrets.CCR_USER }}
                 password: ${{ secrets.CCR_PASSWORD }}
 
             - name: Pull image from GHCR
-              run: docker pull ${GHCR_PACKAGE}
+              run: docker pull ${{ env.GHCR_PACKAGE }}
 
             - name: Tag the image for the ciao registry
               run: |
-                docker tag ${GHCR_PACKAGE} ${CCR_PACKAGE}
+                docker tag ${{ env.GHCR_PACKAGE }} ${{ env.CCR_PACKAGE }}
 
             - name: Push the tagged image to the ciao registry
               run: |
-                docker push ${CCR_PACKAGE}
+                docker push ${{ env.CCR_PACKAGE }}
 
