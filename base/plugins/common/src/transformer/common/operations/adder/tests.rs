@@ -115,7 +115,6 @@ fn test_new_known_no_arg_functions() {
 #[test]
 fn test_new_known_param_functions() {
     let test_cases = vec![
-        ("data:sum(10,20)", "sum", vec!["10", "20"]),
         ("message:value('hello world')", "value", vec!["hello world"]),
     ];
 
@@ -174,11 +173,11 @@ fn test_new_error_empty_function_name_with_parens() {
 
 #[test]
 fn test_new_error_unexpected_char_after_func_name() {
-    let result = Adder::new("field:sum trailing_chars");
+    let result = Adder::new("field:value trailing_chars");
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err().to_string(),
-        "Invalid characters after function name 'sum' in 'sum trailing_chars'"
+        "Invalid characters after function name 'value' in 'value trailing_chars'"
     );
 }
 

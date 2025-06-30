@@ -19,7 +19,7 @@ pub struct Adder {
 
 // --- Constants for Allowed Functions ---
 const ALLOWED_NO_ARG_FUNCTIONS: &[&str] = &["autoinc", "uuid", "empty", "now"];
-const ALLOWED_PARAM_FUNCTIONS: &[&str] = &["sum", "value"];
+const ALLOWED_PARAM_FUNCTIONS: &[&str] = &["value"];
 
 impl Adder {
     pub fn new(data: &str) -> Result<Self, BoxedError> {
