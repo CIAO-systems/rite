@@ -15,7 +15,9 @@ env:
     CCR_PACKAGE: ${CIAO_REGISTRY}/ciao-systems/rite:main
 jobs:
     copy-image:
-        if: github.event.package.name == 'rite'
+        if: |
+          github.event_name == 'workflow_dispatch' ||
+          github.event.package.name == 'rite'
         runs-on: ubuntu-latest
         permissions:
             contents: read
