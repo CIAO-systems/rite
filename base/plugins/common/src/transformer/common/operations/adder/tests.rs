@@ -1,4 +1,5 @@
 use regex::Regex;
+use uuid::Uuid;
 
 use super::*;
 
@@ -114,9 +115,7 @@ fn test_new_known_no_arg_functions() {
 
 #[test]
 fn test_new_known_param_functions() {
-    let test_cases = vec![
-        ("message:value('hello world')", "value", vec!["hello world"]),
-    ];
+    let test_cases = vec![("message:value('hello world')", "value", vec!["hello world"])];
 
     for (input, expected_name, expected_args) in test_cases {
         let adder = Adder::new(input).unwrap();
