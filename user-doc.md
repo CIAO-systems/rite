@@ -5,9 +5,9 @@ For easy usage, there is a shell script to run the container. See [the documenta
 ## RITE configuration format
 A rite configuration is an [XML](https://developer.mozilla.org/en-US/docs/Web/XML/Guides/XML_introduction) file with the root element `rite`
 
-A rit configuration must have the elements `plugins` and `processes`. A `process` element within the `processes` must contain one `importer` element and at least one `exporter` element withing the mandatory `exporters` element. The element `transformers` and its `transformer` elements are optional.
+A rite configuration must have the elements `plugins` and `processes`. A `process` element within the `processes` must contain one `importer` element and at least one `exporter` element withing the mandatory `exporters` element. The element `transformers` and its `transformer` elements are optional.
 
-A minimal rite configuration has those elements:
+A minimal rite configuration looks as follows:
 ```xml
 <rite>
     <plugins>
@@ -42,7 +42,7 @@ There are also some predefined variables, that can be used in any configuration 
 | `RITE_CONFIG_PATH` | The variable will be replaced with the directory, where the XML file is located
 
 #### Example
-The postgres importer has a separate configuration XML that can be loaded from the same directory of the main configuration:
+The [postgres importer](base/plugins/postgres/README.md) has a separate configuration XML that can be loaded from the same directory of the main configuration:
 ```xml
     <importer plugin="rite_postgres">
         <configuration xml="$RITE_CONFIG_PATH/postgres-import-config.xml" />
