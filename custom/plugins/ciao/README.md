@@ -166,7 +166,7 @@ This importer supports the additional filter parameters:
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | String | Unique id of the time type |
-| `description` | String | Descriptive name of the time type |
+| `name` | String | Descriptive name of the time type |
 | `shorthand` | String | Shorthand of the time type |
 | `color.alpha` | i32 | Alpha of the color (if available) forthe time type |
 | `color.red` | i32 | Red of the color (if available) forthe time type |
