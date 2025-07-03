@@ -5,8 +5,6 @@ rite is a framework for importing data from a datasource, optionally transform t
 
 Go to the [user documentation](user-doc.md) to learn how to create a rite import/export.
 
-For easy usage, there is a shell script to run the container. See [the documentation for the script](rite.sh.md)
-
 ## Overview
 ### model
 This [library](https://github.com/CIAO-systems/rite-lib-model) describes the data model of the framework
