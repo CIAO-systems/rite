@@ -79,7 +79,7 @@ async fn list_time_types(
                 }
             }
             Err(e) => {
-                log::error!("Error processing time types stream: {e}");
+                return Err(e.into());
             }
         }
     }

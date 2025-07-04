@@ -66,7 +66,7 @@ async fn list_cost_centers(
                 }
             }
             Err(e) => {
-                log::error!("Error processing clock entries stream: {e}");
+                return Err(e.into());
             }
         }
     }

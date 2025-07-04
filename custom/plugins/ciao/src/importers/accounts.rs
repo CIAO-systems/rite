@@ -63,7 +63,7 @@ async fn list_accounts(
                 }
             }
             Err(e) => {
-                log::error!("Error processing project stream: {e}");
+                return Err(e.into());
             }
         }
     }

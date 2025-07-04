@@ -74,7 +74,7 @@ async fn list_projects(
                 }
             }
             Err(e) => {
-                log::error!("Error processing project stream: {e}");
+                return Err(e.into());
             }
         }
     }
