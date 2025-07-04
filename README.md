@@ -2,7 +2,8 @@
 
 # rite - Rust Import/Transform/Export
 rite is a framework for importing data from a datasource, optionally transform the data, and then exporting it to a datasink
-For easy usage, there is a shell script to run the container. See [the documentation for the script](rite.sh.md)
+
+Go to the [user documentation](doc/user-doc.md) to learn how to create a rite import/export.
 
 ## Overview
 ### model
@@ -26,7 +27,7 @@ A [library](https://github.com/CIAO-systems/rite-lib-helper) with some useful fu
 ### examples
 Some [example](examples/README.md) implementations for plugins
 ## Creating a plugin
-To get started creating a RITE plugin, read the [How to write a plugin guide](write-a-plugin.md)
+To get started creating a RITE plugin, read the [How to write a plugin guide](doc/write-a-plugin.md)
 
 ## Plugins
 ### base
