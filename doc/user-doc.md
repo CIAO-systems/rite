@@ -5,7 +5,7 @@
 
 ## Plugins
 ### base
-[Common plugins (transformers and exporters)](../base/plugins/README.md)
+[Common plugins](../base/plugins/README.md)
 
 ### extended
 [Plugins for special applications with open APIs](../extended/plugins/README.md)
