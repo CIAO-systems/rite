@@ -71,8 +71,7 @@ async fn list_devices(
                 }
             }
             Err(e) => {
-                log::error!("Error processing devices stream: {e}");
-                return Err(Box::new(e));
+                return Err(e.into());
             }
         }
     }
