@@ -1,4 +1,4 @@
-# Common functionality for [RITE](../../README.md)
+# Common functionality for [RITE](../../../README.md)
 This plugin contains some common transformers and exporters. To use them, 
 include the plugin in the rite-XML:
 ```xml
