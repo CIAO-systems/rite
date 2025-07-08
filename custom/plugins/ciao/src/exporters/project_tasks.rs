@@ -51,7 +51,7 @@ impl Exporter for ProjectTasks {
 }
 
 async fn create_project_task(
-    service_client: &mut ciao_rs::ciao::clients::time_tracking::project_tasks::ProjectTaskClient,
+    service_client: &mut ciao_rs::ciao::clients::time_tracking::projects::tasks::ProjectTaskClient,
     record: &model::record::Record,
 ) -> Result<(), model::BoxedError> {
     let request = CreateRequest {
