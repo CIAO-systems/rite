@@ -14,6 +14,7 @@ pub fn create_importer(
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
         "accounts" => Ok(Box::new(importers::accounts::Accounts::new())),
+        "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "devices" => Ok(Box::new(importers::devices::Devices::new())),
         "projects" => Ok(Box::new(importers::projects::Projects::new())),
         "time_types" => Ok(Box::new(importers::time_types::TimeTypes::new())),

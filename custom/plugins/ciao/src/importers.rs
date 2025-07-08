@@ -4,3 +4,4 @@ pub mod time_types;
 pub mod clock_entries;
 pub mod cost_centers;
 pub mod accounts;
+pub mod absences;
