@@ -1605,7 +1605,7 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git#c949822781d516d7935bee74e459a35b401e8323"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git#b485b341890960e86231602f39f640156952cef9"
 dependencies = [
  "chrono",
  "serde",
