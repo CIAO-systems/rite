@@ -107,12 +107,12 @@ Currently, this importer retrieves all projects
 | `id` | String | Unique id of the project |
 | `externalId` | String | External id of the project |
 | `name` | String | Descriptive name of the project |
-| `startDate.timeUtc` | Start date of the project in millis since UNIX Epoch |
-| `startDate.timeZome` | IANA timezone id of the start date of the project in millis since UNIX Epoch |
-| `endDate.timeUtc` | End date of the project in millis since UNIX Epoch |
-| `endDate.timeZome` | IANA timezone id of the end date of the project in millis since UNIX Epoch |
-| `closedDate.timeUtc` | Closed date of the project in millis since UNIX Epoch |
-| `closedDate.timeZome` | IANA timezone id of the closed date of the project in millis since UNIX Epoch |
+| `startDate.timeUtc` | i64 | Start date of the project in millis since UNIX Epoch |
+| `startDate.timeZome` | String | IANA timezone id of the start date of the project in millis since UNIX Epoch |
+| `endDate.timeUtc` | i64 | End date of the project in millis since UNIX Epoch |
+| `endDate.timeZome` | String | IANA timezone id of the end date of the project in millis since UNIX Epoch |
+| `closedDate.timeUtc` | i64 | Closed date of the project in millis since UNIX Epoch |
+| `closedDate.timeZome` | String | IANA timezone id of the closed date of the project in millis since UNIX Epoch |
 
 # Time types
 This importer reads the time types. 
