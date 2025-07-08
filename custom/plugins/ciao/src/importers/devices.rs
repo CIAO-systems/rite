@@ -93,7 +93,7 @@ fn handle_device(
     );
     add_field(
         fields,
-        "description",
+        "name",
         Value::String(device.name.clone()),
     );
     add_field(
@@ -130,7 +130,7 @@ fn handle_device(
         );
         add_optional_field(
             fields,
-            &format!("{element_prefix}.description"),
+            &format!("{element_prefix}.name"),
             action.name.clone(),
         );
         add_field(
@@ -208,7 +208,7 @@ mod tests {
         for record in records {
             println!("{:?}", record);
             assert!(record.field_by_name("id").is_some());
-            assert!(record.field_by_name("description").is_some());
+            assert!(record.field_by_name("name").is_some());
         }
         Ok(())
     }
