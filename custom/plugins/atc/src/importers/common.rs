@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use model::value::Value;
+use chrono::{NaiveDate, TimeZone, Utc};
+use model::{value::Value, BoxedError};
+use prost_types::Timestamp;
 
 use crate::com::atoss::atc::protobuf::{
     field::Value::{
@@ -111,6 +113,56 @@ pub fn duration_to_i64(v: prost_types::Duration) -> i64 {
 /// Converts a [prost_types::Timestamp] to a string
 pub fn timestamp_to_string(v: prost_types::Timestamp) -> String {
     v.to_string()
+}
+
+/// Parses the a string of two dates separated by `:`.
+/// Dates can be empty and use the format `"%Y-%m-%d"`.
+/// Returns a tuple of start and end
+pub fn parse_period(period: &str) -> (Option<NaiveDate>, Option<NaiveDate>) {
+    let parts: Vec<&str> = period.split(':').collect();
+
+    let start = if parts.get(0).is_some() && !parts[0].is_empty() {
+        match NaiveDate::parse_from_str(parts[0], "%Y-%m-%d") {
+            Ok(date) => Some(date),
+            Err(e) => {
+                log::error!("Error parsing period start: {e}");
+                None
+            }
+        }
+    } else {
+        None
+    };
+
+    let end = if parts.get(1).is_some() && !parts[1].is_empty() {
+        match NaiveDate::parse_from_str(parts[1], "%Y-%m-%d") {
+            Ok(date) => Some(date),
+            Err(e) => {
+                log::error!("Error parsing period end: {e}");
+                None
+            }
+        }
+    } else {
+        None
+    };
+
+    (start, end)
+}
+
+/// Converts a [NaiveDate] to a protobuf [Timestamp]
+pub fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError> {
+    if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
+        // Convert the NaiveDateTime to a DateTime<Utc>.
+        let utc_datetime = Utc.from_utc_datetime(&naive_datetime);
+
+        // Create a protobuf Timestamp from the NaiveDate
+        let timestamp = Timestamp {
+            seconds: utc_datetime.timestamp(),
+            nanos: 0,
+        };
+        Ok(timestamp)
+    } else {
+        Err("Could not add midnight to date".into())
+    }
 }
 
 #[cfg(test)]

@@ -16,9 +16,10 @@ pub fn create_importer(
     name: &str,
 ) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
     match name {
+        "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "dataset" => Ok(Box::new(importers::dataset::Dataset::new())),
         "clock_records" => Ok(Box::new(importers::clock_records::ClockRecords::new())),
-        _ => Err("Not implemented".into()),
+        _ => Err(format!("Importer not found: {name}").into()),
     }
 }
 

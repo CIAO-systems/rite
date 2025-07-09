@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::NaiveDate;
 use model::{value::Value, xml::config::Configuration};
 use prost_types::{Duration, Timestamp};
 
@@ -14,8 +15,8 @@ use crate::{
         TimestampCollection,
     },
     importers::common::{
-        add_fields_filter, atc_value_to_model_value, duration_to_i64, timestamp_to_string,
-        CFG_FILTER_FIELDS,
+        add_fields_filter, atc_value_to_model_value, date_to_protobuf, duration_to_i64,
+        parse_period, timestamp_to_string, CFG_FILTER_FIELDS,
     },
 };
 
@@ -279,4 +280,118 @@ fn test_atc_value_to_model_value_durations() {
                 .collect(),
         )
     );
+}
+
+#[test]
+fn test_parse_period_full() {
+    let (start, end) = parse_period("2025-01-01:2025-12-31");
+    assert_eq!(start, NaiveDate::from_ymd_opt(2025, 1, 1));
+    assert_eq!(end, NaiveDate::from_ymd_opt(2025, 12, 31));
+}
+
+#[test]
+fn test_parse_period_start() {
+    let (start, end) = parse_period("2025-01-01:");
+    assert_eq!(start, NaiveDate::from_ymd_opt(2025, 1, 1));
+    assert_eq!(end, None);
+}
+
+#[test]
+fn test_parse_period_end() {
+    let (start, end) = parse_period(":2025-12-31");
+    assert_eq!(start, None);
+    assert_eq!(end, NaiveDate::from_ymd_opt(2025, 12, 31));
+}
+
+#[test]
+fn test_parse_period_empty() {
+    let (start, end) = parse_period(":");
+    assert_eq!(start, None);
+    assert_eq!(end, None);
+}
+
+#[test]
+fn test_parse_period_invalid() {
+    let (start, end) = parse_period("this is not a date or a period");
+    assert_eq!(start, None);
+    assert_eq!(end, None);
+}
+
+/// Test case: Valid date conversion (normal date)
+#[test]
+fn test_date_to_protobuf_valid_date() {
+    // Arrange
+    let naive_date = NaiveDate::from_ymd_opt(2023, 1, 15).unwrap();
+    let expected_seconds = NaiveDate::from_ymd_opt(2023, 1, 15)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap()
+        .and_utc()
+        .timestamp();
+
+    // Act
+    let result = date_to_protobuf(&naive_date);
+
+    // Assert
+    assert!(result.is_ok());
+    let timestamp = result.unwrap();
+    assert_eq!(timestamp.seconds, expected_seconds);
+    assert_eq!(timestamp.nanos, 0);
+}
+
+/// Test case: Valid date conversion (epoch date)
+#[test]
+fn test_date_to_protobuf_epoch_date() {
+    let naive_date = NaiveDate::from_ymd_opt(1970, 1, 1).unwrap();
+    let expected_seconds = NaiveDate::from_ymd_opt(1970, 1, 1)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap()
+        .and_utc()
+        .timestamp();
+
+    let result = date_to_protobuf(&naive_date);
+
+    assert!(result.is_ok());
+    let timestamp = result.unwrap();
+    assert_eq!(timestamp.seconds, expected_seconds);
+    assert_eq!(timestamp.nanos, 0);
+}
+
+/// Test case: Valid date conversion (date in the past)
+#[test]
+fn test_date_to_protobuf_past_date() {
+    let naive_date = NaiveDate::from_ymd_opt(1999, 12, 31).unwrap();
+    let expected_seconds = NaiveDate::from_ymd_opt(1999, 12, 31)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap()
+        .and_utc()
+        .timestamp();
+
+    let result = date_to_protobuf(&naive_date);
+
+    assert!(result.is_ok());
+    let timestamp = result.unwrap();
+    assert_eq!(timestamp.seconds, expected_seconds);
+    assert_eq!(timestamp.nanos, 0);
+}
+
+/// Test case: Valid date conversion (date in the future)
+#[test]
+fn test_date_to_protobuf_future_date() {
+    let naive_date = NaiveDate::from_ymd_opt(2050, 6, 1).unwrap();
+    let expected_seconds = NaiveDate::from_ymd_opt(2050, 6, 1)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap()
+        .and_utc()
+        .timestamp();
+
+    let result = date_to_protobuf(&naive_date);
+
+    assert!(result.is_ok());
+    let timestamp = result.unwrap();
+    assert_eq!(timestamp.seconds, expected_seconds);
+    assert_eq!(timestamp.nanos, 0);
 }

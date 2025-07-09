@@ -1087,6 +1087,7 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "chrono",
+ "dotenv",
  "futures",
  "grpc-utils-rs",
  "helper",
