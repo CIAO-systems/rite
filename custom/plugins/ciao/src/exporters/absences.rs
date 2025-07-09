@@ -79,7 +79,7 @@ fn absence_from_record(record: &model::record::Record) -> Result<Absence, BoxedE
     let end_half_day = get_bool(record, "endHalfDay", false);
     let time_type_id = get_mandatory_string(record, "timeTypeId")?;
     let user_id = get_mandatory_string(record, "userId")?;
-    let deleted = get_bool(record, "deleted", false);
+    let deleted = false;
 
     Ok(Absence {
         id,
