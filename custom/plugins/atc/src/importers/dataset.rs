@@ -33,7 +33,7 @@ impl Initializable for Dataset {
 
 impl Importer for Dataset {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
-        // 1. Establich connection to gRPC server
+        // 1. Establish connection to gRPC server
         let connection = ATCConnection::connect(&self.config)?;
         if let Some(client) = connection.client {
             // 2. Retrieve the client that fits the need
