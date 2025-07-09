@@ -30,7 +30,7 @@ impl Initializable for Absences {
         config: Option<model::xml::config::Configuration>,
     ) -> Result<(), model::BoxedError> {
         self.config = config;
-        // 1. Establich connection to gRPC server
+        // 1. Establish connection to gRPC server
         self.connection = Some(CiaoConnection::connect(&self.config)?);
 
         Ok(())
