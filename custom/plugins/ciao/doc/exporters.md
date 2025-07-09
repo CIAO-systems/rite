@@ -1,3 +1,27 @@
+# Absences
+This exporter creates an absence on the CIAO backend using the `AbsenceService.create` gRPC service.
+To use it, define a process and add the exporter with the name `absences` to your project:
+```xml
+<exporter plugin="ciao" name="absences">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+## Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `startDate` | String | The start date of the absence as string with the format YYYY-MM-DD |
+| `endDate` | String | The end date of the absence as string with the format YYYY-MM-DD |
+| `startHalfDay` | bool | `true` if the start day is a half day absence |
+| `endHalfDay` | String | `true` if the end day is a half day absence |
+| `timeTypeId` | String | The time type id for the new absence |
+| `userId` | String | The user id for the new absence |
+
+
 # Accounts
 This exporter creates an account on the CIAO backend using the `AccountService.create` gRPC service.
 To use it, define a process and add the exporter with the name `accounts` to your project:

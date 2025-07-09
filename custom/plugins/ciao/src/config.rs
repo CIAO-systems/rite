@@ -1,8 +1,6 @@
-use ciao_rs::{
-    ciao::{
-        common::{TimeRange, Timestamp},
-        ClientManager,
-    },
+use ciao_rs::ciao::{
+    common::{TimeRange, Timestamp},
+    ClientManager,
 };
 use grpc_utils_rs::{grpc::interceptor::APIKeyClientInterceptor, interceptors};
 use model::{xml::config::get_config_value, BoxedError};
@@ -52,14 +50,14 @@ impl ConnectionConfiguration {
     }
 }
 
-/// Read a [TimeRange] with prefix `key` from the confiuration `config`.
+/// Read a [TimeRange] with prefix `key` from the configuration `config`.
 ///
 /// A time range configuration has two keys, the `startTime` and the `endTime`
 /// If any of the parts are missing or can't be parsed, the result will be [None]
-/// The format of the time alues is a ISO 8601 date/time string in UTC
+/// The format of the time values is a ISO 8601 date/time string in UTC
 ///
 /// # Arguments
-/// * `config`: A reference to a [Configuration]
+/// * `config`: A reference to a Option<Configuration>
 /// * `key`: The prefix  for the two range keys: `<key>.startTime` and `<key>.endTime`
 ///
 pub fn get_config_time_range(

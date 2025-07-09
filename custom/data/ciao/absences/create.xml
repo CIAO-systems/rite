@@ -1,0 +1,25 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="ciao" name="rite_ciao"/>
+        <plugin id="csv" name="rite_csv"/>
+    </plugins>
+    <processes>
+        <process id="create-absences-from-csv">
+            <importer plugin="csv">
+                <configuration>
+                    <config key="filename" value="$RITE_CONFIG_PATH/absences.csv" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+                <exporter plugin="ciao" name="absences">
+                    <configuration>
+                        <config key="url" value="$CIAO_URL" />
+                        <config key="api-key" value="$CIAO_API_KEY" />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

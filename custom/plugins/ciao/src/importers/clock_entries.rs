@@ -1,18 +1,21 @@
-use ciao_rs::ciao::time_tracking::{clock_record, ListRequest};
+use ciao_rs::ciao::{
+    clients::time_tracking::TimeTrackingClient,
+    time_tracking::{clock_record, ListRequest},
+};
 use futures::StreamExt;
 use import::{Importer, RecordHandler};
 use model::{
     field::{add_field, add_optional_field},
     record::Record,
     value::Value,
-    xml::config::get_config_value,
+    xml::config::{get_config_value, Configuration},
     BoxedError, Initializable,
 };
 
 use crate::{config::get_config_time_range, connection::CiaoConnection};
 
 pub struct ClockEntries {
-    config: Option<model::xml::config::Configuration>,
+    config: Option<Configuration>,
 }
 
 impl ClockEntries {
@@ -22,10 +25,7 @@ impl ClockEntries {
 }
 
 impl Initializable for ClockEntries {
-    fn init(
-        &mut self,
-        config: Option<model::xml::config::Configuration>,
-    ) -> Result<(), BoxedError> {
+    fn init(&mut self, config: Option<Configuration>) -> Result<(), BoxedError> {
         self.config = config;
         Ok(())
     }
@@ -36,7 +36,7 @@ impl Importer for ClockEntries {
         &mut self,
         handler: &mut dyn import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // 1. Establich connection to gRPC server
+        // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;
         if let Some(client) = connection.client {
             // 2. Retrieve the client that fits the need
@@ -56,8 +56,8 @@ impl Importer for ClockEntries {
 }
 
 async fn list_clock_entries(
-    config: &Option<model::xml::config::Configuration>,
-    mut service_client: ciao_rs::ciao::clients::time_tracking::TimeTrackingClient,
+    config: &Option<Configuration>,
+    mut service_client: TimeTrackingClient,
     handler: &mut dyn RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = service_client

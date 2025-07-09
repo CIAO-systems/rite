@@ -1,21 +1,36 @@
-# Cost centers
-This importer reads the cost centers. 
-To use it, define a process and add the importer with the name `cost_centers` to your project:
+# Absences
+This importer reads the absences. 
+To use it, define a process and add the importer with the name `absences` to your project:
 ```xml
-<importer plugin="ciao" name="cost_centers">
+<importer plugin="ciao" name="accounts">
     <configuration>
         <config key="url" value="$CIAO_URL" />
         <config key="api-key" value="$CIAO_API_KEY" />
+        <!-- Filter parameters -->
     </configuration>
 </importer>
 ```
+## Parameters
+This importer supports the additional filter parameters:
+| Key | Description | Type | Default |
+| --- | --- | --- | --- |
+| filter.timeRange.startTime | Only return absences after this date/time | ISO 8601 | \<None> |
+| filter.timeRange.endTime | Only return absences before this date/time | ISO 8601 | \<None> |
+| filter.userIds | Only return absences for user ids in this list | Comma-separated list of UUIDs | \<None> |
+| filter.timeTypeIds | Only return absences for time type ids in this list | Comma-separated list of UUIDs | \<None> |
 
-Currently, this importer retrieves all cost centers
 ## Fields
 | Field | Type | Description |
 | --- | --- | --- |
-| `id` | String | Unique id of the cost center |
-| `name` | String | Descriptive name of the cost center |
+| `id` | String | Unique id of the account |
+| `startDate` | Date String | Start date of the absence in format YYYY-MM-DD |
+| `endDate` | Date String | End date of the absence in format YYYY-MM-DD |
+| `startHalfDay` | bool | `true`, if start day is a half day absence |
+| `endHalfDay` | bool | `true`, if end day is a half day absence |
+| `timeTypeId` | UUID | Id of the time type of the absence |
+| `userId` | UUID | Id of the user of this absence |
+| `deleted` | bool | `true` if this absence is deleted |
+
 
 # Accounts
 This importer reads the accounts. 
@@ -47,6 +62,69 @@ Currently, this importer retrieves all accounts
 | `avatar.id` | String | Avatar id of the account |
 | `avatar.updatedAt.timeUtc` | String | Time (in UTC unix time millis) of the last change for the avatar of the account |
 | `avatar.updatedAt.timeZone` | String | Time zone (IANA time zone id) of the last change for the avatar of the account |
+
+# Clock entries
+This importer reads the clock entries.
+To use it, define a process and add the importer with the name `clock_entries` to your project:
+```xml
+<importer plugin="ciao" name="clock_entries">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+            <!-- Filter parameter 
+            <config key="filter.timeRange.startTime" value="2024-01-01T00:00:00Z" />
+            <config key="filter.timeRange.endTime" value="2024-01-02T00:00:00Z" />
+            <config key="filter.userId" value="<user-id>" />
+            <config key="filter.creatorId" value="<creator-id>" />
+            <config key="filter.timeTypeId" value="<time-type-id" />
+            -->
+    </configuration>
+</importer>
+```
+## Parameters
+
+This importer supports the additional filter parameters:
+| Key | Description | Type | Default |
+| --- | --- | --- | --- |
+| filter.timeRange.startTime | Only return clock entries after this date/time | ISO 8601 | \<None> |
+| filter.timeRange.endTime | Only return clock entries before this date/time | ISO 8601 | \<None> |
+| filter.userId | Only return clock entries for this user id | UUID | \<None> |
+| filter.creatorId | Only return clock entries created by this user | UUID | \<None> |
+| filter.timeTypeId | Only return clock entries for this time type | UUID | \<None> |
+
+## Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the clock entry |
+| `identitiy.userId` | String | User id of the clock entry |
+| `identitiy.badgeId` | String | Badge id of the clock entry |
+| `timestamp.timeUtc` | i64 | Time in millis (UTC) of the clock entry |
+| `timestamp.timeZone` | String | IANA time zone id of the clock entry |
+| `deviceId` | String | Device id of the clock entry |
+| `timeTypeId` | String | Time type id of the clock entry |
+| `projectId` | String | Project id of the clock entry |
+| `projectTaskId` | String | Project task id of the clock entry |
+| `costCenterId` | String | Cost center id of the clock entry |
+
+# Cost centers
+This importer reads the cost centers. 
+To use it, define a process and add the importer with the name `cost_centers` to your project:
+```xml
+<importer plugin="ciao" name="cost_centers">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</importer>
+```
+
+Currently, this importer retrieves all cost centers
+## Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique id of the cost center |
+| `name` | String | Descriptive name of the cost center |
+
 
 # Devices
 This importer reads the devices. 
@@ -148,47 +226,3 @@ This importer supports the additional filter parameters:
 | `icon` | String | The name of the icon for the time type |
 | `options.absence` | bool | If available, it is `true` if the time type is an absence |
 | `options.bookable` | bool | If available, it is `true` if the time type is bookable |
-
-
-# Clock entries
-This importer reads the clock entries.
-To use it, define a process and add the importer with the name `clock_entries` to your project:
-```xml
-<importer plugin="ciao" name="clock_entries">
-    <configuration>
-        <config key="url" value="$CIAO_URL" />
-        <config key="api-key" value="$CIAO_API_KEY" />
-            <!-- Filter parameter 
-            <config key="filter.timeRange.startTime" value="2024-01-01T00:00:00Z" />
-            <config key="filter.timeRange.endTime" value="2024-01-02T00:00:00Z" />
-            <config key="filter.userId" value="<user-id>" />
-            <config key="filter.creatorId" value="<creator-id>" />
-            <config key="filter.timeTypeId" value="<time-type-id" />
-            -->
-    </configuration>
-</importer>
-```
-## Parameters
-
-This importer supports the additional filter parameters:
-| Key | Description | Type | Default |
-| --- | --- | --- | --- |
-| filter.timeRange.startTime | Only return clock entries after this date/time | ISO 8601 | \<None> |
-| filter.timeRange.endTime | Only return clock entries before this date/time | ISO 8601 | \<None> |
-| filter.userId | Only return clock entries for this user id | UUID | \<None> |
-| filter.creatorId | Only return clock entries created by this user | UUID | \<None> |
-| filter.timeTypeId | Only return clock entries for this time type | UUID | \<None> |
-
-## Fields
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | String | Unique id of the clock entry |
-| `identitiy.userId` | String | User id of the clock entry |
-| `identitiy.badgeId` | String | Badge id of the clock entry |
-| `timestamp.timeUtc` | i64 | Time in millis (UTC) of the clock entry |
-| `timestamp.timeZone` | String | IANA time zone id of the clock entry |
-| `deviceId` | String | Device id of the clock entry |
-| `timeTypeId` | String | Time type id of the clock entry |
-| `projectId` | String | Project id of the clock entry |
-| `projectTaskId` | String | Project task id of the clock entry |
-| `costCenterId` | String | Cost center id of the clock entry |
