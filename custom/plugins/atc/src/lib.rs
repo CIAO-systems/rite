@@ -22,12 +22,28 @@ pub fn create_importer(
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
-    use crate::com::atoss::atc::protobuf::{field::Value, Field, Record};
+    use crate::com::atoss::atc::protobuf::{field::Value, AbsencesRequest, Field, Record};
+
+    #[test]
+    fn test_absences() {
+        let request = AbsencesRequest {
+            employee_ids: vec!["01".to_string(), "02".to_string(), "03".to_string()],
+            start_date: None,
+            end_date: None,
+            account_ids: vec![1, 2, 3],
+            plan_version: -1,
+            options: None,
+        };
+
+        // Asserting specific field's value
+        assert_eq!(request.employee_ids.len(), 3);
+        assert!(request.start_date.is_none());
+        assert_eq!(request.plan_version, -1);
+    }
 
     #[test]
     fn test_proto_record() {
