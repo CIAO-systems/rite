@@ -98,7 +98,7 @@ fn get_mandatory_string(
     field_name: &str,
 ) -> Result<String, BoxedError> {
     Ok(record
-        .field_by_name("timeTypeId")
+        .field_by_name(field_name)
         .map(|field| field.value().to_string())
         .ok_or_else(|| BoxedError::from(format!("Mandatory field '{field_name}' not found")))?)
 }
