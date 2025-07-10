@@ -1,0 +1,34 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="atc" name="rite_atc"/>
+    </plugins>
+    <processes>
+        <process id="absences-printer">
+            <importer plugin="atc" name="absences">
+                <configuration>
+                    <config key="url" value="$ATC_URL" />
+                    <config key="auth-token" value="rite" />
+                    <config key="user" value="$ATC_USER" />
+                    <config key="password" value="$ATC_PASSWORD" />
+                    <!-- Filters -->
+                    <config key="filter.period" value="2025-01-01:2025-12-31" />
+                    <!-- 
+                    <config key="filter.employees" value="" /> 
+                    <config key="filter.accounts" value="" /> 
+                    -->
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="{" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" /> 
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

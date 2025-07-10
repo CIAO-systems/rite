@@ -15,6 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .compile_protos(
             &[
                 &format!("{}/atc/com/atoss/atc/protobuf/dataset.proto", basepath),
+                &format!("{}/atc/com/atoss/atc/protobuf/absences.proto", basepath),
                 &format!("{}/grpc/reflection/v1/reflection.proto", basepath),
                 &format!("{}/grpc/reflection/v1alpha/reflection.proto", basepath),
             ],

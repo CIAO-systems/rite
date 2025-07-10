@@ -4,7 +4,9 @@ use grpc_utils_rs::grpc::{
 };
 use tonic::{service::interceptor::InterceptedService, transport::Channel};
 
-use crate::com::atoss::atc::protobuf::data_set_service_client::DataSetServiceClient;
+use crate::com::atoss::atc::protobuf::{
+    absences_service_client::AbsencesServiceClient, data_set_service_client::DataSetServiceClient,
+};
 
 pub mod manager;
 
@@ -37,6 +39,39 @@ impl DataSetClient {
     pub fn inner_mut(
         &mut self,
     ) -> &mut DataSetServiceClient<InterceptedService<Channel, CompositeInterceptor>> {
+        &mut self.inner
+    }
+}
+
+#[derive(Debug)]
+pub struct AbsencesClient {
+    inner: AbsencesServiceClient<InterceptedService<Channel, CompositeInterceptor>>,
+}
+
+impl AbsencesClient {
+    async fn new(
+        url: &str,
+        interceptors: Interceptors,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        let tls = tonic::transport::ClientTlsConfig::new().with_native_roots();
+        match Channel::from_shared(String::from(url)) {
+            Ok(endpoint) => {
+                let channel = channel(tls, endpoint).await?;
+                Ok(Self {
+                    inner: AbsencesServiceClient::with_interceptor(
+                        channel,
+                        CompositeInterceptor::new(interceptors),
+                    ),
+                })
+            }
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    /// Returns the encapsulated service client as mutable
+    pub fn inner_mut(
+        &mut self,
+    ) -> &mut AbsencesServiceClient<InterceptedService<Channel, CompositeInterceptor>> {
         &mut self.inner
     }
 }
