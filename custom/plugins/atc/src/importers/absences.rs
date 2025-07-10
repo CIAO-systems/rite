@@ -97,6 +97,7 @@ fn handle_absence(
 
     add_field(fields, "accountId", Value::I32(absence.account_id));
     add_field(fields, "application", Value::String(absence.application));
+    add_date_field(fields, "date", absence.date);
     add_field(fields, "description", Value::String(absence.description));
     add_field(fields, "displayColor", Value::I32(absence.display_color));
     add_field(fields, "displayToken", Value::String(absence.display_token));
@@ -108,9 +109,10 @@ fn handle_absence(
     add_field(fields, "state", Value::I32(absence.state));
     add_field(fields, "substitute", Value::String(absence.substitute));
     add_field(fields, "textColor", Value::I32(absence.text_color));
+    add_date_field(fields, "time", absence.time);
     add_field(fields, "weightEnd", Value::F64(absence.weight_end));
     add_field(fields, "weightStart", Value::F64(absence.weight_start));
-    
+
     handler.handle_record(&mut record)?;
     Ok(())
 }

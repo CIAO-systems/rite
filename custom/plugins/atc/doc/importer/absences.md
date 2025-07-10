@@ -28,6 +28,7 @@ The fields from the ATOSS Time Control gRPC call `AbsenceService.getSingleDayAbs
 | :--- | :---: |
 | `accountId` | i32 |
 | `application` | String |
+| `date` | ISO 8601 string |
 | `description` | String |
 | `displayColor` | i32 |
 | `displayToken` | String |
@@ -39,6 +40,7 @@ The fields from the ATOSS Time Control gRPC call `AbsenceService.getSingleDayAbs
 | `state` | i32 |
 | `substitute` | String |
 | `textColor` | i32 |
+| `time` | ISO 8601 string |
 | `weightEnd` | f64 |
 | `weightStart` | f64 |
 
