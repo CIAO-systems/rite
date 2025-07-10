@@ -110,6 +110,7 @@ args=(
     -u $(id -u):$(id -g)
     --network=host
     --rm
+    --init
     --platform linux/amd64
     -v "$local_directory:/data"
     -v "$local_logs_directory:/app/logs:rw"
