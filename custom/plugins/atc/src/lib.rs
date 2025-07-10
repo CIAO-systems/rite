@@ -19,7 +19,7 @@ pub fn create_importer(
         "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "dataset" => Ok(Box::new(importers::dataset::Dataset::new())),
         "clock_records" => Ok(Box::new(importers::clock_records::ClockRecords::new())),
-        _ => Err(format!("Importer not found: {name}").into()),
+        _ => Err(format!("Importer '{name}' not found").into()),
     }
 }
 
