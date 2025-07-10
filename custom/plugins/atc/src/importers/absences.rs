@@ -130,6 +130,21 @@ fn add_timestamp_field(
 fn create_request(
     config: &model::xml::config::Configuration,
 ) -> Result<AbsencesRequest, BoxedError> {
+    let (start_date, end_date) = get_start_and_end_date(config)?;
+    let request = AbsencesRequest {
+        employee_ids: config.get_list(CFG_FILTER_EMPLOYEES).unwrap_or(Vec::new()),
+        start_date,
+        end_date,
+        account_ids: config.get_list(CFG_FILTER_ACCOUNTS).unwrap_or(Vec::new()),
+        plan_version: -1,
+        options: None,
+    };
+    Ok(request)
+}
+
+fn get_start_and_end_date(
+    config: &model::xml::config::Configuration,
+) -> Result<(Option<Timestamp>, Option<Timestamp>), BoxedError> {
     let mut start_date: Option<Timestamp> = None;
     let mut end_date: Option<Timestamp> = None;
     if let Some(period_str) = config.get(CFG_FILTER_PERIOD) {
@@ -151,30 +166,7 @@ fn create_request(
             }
         }
     }
-    let request = AbsencesRequest {
-        employee_ids: get_employee_ids(config),
-        start_date,
-        end_date,
-        account_ids: get_account_ids(config),
-        plan_version: -1,
-        options: None,
-    };
-    Ok(request)
-}
-
-fn get_employee_ids(config: &model::xml::config::Configuration) -> Vec<String> {
-    if let Some(employee_ids) = config.get_list::<String>(CFG_FILTER_EMPLOYEES) {
-        return employee_ids;
-    }
-
-    Vec::new()
-}
-
-fn get_account_ids(config: &model::xml::config::Configuration) -> Vec<i32> {
-    if let Some(account_ids) = config.get_list::<i32>(CFG_FILTER_ACCOUNTS) {
-        return account_ids;
-    }
-    Vec::new()
+    Ok((start_date, end_date))
 }
 
 #[cfg(test)]
