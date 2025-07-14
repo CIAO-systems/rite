@@ -5,3 +5,4 @@ pub mod clock_entries;
 pub mod cost_centers;
 pub mod accounts;
 pub mod absences;
+pub mod badges;
