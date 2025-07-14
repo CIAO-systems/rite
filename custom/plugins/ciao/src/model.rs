@@ -1,5 +1,5 @@
-use chrono::NaiveDateTime;
-use ciao_rs::ciao::common::Timestamp;
+use chrono::{DateTime, Datelike, NaiveDate, NaiveDateTime, Utc};
+use ciao_rs::ciao::common::{Date, Timestamp};
 use model::{
     field::{add_field, Field},
     record::Record,
@@ -99,6 +99,74 @@ pub fn get_timestamp(record: &Record, field_name: &str) -> Result<Timestamp, Box
     } else {
         Err(format!("Field {field_time_utc} missing").into())
     }
+}
+
+/// Gets an optional string field from the record.
+///
+pub fn get_optional_string(record: &Record, field_name: &str) -> Option<String> {
+    if let Some(field) = record.field_by_name(field_name) {
+        return Some(field.value().to_string());
+    }
+
+    None
+}
+
+/// Gets a mandatory string field from the record.
+///
+pub fn get_mandatory_string(record: &Record, field_name: &str) -> Result<String, BoxedError> {
+    Ok(record
+        .field_by_name(field_name)
+        .map(|field| field.value().to_string())
+        .ok_or_else(|| BoxedError::from(format!("Mandatory field '{field_name}' not found")))?)
+}
+
+/// Gets a boolean value from the record. If the field is missing, the `default`
+/// will be returned
+///
+pub fn get_bool(record: &Record, field_name: &str, default: bool) -> bool {
+    if let Some(field) = record.field_by_name(field_name) {
+        if let Value::Bool(value) = field.value() {
+            return value;
+        }
+    }
+
+    default
+}
+
+/// Gets a CIAO date value from a string field in record. String can be in format
+/// YYY-MM-DD or ISO 8601
+///
+pub fn get_date(
+    record: &Record,
+    field_name: &str,
+) -> Result<ciao_rs::ciao::common::Date, BoxedError> {
+    let field = record
+        .field_by_name(field_name)
+        .ok_or_else(|| BoxedError::from(format!("Mandatory field '{field_name}' not found")))?;
+
+    if let Value::String(field_value) = field.value() {
+        match NaiveDate::parse_from_str(&field_value, "%Y-%m-%d") {
+            Ok(date) => {
+                return Ok(Date {
+                    year: date.year(),
+                    month: date.month0() as i32 + 1,
+                    day: date.day0() as i32 + 1,
+                })
+            }
+            Err(_) => {
+                let date_time = field_value
+                    .parse::<DateTime<Utc>>()
+                    .map_err(|e| format!("Field '{field_name}' is invalid: {e}"))?;
+                return Ok(Date {
+                    year: date_time.year(),
+                    month: date_time.month0() as i32 + 1,
+                    day: date_time.day0() as i32 + 1,
+                });
+            }
+        }
+    }
+
+    Err(format!("Mandatory field '{field_name}' is not a YYYY-MM-DD string").into())
 }
 
 #[cfg(test)]
@@ -260,5 +328,124 @@ mod tests {
 
         let result = get_timestamp(&record, field_name);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_get_mandatory_string() {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "field",
+            Value::String("value".to_string()),
+        );
+        let result = get_mandatory_string(&record, "field");
+        assert!(result.is_ok());
+        assert_eq!("value", result.unwrap());
+    }
+
+    #[test]
+    fn test_get_mandatory_string_missing() {
+        let record = Record::new();
+        let result = get_mandatory_string(&record, "field");
+        assert!(result.is_err());
+        let e = format!("{}", result.unwrap_err());
+        assert_eq!("Mandatory field 'field' not found", e);
+    }
+
+    #[test]
+    fn test_get_bool() {
+        let mut record = Record::new();
+        add_field(record.fields_as_mut(), "bool", Value::Bool(true));
+        let result = get_bool(&record, "bool", false);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_get_bool_default() {
+        let record = Record::new();
+        let result = get_bool(&record, "bool", false);
+        assert!(!result);
+        let result = get_bool(&record, "bool", true);
+        assert!(result);
+    }
+
+    #[test]
+    fn test_get_date() {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "date",
+            Value::String("2025-01-01".to_string()),
+        );
+
+        let result = get_date(&record, "date");
+        assert!(result.is_ok());
+        let value = result.unwrap();
+
+        assert_eq!(
+            value,
+            Date {
+                year: 2025,
+                month: 1,
+                day: 1
+            }
+        );
+    }
+
+    #[test]
+    fn test_get_date_missing() {
+        let record = Record::new();
+        let result = get_date(&record, "date");
+        assert!(result.is_err());
+        let e = format!("{}", result.unwrap_err());
+        assert_eq!("Mandatory field 'date' not found", e);
+    }
+
+    #[test]
+    fn test_get_date_invalid() {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "date",
+            Value::String("This is not a date".to_string()),
+        );
+        let result = get_date(&record, "date");
+        assert!(result.is_err());
+        let e = format!("{}", result.unwrap_err());
+        assert_eq!(
+            "Field 'date' is invalid: input contains invalid characters",
+            e
+        );
+    }
+
+    #[test]
+    fn test_get_date_with_time() {
+        let mut record = Record::new();
+        add_field(
+            record.fields_as_mut(),
+            "date",
+            Value::String("2025-01-01T23:00:00Z".to_string()),
+        );
+        let result = get_date(&record, "date");
+        assert!(result.is_ok(), "Result should be ok, but is err");
+        assert_eq!(
+            result.unwrap(),
+            Date {
+                year: 2025,
+                month: 1,
+                day: 1
+            }
+        );
+    }
+
+    #[test]
+    fn test_get_date_no_string() {
+        let mut record = Record::new();
+        add_field(record.fields_as_mut(), "date", Value::I32(4273));
+
+        let result = get_date(&record, "date");
+        assert!(result.is_err());
+        let e = format!("{}", result.unwrap_err());
+        assert_eq!("Mandatory field 'date' is not a YYYY-MM-DD string", e);
     }
 }

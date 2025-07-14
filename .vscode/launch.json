@@ -856,5 +856,29 @@
                 "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
             }
         },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO: create badges custom/data/ciao/accounts/badges/create.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/ciao/accounts/badges/create.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
      ]
 }
