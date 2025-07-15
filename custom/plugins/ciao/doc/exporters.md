@@ -55,6 +55,26 @@ This exporter uses the following fields from the record passed to it
 | `name.middle` | String | The middle name of the new account |
 | `name.last` | String | The last name of the new account |
 
+# Badges
+This exporter creates a badge on the CIAO backend using the `BadgeService.create` gRPC service.
+To use it, define a process and add the exporter with the name `badges` to your project:
+```xml
+<exporter plugin="ciao" name="badges">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+    </configuration>
+</exporter>
+```
+## Fields
+This exporter uses the following fields from the record passed to it
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `userId` | UUID | The id of the user of the new badge |
+| `externalId` | String | (optional) The external id of the new badge |
+| `description` | String | (optional) The description of the new badge |
+
 # Clock entries
 This exporter creates a clock entry on the CIAO backend using the `TimeTrackingService.clock` gRPC service.
 To use it, define a process and add the exporter with the name `clock_entries` to your project:
