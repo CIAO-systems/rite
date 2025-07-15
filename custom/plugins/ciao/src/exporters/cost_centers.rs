@@ -57,7 +57,7 @@ async fn create_cost_center(
 ) -> Result<(), model::BoxedError> {
     let id = record.field_by_name("id");
     let name = record.field_by_name("name");
-    let external_id = record.field_by_name("name");
+    let external_id = record.field_by_name("externalId");
     if id.is_some() && name.is_some() {
         let cost_center = CostCenter {
             id: id.unwrap().value().to_string(),

@@ -72,7 +72,7 @@ This exporter uses the following fields from the record passed to it
 | Field | Type | Description |
 | --- | --- | --- |
 | `userId` | UUID | The id of the user of the new badge |
-| `externalId` | String | (optional) The external id of the new badge |
+| `externalId` | String | The external id of the new badge |
 | `description` | String | (optional) The description of the new badge |
 
 # Clock entries

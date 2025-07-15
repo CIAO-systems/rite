@@ -73,7 +73,7 @@ async fn create_badge(
 fn badge_from_record(record: &model::record::Record) -> Result<Badge, BoxedError> {
     let id = Uuid::new_v4().to_string();
     let user_id = get_mandatory_string(record, "userId")?;
-    let external_id = get_optional_string(record, "externalId").unwrap_or_default();
+    let external_id = get_mandatory_string(record, "externalId")?;
     let description = get_optional_string(record, "description");
     Ok(Badge {
         id,
