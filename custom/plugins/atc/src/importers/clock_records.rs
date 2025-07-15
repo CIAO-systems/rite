@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
-use chrono::{NaiveDate, TimeZone, Utc};
+use chrono::NaiveDate;
 use futures::StreamExt;
 use import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, BoxedError, Initializable};
-use prost_types::Timestamp;
 
 use crate::{
     com::atoss::atc::protobuf::{
@@ -16,6 +15,7 @@ use crate::{
         Field, Filter,
     },
     connection::ATCConnection,
+    importers::common::{date_to_protobuf, parse_period},
 };
 
 use super::common::{
@@ -51,7 +51,7 @@ impl Initializable for ClockRecords {
 
 impl Importer for ClockRecords {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
-        // 1. Establich connection to gRPC server
+        // 1. Establish connection to gRPC server
         let connection = ATCConnection::connect(&self.config)?;
         if let Some(client) = connection.client {
             // 2. Retrieve the client that fits the need
@@ -112,56 +112,6 @@ async fn call_get_clock_records(
     }
 
     Ok(())
-}
-
-/// Parses the a string of two dates separated by `:`. 
-/// Dates can be empty and use the format `"%Y-%m-%d"`. 
-/// Returns a tuple of start and end
-fn parse_period(period: &str) -> (Option<NaiveDate>, Option<NaiveDate>) {
-    let parts: Vec<&str> = period.split(':').collect();
-
-    let start = if parts.get(0).is_some() && !parts[0].is_empty() {
-        match NaiveDate::parse_from_str(parts[0], "%Y-%m-%d") {
-            Ok(date) => Some(date),
-            Err(e) => {
-                log::error!("Error parsing period start: {e}");
-                None
-            }
-        }
-    } else {
-        None
-    };
-
-    let end = if parts.get(1).is_some() && !parts[1].is_empty() {
-        match NaiveDate::parse_from_str(parts[1], "%Y-%m-%d") {
-            Ok(date) => Some(date),
-            Err(e) => {
-                log::error!("Error parsing period end: {e}");
-                None
-            }
-        }
-    } else {
-        None
-    };
-
-    (start, end)
-}
-
-/// Converts a [NaiveDate] to a protobuf [Timestamp]
-fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError> {
-    if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
-        // Convert the NaiveDateTime to a DateTime<Utc>.
-        let utc_datetime = Utc.from_utc_datetime(&naive_datetime);
-
-        // Create a protobuf Timestamp from the NaiveDate
-        let timestamp = Timestamp {
-            seconds: utc_datetime.timestamp(),
-            nanos: 0,
-        };
-        Ok(timestamp)
-    } else {
-        Err("Could not add midnight to date".into())
-    }
 }
 
 /// Adds the [ParameterMetaData] filter for the `filter.period` configuration

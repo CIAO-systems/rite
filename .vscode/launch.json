@@ -734,7 +734,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Test $HOME/tmp/rite/customer/FuS/",
+            "name": "CIAO: List absences custom/data/ciao/absences/list.xml",
             "cargo": {
                 "args": [
                     "build",
@@ -748,12 +748,132 @@
             },
             "args": [
                 "-f",
-                "/home/freiheit/tmp/rite/customer/FuS/atc-ciao.xml"
+                "custom/data/ciao/absences/list.xml"
             ],
             "cwd": "${workspaceFolder}",
             "env": {
                 "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
             }
         },
-    ]
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO: Create absences from CSV custom/data/ciao/absences/create.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/ciao/absences/create.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "ATC: print absences custom/data/atc/absences-printer.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/atc/absences-printer.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "ATC: print employees custom/data/atc/employees-printer.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/atc/employees-printer.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO: print badges custom/data/ciao/accounts/badges/badge-printer.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/ciao/accounts/badges/badge-printer.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CIAO: create badges custom/data/ciao/accounts/badges/create.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "custom/data/ciao/accounts/badges/create.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+     ]
 }

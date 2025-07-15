@@ -39,7 +39,7 @@ impl Importer for TimeTypes {
         &mut self,
         handler: &mut dyn import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // 1. Establich connection to gRPC server
+        // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;
         if let Some(client) = connection.client {
             // 2. Retrieve the client that fits the need
@@ -94,11 +94,7 @@ fn handle_time_type(
     let mut record = Record::new();
     let fields = record.fields_as_mut();
     add_field(fields, "id", Value::String(time_type.id.clone()));
-    add_field(
-        fields,
-        "name",
-        Value::String(time_type.name.clone()),
-    );
+    add_field(fields, "name", Value::String(time_type.name.clone()));
     add_field(
         fields,
         "shorthand",
@@ -148,6 +144,10 @@ mod tests {
             options: Some(TimeTypeOptions {
                 bookable: false,
                 absence: false,
+                negative_booking: false,
+                priority: 0,
+                allow_full_booking: false,
+                allow_half_booking: false,
             }),
         };
         let mut records = Vec::new();

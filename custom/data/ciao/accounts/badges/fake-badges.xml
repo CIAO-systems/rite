@@ -1,0 +1,7 @@
+<rite-random-import>
+  <generator number="10">
+     <field name="userId" function="uuid" />
+     <field name="externalId" function="uuid" />
+     <field name="description" function="string" />
+  </generator>
+</rite-random-import>
