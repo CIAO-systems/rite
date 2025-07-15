@@ -15,6 +15,7 @@ pub fn create_importer(
     match name {
         "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "accounts" => Ok(Box::new(importers::accounts::Accounts::new())),
+        "badges" => Ok(Box::new(importers::badges::Badges::new())),
         "clock_entries" => Ok(Box::new(importers::clock_entries::ClockEntries::new())),
         "cost_centers" => Ok(Box::new(importers::cost_centers::CostCenters::new())),
         "devices" => Ok(Box::new(importers::devices::Devices::new())),
@@ -30,6 +31,7 @@ pub fn create_importer(
 pub fn create_exporter(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
     match name {
         "absences" => Ok(Box::new(exporters::absences::Absences::new())),
+        "badges" => Ok(Box::new(exporters::badges::Badges::new())),
         "accounts" => Ok(Box::new(exporters::accounts::Accounts::new())),
         "clock_entries" => Ok(Box::new(exporters::clock_entries::ClockEntries::new())),
         "cost_centers" => Ok(Box::new(exporters::cost_centers::CostCenters::new())),

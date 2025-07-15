@@ -63,6 +63,35 @@ Currently, this importer retrieves all accounts
 | `avatar.updatedAt.timeUtc` | String | Time (in UTC unix time millis) of the last change for the avatar of the account |
 | `avatar.updatedAt.timeZone` | String | Time zone (IANA time zone id) of the last change for the avatar of the account |
 
+# Badges
+This importer reads the badges.
+To use it, define a process and add the importer with the name `badges` to your project:
+```xml
+<importer plugin="ciao" name="badges">
+    <configuration>
+        <config key="url" value="$CIAO_URL" />
+        <config key="api-key" value="$CIAO_API_KEY" />
+            <!-- Filter parameter 
+            <config key="filter.userId" value="<user-id>" />
+            -->
+    </configuration>
+</importer>
+```
+
+## Parameters
+This importer supports the additional filter parameters:
+| Key | Description | Type | Default |
+| --- | --- | --- | --- |
+| filter.userId | Only return badges for this user id | UUID | \<None> |
+
+## Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | UUID | Unique id of the badge |
+| `userId` | UUID | Unique id of the user of this badge |
+| `externalId` | String | The external id of this badge |
+| `description` | String | (optional) A description of this badge |
+
 # Clock entries
 This importer reads the clock entries.
 To use it, define a process and add the importer with the name `clock_entries` to your project:
@@ -82,7 +111,6 @@ To use it, define a process and add the importer with the name `clock_entries` t
 </importer>
 ```
 ## Parameters
-
 This importer supports the additional filter parameters:
 | Key | Description | Type | Default |
 | --- | --- | --- | --- |
