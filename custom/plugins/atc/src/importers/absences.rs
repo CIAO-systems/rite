@@ -1,4 +1,5 @@
-use chrono::{Datelike, Local};
+use chrono::{DateTime, Datelike, Local, TimeZone, Utc};
+use chrono_tz::Europe::Berlin;
 use futures::StreamExt;
 use import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, value::Value, BoxedError, Initializable};
@@ -92,6 +93,11 @@ fn handle_absence(
     handler: &mut dyn RecordHandler,
     absence: crate::com::atoss::atc::protobuf::Absence,
 ) -> Result<(), BoxedError> {
+    // ignore records that are not planVersion=1
+    if absence.plan_version != 1 {
+        return Ok(());
+    }
+
     let mut record = Record::new();
     let fields = record.fields_as_mut();
 
@@ -123,8 +129,31 @@ fn add_timestamp_field(
     value: Option<Timestamp>,
 ) {
     if let Some(date) = value {
-        add_field(fields, field_name, Value::String(timestamp_to_string(date)));
+        if let Ok(local_ts) = utc_to_atc(date) {
+            add_field(
+                fields,
+                field_name,
+                Value::String(timestamp_to_string(local_ts)),
+            );
+        }
     }
+}
+
+/// Convert UTC timestamp to German time
+fn utc_to_atc(date: Timestamp) -> Result<Timestamp, BoxedError> {
+    // ATC stores timestamps in local time (we assume German), but returns them
+    // as UTC timestamps.
+    if let Some(utc_datetime) = DateTime::<Utc>::from_timestamp(date.seconds, date.nanos as u32) {
+        let berlin_time = utc_datetime.with_timezone(&Berlin);
+        let naive_datetime = berlin_time.naive_local();
+        let utc_datetime = Utc.from_utc_datetime(&naive_datetime);
+        return Ok(Timestamp {
+            seconds: utc_datetime.timestamp(),
+            nanos: utc_datetime.timestamp_subsec_nanos() as i32,
+        });
+    }
+
+    Err("utc_to_atc failed".into())
 }
 
 fn create_request(

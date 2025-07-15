@@ -1,11 +1,15 @@
 use std::env;
 
+use chrono::{DateTime, Datelike, Timelike, Utc};
 use import::{handlers::CollectingRecordHandler, Importer};
 use model::{xml::config::Configuration, BoxedError, Initializable};
+use prost_types::Timestamp;
 
 use crate::{
     com::atoss::atc::protobuf::AbsencesRequest,
-    importers::absences::{Absences, CFG_FILTER_ACCOUNTS, CFG_FILTER_EMPLOYEES, CFG_FILTER_PERIOD},
+    importers::absences::{
+        utc_to_atc, Absences, CFG_FILTER_ACCOUNTS, CFG_FILTER_EMPLOYEES, CFG_FILTER_PERIOD,
+    },
 };
 
 #[test]
@@ -54,4 +58,42 @@ fn test_import() -> Result<(), BoxedError> {
     // Assert
     assert!(records.len() > 0);
     Ok(())
+}
+
+#[test]
+fn test_utc_to_atc_cet() {
+    use chrono::TimeZone;
+    // Example timestamp during CET (UTC+1)
+    let utc_datetime = Utc.with_ymd_and_hms(2025, 3, 1, 23, 0, 0).unwrap();
+    let timestamp = Timestamp {
+        seconds: utc_datetime.timestamp(),
+        nanos: utc_datetime.timestamp_subsec_nanos() as i32,
+    };
+
+    let result = utc_to_atc(timestamp).unwrap();
+    let result_datetime =
+        DateTime::<Utc>::from_timestamp(result.seconds, result.nanos as u32).unwrap();
+
+    // Assert the converted time is as expected
+    assert_eq!(result_datetime.hour(), 0);
+    assert_eq!(result_datetime.day(), 2);
+}
+
+#[test]
+fn test_utc_to_atc_cest() {
+    use chrono::TimeZone;
+    // Example timestamp during CET (UTC+1)
+    let utc_datetime = Utc.with_ymd_and_hms(2025, 4, 2, 22, 0, 0).unwrap();
+    let timestamp = Timestamp {
+        seconds: utc_datetime.timestamp(),
+        nanos: utc_datetime.timestamp_subsec_nanos() as i32,
+    };
+
+    let result = utc_to_atc(timestamp).unwrap();
+    let result_datetime =
+        DateTime::<Utc>::from_timestamp(result.seconds, result.nanos as u32).unwrap();
+
+    // Assert the converted time is as expected
+    assert_eq!(result_datetime.hour(), 0);
+    assert_eq!(result_datetime.day(), 3);
 }
