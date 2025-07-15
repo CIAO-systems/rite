@@ -13,8 +13,8 @@
                     <config key="password" value="$ATC_PASSWORD" />
                     <!-- Filters -->
                     <config key="filter.period" value="2025-01-01:2025-12-31" />
+                    <config key="filter.employees" value="90000" /> 
                     <!-- 
-                    <config key="filter.employees" value="" /> 
                     <config key="filter.accounts" value="" /> 
                     -->
                 </configuration>
