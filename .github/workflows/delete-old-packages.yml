@@ -16,7 +16,8 @@ jobs:
         uses: actions/delete-package-versions@v5 # Use the latest stable version
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          owner: CIAO-systems
-          package-name: rite
+          owner: 'CIAO-systems'
+          package-name: 'rite'
+          package-type: 'container'
           min-versions-to-keep: 5
-          delete-only-untagged-versions: true
+          delete-only-untagged-versions: 'true'
