@@ -18,8 +18,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: CIAO-systems
           package-name: rite
-          min-age-days: 7 # Delete versions older than 7 days
-          # Optional: Dry run (set to true to test without actually deleting)
-          dry-run: true
-          # Optional: Debug output
-          debug: true        
+          min-versions-to-keep: 5
