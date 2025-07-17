@@ -70,6 +70,7 @@ async fn call_get_absences(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let request = create_request(config)?;
 
+    let account_ids: Option<Vec<i32>> = config.get_list(CFG_FILTER_ACCOUNTS);
     let mut stream = service_client
         .inner_mut()
         .get_single_day_absences(request)
@@ -78,7 +79,12 @@ async fn call_get_absences(
     while let Some(response) = stream.next().await {
         match response {
             Ok(absence) => {
-                handle_absence(handler, absence)?;
+                if account_ids
+                    .as_ref()
+                    .map_or(true, |vec| vec.contains(&absence.account_id))
+                {
+                    handle_absence(handler, absence)?;
+                }
             }
             Err(e) => {
                 return Err(e.into());
