@@ -19,3 +19,4 @@ jobs:
           owner: CIAO-systems
           package-name: rite
           min-versions-to-keep: 5
+          delete-only-untagged-versions: true
