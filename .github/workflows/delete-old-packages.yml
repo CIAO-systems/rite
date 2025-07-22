@@ -1,0 +1,23 @@
+name: Delete Old Packages
+on:
+  workflow_dispatch: 
+jobs:
+  delete-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write # Grant permission to delete packages
+      contents: read # Required for checkout action
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Delete old package versions
+        uses: actions/delete-package-versions@v5 # Use the latest stable version
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: 'CIAO-systems'
+          package-name: 'rite'
+          package-type: 'container'
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: 'true'

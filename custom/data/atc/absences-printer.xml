@@ -14,8 +14,8 @@
                     <!-- Filters -->
                     <config key="filter.period" value="2025-01-01:2025-12-31" />
                     <!-- 
-                    <config key="filter.employees" value="" /> 
-                    <config key="filter.accounts" value="" /> 
+                    <config key="filter.employees" value="90000" /> 
+                    <config key="filter.accounts" value="30,20" /> 
                     -->
                 </configuration>
             </importer>
