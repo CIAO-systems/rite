@@ -5,6 +5,7 @@ use std::{
 };
 
 use model::BoxedError;
+use rite::processor;
 use uuid::Uuid;
 
 pub struct ServiceProcessor {
@@ -60,6 +61,20 @@ impl ServiceProcessor {
 
     pub fn process(&self) -> Result<bool, BoxedError> {
         println!("Processing {} ...", self.main_config);
+
+        let mut path = PathBuf::from(&self.root_directory);
+        path.push(&self.main_config);
+        let filename = path.to_str().ok_or::<BoxedError>(format!("").into())?;
+
+        let mut rp = processor::rite::Rite::new(filename)?;
+        match rp.init() {
+            Ok(_) => match rp.process() {
+                Ok(_) => log::info!("Successfully processed"),
+                Err(e) => log::error!("Error processing: {}", e),
+            },
+            Err(e) => log::error!("Error initializing: {}", e),
+        }
+
         // TODO implement
         ServiceProcessor::list_dir(&self.root_directory, 0)?;
         Ok(true)
