@@ -1,12 +1,14 @@
 use std::{
     fs::{self, remove_dir_all},
     io::Cursor,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use model::BoxedError;
 use rite::processor;
 use uuid::Uuid;
+
+use crate::proto::rite::v1::ProcessResponse;
 
 pub struct ServiceProcessor {
     main_config: String,
@@ -31,54 +33,38 @@ impl ServiceProcessor {
         })
     }
 
-    fn list_dir<P: AsRef<Path>>(path: P, indent: usize) -> std::io::Result<()> {
-        let entries = fs::read_dir(&path)?;
-
-        for entry in entries {
-            let entry = entry?;
-            let path = entry.path();
-            let indent_str = "  ".repeat(indent);
-
-            if path.is_dir() {
-                println!(
-                    "{}📁 {}",
-                    indent_str,
-                    path.file_name().unwrap().to_string_lossy()
-                );
-                // Recursive call
-                ServiceProcessor::list_dir(&path, indent + 1)?;
-            } else if path.is_file() {
-                println!(
-                    "{}📄 {}",
-                    indent_str,
-                    path.file_name().unwrap().to_string_lossy()
-                );
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn process(&self) -> Result<bool, BoxedError> {
-        println!("Processing {} ...", self.main_config);
+    pub fn process(&self) -> Result<ProcessResponse, BoxedError> {
+        log::info!("Processing {} ...", self.main_config);
 
         let mut path = PathBuf::from(&self.root_directory);
         path.push(&self.main_config);
         let filename = path.to_str().ok_or::<BoxedError>(format!("").into())?;
 
+        let mut response = ProcessResponse {
+            success: false,
+            error_message: None,
+        };
+
         let mut rp = processor::rite::Rite::new(filename)?;
         match rp.init() {
             Ok(_) => match rp.process() {
-                Ok(_) => log::info!("Successfully processed"),
-                Err(e) => log::error!("Error processing: {}", e),
+                Ok(_) => {
+                    response.success = true;
+                    log::info!("Successfully processed")
+                }
+                Err(e) => handle_error(&mut response, "Error processing:", e),
             },
-            Err(e) => log::error!("Error initializing: {}", e),
+            Err(e) => handle_error(&mut response, "Error initializing:", e),
         }
 
-        // TODO implement
-        ServiceProcessor::list_dir(&self.root_directory, 0)?;
-        Ok(true)
+        Ok(response)
     }
+}
+
+fn handle_error(response: &mut ProcessResponse, prefix: &str, e: BoxedError) {
+    let error_message = format!("{prefix} {e}");
+    log::error!("{error_message}");
+    response.error_message = Some(error_message);
 }
 
 impl Drop for ServiceProcessor {

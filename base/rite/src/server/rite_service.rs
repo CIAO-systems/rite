@@ -23,12 +23,9 @@ impl RiteService for RiteServiceImpl {
                 |e| Status::invalid_argument(format!("Failed to read zip archive: {}", e)),
             )?;
 
-        let success = service_processor
+        let response = service_processor
             .process()
             .map_err(|e| Status::internal(format!("Failed to process configuration: {}", e)))?;
-
-        // For now, returning an empty response
-        let response = ProcessResponse { success };
 
         Ok(Response::new(response))
     }

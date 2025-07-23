@@ -6,7 +6,9 @@
     <processes>
         <process id="csv.print">
             <importer plugin="csv">
-                <config key="filename" value="$RITE_CONFIG_PATH/example.csv" />
+                <configuration>
+                    <config key="filename" value="$RITE_CONFIG_PATH/data/example.csv" />
+                </configuration>
             </importer>
             <exporters>
                 <exporter plugin="common" name="console" />

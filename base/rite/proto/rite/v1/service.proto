@@ -14,4 +14,5 @@ message ProcessRequest {
 
 message ProcessResponse {
   bool success = 1;
+  optional string error_message = 2;
 }
