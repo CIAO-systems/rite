@@ -1,4 +1,4 @@
-use import::Importer;
+use model::import::Importer;
 use model::{BoxedError, Initializable, field::add_field, record::Record, value::Value};
 
 pub struct EnvImporter;
@@ -19,7 +19,7 @@ impl Initializable for EnvImporter {
 }
 
 impl Importer for EnvImporter {
-    fn read(&mut self, handler: &mut dyn import::RecordHandler) -> Result<(), BoxedError> {
+    fn read(&mut self, handler: &mut dyn model::import::RecordHandler) -> Result<(), BoxedError> {
         // Iterate over all the environment variables.
         for (key, value) in std::env::vars() {
             let mut record = Record::new();
@@ -35,7 +35,7 @@ impl Importer for EnvImporter {
 
 #[cfg(test)]
 mod tests {
-    use import::{Importer, handlers::CollectingRecordHandler};
+    use model::import::{Importer, handlers::CollectingRecordHandler};
     use model::{BoxedError, value::Value};
     use uuid::Uuid;
 

@@ -2,7 +2,7 @@ use crate::{
     common::{handle_response, response::LLMResponse},
     importers::gemini::config::GeminiConnection,
 };
-use import::Importer;
+use model::import::Importer;
 use model::BoxedError;
 use rig::completion::Prompt;
 
@@ -17,7 +17,7 @@ pub struct GeminiImporter {
 impl Importer for GeminiImporter {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let prompt = self.prompt.clone().ok_or("No 'prompt' configured")?;
 

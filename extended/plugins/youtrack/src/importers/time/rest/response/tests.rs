@@ -1,6 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use import::handlers::{ClosureRecordHandler, CollectingRecordHandler};
+use model::import::handlers::{ClosureRecordHandler, CollectingRecordHandler};
 use model::record::Record;
 
 use super::*;

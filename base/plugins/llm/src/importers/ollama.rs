@@ -1,5 +1,5 @@
 use config::OllamaConnection;
-use import::Importer;
+use model::import::Importer;
 use model::BoxedError;
 use rig::completion::Prompt;
 
@@ -14,7 +14,7 @@ pub struct OllamaImporter {
 }
 
 impl Importer for OllamaImporter {
-    fn read(&mut self, handler: &mut dyn import::RecordHandler) -> Result<(), BoxedError> {
+    fn read(&mut self, handler: &mut dyn model::import::RecordHandler) -> Result<(), BoxedError> {
         let prompt = self.prompt.clone().ok_or("No 'prompt' configured")?;
 
         if let Some(ref connection) = self.connection {

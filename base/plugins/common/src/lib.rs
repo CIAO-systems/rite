@@ -11,7 +11,7 @@ pub mod transformer;
 /// This function creates an importer for the given name
 ///
 #[unsafe(no_mangle)]
-pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
+pub fn create_importer(name: &str) -> Result<Box<dyn model::import::Importer>, BoxedError> {
     match name {
         "env" => Ok(Box::new(EnvImporter::new())),
         _ => Err(format!("Unknown importer '{name}'").into()),
@@ -20,7 +20,7 @@ pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedErr
 
 /// Plugin entry function to create an instance of an [Transformer]
 #[unsafe(no_mangle)]
-pub fn create_transformer(name: &str) -> Result<Box<dyn transform::Transformer>, BoxedError> {
+pub fn create_transformer(name: &str) -> Result<Box<dyn model::transform::Transformer>, BoxedError> {
     match name {
         "mapper" => Ok(Box::new(MapperTransformer::new())),
         _ => Ok(Box::new(CommonTransformer::new())),
@@ -34,7 +34,7 @@ pub fn create_transformer(name: &str) -> Result<Box<dyn transform::Transformer>,
 /// # Available exporters
 /// * `console` - An [Exporter] to write to the stdout
 #[unsafe(no_mangle)]
-pub fn create_exporter(name: &str) -> Result<Box<dyn export::Exporter>, BoxedError> {
+pub fn create_exporter(name: &str) -> Result<Box<dyn model::export::Exporter>, BoxedError> {
     match name {
         "console" => Ok(Box::new(ConsoleExporter::new())),
         "template" => Ok(Box::new(TemplateExporter::new())),

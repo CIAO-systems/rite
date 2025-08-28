@@ -3,7 +3,7 @@ use ciao_rs::ciao::{
     time_tracking::project::{ListRequest, Project},
 };
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::{add_field, add_optional_field},
     record::Record,

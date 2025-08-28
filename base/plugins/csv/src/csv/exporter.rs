@@ -1,4 +1,4 @@
-use export::Exporter;
+use model::export::Exporter;
 use std::fs::OpenOptions;
 use std::io::Write;
 
@@ -47,7 +47,7 @@ impl Exporter for CSV {
 mod tests {
     use std::{fs, path::Path};
 
-    use export::Exporter;
+    use model::export::Exporter;
     use model::{
         field::add_field, record::Record, value::Value, xml::config::Configuration, Initializable,
     };

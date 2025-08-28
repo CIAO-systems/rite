@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use import::handlers::CollectingRecordHandler;
+use model::import::handlers::CollectingRecordHandler;
 use model::{BoxedError, value::Value};
 use personio_rs::personnel::models::{
     CompanyAttendancesProjectsGet200Response, Project, ProjectAttributes,

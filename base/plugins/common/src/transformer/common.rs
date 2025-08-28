@@ -5,7 +5,7 @@ use operations::{
     formatter::Formatter,
     renamer::Renamer,
 };
-use transform::Transformer;
+use model::transform::Transformer;
 
 mod operations;
 

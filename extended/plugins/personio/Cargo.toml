@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 personio-rs = { git = "https://github.com/CIAO-systems/personio-rs" }
 tokio = { version = "1", features = ["full", "test-util"] }
 log = "0.4.27"

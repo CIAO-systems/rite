@@ -1,4 +1,4 @@
-use import::RecordHandler;
+use model::import::RecordHandler;
 
 use crate::importers::time::config::TimeTracking;
 

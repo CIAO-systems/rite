@@ -2,7 +2,7 @@ use ciao_rs::ciao::{
     clients::time_tracking::absences::AbsenceClient,
     time_tracking::absences::{Absence, CreateRequest},
 };
-use export::Exporter;
+use model::export::Exporter;
 use model::{BoxedError, Initializable};
 use uuid::Uuid;
 

@@ -6,7 +6,7 @@ use std::{
     path::Path,
 };
 
-use import::{handlers::CollectingRecordHandler, Importer, RecordHandler};
+use model::import::{handlers::CollectingRecordHandler, Importer, RecordHandler};
 use model::{
     field::Field, record::Record, value::Value, xml::config::Configuration, BoxedError,
     Initializable,

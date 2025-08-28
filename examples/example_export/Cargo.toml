@@ -8,10 +8,8 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 gag = "1.0.0"
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
-helper = { git = "https://github.com/CIAO-systems/rite-lib-helper.git" }
 
 [lib]
 name = "example_export"

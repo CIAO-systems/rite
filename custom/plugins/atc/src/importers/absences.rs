@@ -1,7 +1,7 @@
 use chrono::{DateTime, Datelike, Local, TimeZone, Utc};
 use chrono_tz::Europe::Berlin;
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, value::Value, BoxedError, Initializable};
 use prost_types::Timestamp;
 
@@ -38,7 +38,7 @@ impl Initializable for Absences {
 impl Importer for Absences {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establish connection to gRPC server
         let connection = ATCConnection::connect(&self.config)?;

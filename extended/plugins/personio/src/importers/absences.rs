@@ -1,5 +1,5 @@
 use filter::AbsencesFilter;
-use import::RecordHandler;
+use model::import::RecordHandler;
 use model::{BoxedError, field::add_field, record::Record, value::Value};
 use personio_rs::personnel::models::{AbsenceTimeOffType, ShortEmployee};
 

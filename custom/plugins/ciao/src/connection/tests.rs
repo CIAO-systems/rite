@@ -7,7 +7,7 @@ use ciao_rs::ciao::{
 use dotenv::dotenv;
 use futures::StreamExt;
 use grpc_utils_rs::{grpc::interceptor::APIKeyClientInterceptor, interceptors};
-use import::{handlers::CollectingRecordHandler, RecordHandler};
+use model::import::{handlers::CollectingRecordHandler, RecordHandler};
 use model::{
     field::Field,
     record::Record,

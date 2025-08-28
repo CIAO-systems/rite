@@ -1,6 +1,6 @@
 //! Example plugin for an importer
 
-use import::Importer;
+use model::import::Importer;
 use text::TextFileImporter;
 
 pub mod text;

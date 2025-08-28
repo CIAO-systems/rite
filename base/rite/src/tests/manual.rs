@@ -1,6 +1,6 @@
-use import::Importer;
+use model::import::Importer;
 use model::xml;
-use plugin::Plugin;
+use model::plugin::Plugin;
 
 static PLUGIN_PATH: &str = if cfg!(debug_assertions) {
     "../target/debug"
@@ -40,7 +40,7 @@ fn create_test_importer_config() -> xml::config::Configuration {
 #[test]
 #[ignore = "for manual testing"]
 fn test_importer() -> Result<(), Box<dyn std::error::Error>> {
-    helper::pwd();
+    model::helper::pwd();
 
     let mut importer_plugin = load_importer()?;
     let mut importer = create_importer(&mut importer_plugin)?;

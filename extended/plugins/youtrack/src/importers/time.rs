@@ -1,5 +1,5 @@
 use config::{RiteYoutrackImportTime, TimeTracking};
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::Initializable;
 
 use crate::importers::connection::YouTrackConnection;

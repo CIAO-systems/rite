@@ -1,11 +1,11 @@
 use model::record::Record;
 
 pub struct Transformer<'a> {
-    transformers: &'a Vec<Box<dyn transform::Transformer>>,
+    transformers: &'a Vec<Box<dyn model::transform::Transformer>>,
 }
 
 impl<'a> Transformer<'a> {
-    pub fn new(transformers: &'a Vec<Box<dyn transform::Transformer>>) -> Self {
+    pub fn new(transformers: &'a Vec<Box<dyn model::transform::Transformer>>) -> Self {
         Self { transformers }
     }
 

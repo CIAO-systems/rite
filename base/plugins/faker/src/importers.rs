@@ -1,5 +1,5 @@
 use config::RiteRandomImport;
-use import::Importer;
+use model::import::Importer;
 use model::{
     field::add_field, record::Record, xml::file::load_and_substitute_from_env, Initializable,
 };
@@ -54,7 +54,7 @@ impl Initializable for Faker {
 impl Importer for Faker {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref random) = self.random {
             for _ in 0..random.generator.number {
@@ -83,7 +83,7 @@ impl Importer for Faker {
 #[cfg(test)]
 mod tests {
 
-    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::import::{handlers::CollectingRecordHandler, Importer};
     use model::{xml::config::Configuration, Initializable};
 
     use super::Faker;

@@ -3,7 +3,7 @@ use ciao_rs::ciao::{
     time_tracking::time_type::{ListRequest, TimeType},
 };
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::{add_field, add_optional_field},
     record::Record,
@@ -37,7 +37,7 @@ impl Initializable for TimeTypes {
 impl Importer for TimeTypes {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;
@@ -123,7 +123,7 @@ mod tests {
         common::Color,
         time_tracking::time_type::{TimeType, TimeTypeOptions},
     };
-    use import::handlers::CollectingRecordHandler;
+    use model::import::handlers::CollectingRecordHandler;
     use model::value::Value;
 
     use super::handle_time_type;

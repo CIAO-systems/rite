@@ -5,11 +5,11 @@ use super::{Exporter, Transformer};
 mod handlers;
 
 pub struct Importer<'a> {
-    importer: &'a mut Box<dyn import::Importer>,
+    importer: &'a mut Box<dyn model::import::Importer>,
 }
 
 impl<'a> Importer<'a> {
-    pub fn new(importer: &'a mut Box<dyn import::Importer>) -> Self {
+    pub fn new(importer: &'a mut Box<dyn model::import::Importer>) -> Self {
         Self { importer }
     }
 
@@ -20,14 +20,14 @@ impl<'a> Importer<'a> {
     ) -> Result<(), Box<dyn std::error::Error>> {
         let mut record_handler = TransformAndExportRecordHandler::new(transformer, exporter);
 
-        record_handler.event(export::Signal::Start)?;
+        record_handler.event(model::export::Signal::Start)?;
 
         if let Err(e) = self.importer.read(&mut record_handler) {
             log::error!("Error while importing records: {}", e);
             return Err(e);
         }
 
-        record_handler.event(export::Signal::End)?;
+        record_handler.event(model::export::Signal::End)?;
 
         Ok(())
     }

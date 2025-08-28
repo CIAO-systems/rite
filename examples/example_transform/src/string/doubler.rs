@@ -1,6 +1,6 @@
 //! Another example transformer for doubling characters of a string
 use model::{field::Field, record::Record, Initializable};
-use transform::Transformer;
+use model::transform::Transformer;
 
 /// Converst string field values to double each character
 /// For example, the string "Hello" will be converted to "HHeelllloo"
