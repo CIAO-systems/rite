@@ -180,7 +180,7 @@ impl Initializable for PostgresExporter {
     }
 }
 
-impl export::Exporter for PostgresExporter {
+impl model::export::Exporter for PostgresExporter {
     fn write(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         // Check, if we need to create the table first
         if self.has_create() && !self.is_created() {

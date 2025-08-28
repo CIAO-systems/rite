@@ -1,6 +1,6 @@
 use std::fs;
 
-use import::{handlers::CollectingRecordHandler, Importer};
+use model::import::{handlers::CollectingRecordHandler, Importer};
 use mockito::Matcher;
 use model::{
     field::Field, record::Record, value::Value, xml::config::Configuration, Initializable,

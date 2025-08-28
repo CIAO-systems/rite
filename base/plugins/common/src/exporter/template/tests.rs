@@ -1,4 +1,4 @@
-use export::{Exporter, Signal};
+use model::export::{Exporter, Signal};
 use model::{Initializable, field::add_field, record::Record, xml::config::Configuration};
 use tera::{Context, Tera};
 use uuid::Uuid;

@@ -11,7 +11,7 @@ pub struct RitePostgresImport {
 
 #[cfg(test)]
 mod tests {
-    use helper::pwd;
+    use model::helper::pwd;
     use model::xml::file::load_and_substitute_from_env;
 
     use crate::importer::config::RitePostgresImport;

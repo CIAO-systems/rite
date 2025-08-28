@@ -76,7 +76,7 @@ pub fn extract_json_structures(input: &str) -> Result<Vec<serde_json::Value>, Bo
 
 pub fn handle_response(
     response: String,
-    handler: &mut dyn import::RecordHandler,
+    handler: &mut dyn model::import::RecordHandler,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let objects = extract_json_structures(&response)?;
     log::debug!("Extracted {} JSON structures", objects.len());

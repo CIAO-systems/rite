@@ -1,6 +1,6 @@
 use ciao_rs::ciao::accounts::ListRequest;
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, value::Value, BoxedError, Initializable};
 
 use crate::connection::CiaoConnection;
@@ -136,7 +136,7 @@ fn handle_account(
 
 #[cfg(test)]
 mod tests {
-    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::import::{handlers::CollectingRecordHandler, Importer};
     use model::{xml::config::Configuration, Initializable};
 
     use crate::importers::accounts::Accounts;

@@ -1,4 +1,4 @@
-use import::RecordHandler;
+use model::import::RecordHandler;
 use serde_json::Value;
 
 use crate::importers::generic::config::{Dataset, RiteYoutrackImport};

@@ -1,5 +1,5 @@
 use ciao_rs::ciao::time_tracking::{clock_record::Identity, ClockRecord};
-use export::Exporter;
+use model::export::Exporter;
 use model::{field::Field, value::Value, BoxedError, Initializable};
 
 use crate::connection::CiaoConnection;

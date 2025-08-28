@@ -1,7 +1,7 @@
 use super::youtrack::factory::fill_record_from_json;
 use crate::importers::connection::YouTrackConnection;
 use config::RiteYoutrackImport;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
 use rest::make_request;
 

@@ -1,6 +1,6 @@
 use std::fs;
 
-use import::handlers::CollectingRecordHandler;
+use model::import::handlers::CollectingRecordHandler;
 use model::BoxedError;
 use rig::{completion::Prompt, providers::ollama};
 use serde_json::Value;

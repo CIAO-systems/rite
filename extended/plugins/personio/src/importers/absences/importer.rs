@@ -1,5 +1,4 @@
-use import::Importer;
-use model::BoxedError;
+use model::{BoxedError, import::Importer};
 use personio_rs::personnel::{
     apis::absences_api::company_time_offs_get, models::AbsencePeriodsResponse,
 };
@@ -16,7 +15,7 @@ pub struct AbsencesParameters<'a> {
 impl Importer for super::Absences {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref runtime) = self.general.runtime {
             let configuration = &self.general.get_personnel_configuration()?;

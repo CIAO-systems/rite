@@ -21,7 +21,7 @@ impl Projects {
     fn handle_response(
         &self,
         response: personio_rs::personnel::models::CompanyAttendancesProjectsGet200Response,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), BoxedError> {
         if response.success.unwrap_or(false) {
             if let Some(data) = response.data {

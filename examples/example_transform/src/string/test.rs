@@ -1,5 +1,5 @@
 use model::{field::Field, record::Record, value::Value};
-use transform::Transformer;
+use model::transform::Transformer;
 
 use super::StringFieldConverter;
 

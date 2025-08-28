@@ -2,7 +2,7 @@
 
 use model::{field::Field, record::Record, Initializable};
 
-use transform::Transformer;
+use model::transform::Transformer;
 
 /// The type of conversion to apply
 pub enum StringFieldConversion {

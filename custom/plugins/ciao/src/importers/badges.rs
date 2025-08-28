@@ -3,7 +3,7 @@ use ciao_rs::ciao::{
     clients::accounts::badges::BadgeClient,
 };
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::add_field,
     record::Record,
@@ -39,7 +39,7 @@ impl Initializable for Badges {
 impl Importer for Badges {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;

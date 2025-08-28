@@ -3,7 +3,7 @@ use ciao_rs::ciao::devices::{
     DeviceActionType, DeviceType, ListRequest,
 };
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::{add_field, add_optional_field},
     record::Record,
@@ -186,7 +186,7 @@ fn handle_device(
 
 #[cfg(test)]
 mod tests {
-    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::import::{handlers::CollectingRecordHandler, Importer};
     use model::{xml::config::Configuration, Initializable};
 
     use crate::importers::devices::Devices;

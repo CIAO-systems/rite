@@ -10,9 +10,9 @@ use colored::*;
 
 pub struct Process {
     pub id: String,
-    importer: Option<Box<dyn import::Importer>>,
-    transformers: Option<Vec<Box<dyn transform::Transformer>>>,
-    exporters: Option<Vec<Box<dyn export::Exporter>>>,
+    importer: Option<Box<dyn model::import::Importer>>,
+    transformers: Option<Vec<Box<dyn model::transform::Transformer>>>,
+    exporters: Option<Vec<Box<dyn model::export::Exporter>>>,
 }
 
 impl Process {

@@ -1,5 +1,5 @@
 use ::tera::{Context, Tera, Value};
-use export::Exporter;
+use model::export::Exporter;
 use model::Initializable;
 use std::error::Error;
 
@@ -79,13 +79,13 @@ impl Exporter for TemplateExporter {
         Ok(())
     }
 
-    fn event(&mut self, signal: export::Signal) -> Result<(), model::BoxedError> {
+    fn event(&mut self, signal: model::export::Signal) -> Result<(), model::BoxedError> {
         match signal {
-            export::Signal::Start => {
+            model::export::Signal::Start => {
                 self.records = Some(Vec::new());
                 Ok(())
             }
-            export::Signal::End => self.write_file(),
+            model::export::Signal::End => self.write_file(),
         }
     }
 }

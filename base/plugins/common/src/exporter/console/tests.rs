@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use super::ConsoleExporter;
-use export::Exporter;
+use model::export::Exporter;
 use model::{field::Field, record::Record};
 
 #[test]

@@ -1,4 +1,4 @@
-use import::Importer;
+use model::import::Importer;
 use model::BoxedError;
 use personio_rs::personnel::{
     apis::employees_api::company_employees_get, models::EmployeesResponse,
@@ -16,7 +16,7 @@ pub struct EmployeesParameters<'a> {
 impl Importer for super::Employees {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref runtime) = self.general.runtime {
             let configuration = &self.general.get_personnel_configuration()?;

@@ -1,4 +1,4 @@
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use json_dotpath::DotPaths;
 use model::{field::Field, record::Record, value::Value, Initializable};
 use reqwest::header::HeaderValue;

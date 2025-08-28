@@ -1,11 +1,11 @@
 use model::record::Record;
 
 pub struct Exporter<'a> {
-    exporters: &'a mut Vec<Box<dyn export::Exporter>>,
+    exporters: &'a mut Vec<Box<dyn model::export::Exporter>>,
 }
 
 impl<'a> Exporter<'a> {
-    pub fn new(exporters: &'a mut Vec<Box<dyn export::Exporter>>) -> Self {
+    pub fn new(exporters: &'a mut Vec<Box<dyn model::export::Exporter>>) -> Self {
         Self { exporters }
     }
 
@@ -21,7 +21,10 @@ impl<'a> Exporter<'a> {
     }
 
     /// Signal event to all exporters
-    pub fn event(&mut self, signal: export::Signal) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn event(
+        &mut self,
+        signal: model::export::Signal,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         for exporter in self.exporters.iter_mut() {
             exporter.event(signal.clone())?;
         }

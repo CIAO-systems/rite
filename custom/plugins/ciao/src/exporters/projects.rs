@@ -1,5 +1,5 @@
 use ciao_rs::ciao::time_tracking::project::{CreateRequest, Project};
-use export::Exporter;
+use model::export::Exporter;
 use model::Initializable;
 
 use crate::{connection::CiaoConnection, model::get_timestamp};
@@ -112,7 +112,7 @@ fn project_from_record(record: &model::record::Record) -> Project {
 mod tests {
     use super::{project_from_record, Projects};
     use crate::model::add_timestamp_parse;
-    use export::Exporter;
+    use model::export::Exporter;
     use model::{
         field::add_field, record::Record, value::Value, xml::config::Configuration, BoxedError,
         Initializable,

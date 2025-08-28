@@ -2,7 +2,7 @@
 //!
 use std::io::{self, Write};
 
-use export::Exporter;
+use model::export::Exporter;
 use model::{record::Record, xml, Initializable};
 
 /// An [Exporter] that writes the [Record] to a [Write]
