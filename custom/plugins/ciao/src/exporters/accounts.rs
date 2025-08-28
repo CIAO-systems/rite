@@ -2,7 +2,7 @@ use ciao_rs::ciao::{
     accounts::{Account, CreateRequest},
     common::{Address, Image, Name},
 };
-use export::Exporter;
+use model::export::Exporter;
 use model::Initializable;
 
 use crate::{connection::CiaoConnection, model::get_timestamp};

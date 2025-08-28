@@ -1,6 +1,6 @@
 use ciao_rs::ciao::time_tracking::cost_center::ListRequest;
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, value::Value, BoxedError, Initializable};
 
 use crate::connection::CiaoConnection;
@@ -28,7 +28,7 @@ impl Initializable for CostCenters {
 impl Importer for CostCenters {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;
@@ -91,7 +91,7 @@ fn handle_cost_center(
 
 #[cfg(test)]
 mod tests {
-    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::import::{handlers::CollectingRecordHandler, Importer};
     use model::{xml::config::Configuration, Initializable};
 
     use super::CostCenters;

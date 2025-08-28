@@ -1,5 +1,5 @@
-use export::Signal;
-use import::RecordHandler;
+use model::export::Signal;
+use model::import::RecordHandler;
 use model::{record::Record, BoxedError};
 
 use crate::processor::process::{exporter::Exporter, transformer::Transformer};
@@ -72,7 +72,7 @@ fn import_read_handler<'a>(
 mod tests {
     use std::{cell::RefCell, rc::Rc};
 
-    use export::{Exporter, Signal};
+    use model::export::{Exporter, Signal};
     use model::Initializable;
 
     use super::TransformAndExportRecordHandler;
@@ -106,7 +106,7 @@ mod tests {
 
         fn event(
             &mut self,
-            #[allow(unused_variables)] signal: export::Signal,
+            #[allow(unused_variables)] signal: model::export::Signal,
         ) -> Result<(), model::BoxedError> {
             self.signals.borrow_mut().push(signal);
             Ok(())
@@ -120,8 +120,8 @@ mod tests {
         let mock = SignalTestExporter::new();
 
         let transformer = None;
-        let mut v: Vec<Box<dyn export::Exporter>> = Vec::new();
-        let b: Box<dyn export::Exporter> = Box::new(mock.clone());
+        let mut v: Vec<Box<dyn model::export::Exporter>> = Vec::new();
+        let b: Box<dyn model::export::Exporter> = Box::new(mock.clone());
         v.push(b);
         let mut exporter = Some(Exporter::new(&mut v));
         let mut subject = TransformAndExportRecordHandler::new(&transformer, &mut exporter);

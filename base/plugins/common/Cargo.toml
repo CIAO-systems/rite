@@ -8,10 +8,7 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
-transform = { git = "https://github.com/CIAO-systems/rite-lib-transform.git" }
-export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 uuid = { version = "1.11", features = ["v4"] }
 gag = "1.0"
 chrono = "0.4"

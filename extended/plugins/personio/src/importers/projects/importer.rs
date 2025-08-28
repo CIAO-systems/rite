@@ -1,4 +1,4 @@
-use import::Importer;
+use model::import::Importer;
 use model::BoxedError;
 use personio_rs::personnel::{
     apis::projects_api::company_attendances_projects_get,
@@ -6,7 +6,7 @@ use personio_rs::personnel::{
 };
 
 impl Importer for super::Projects {
-    fn read(&mut self, handler: &mut dyn import::RecordHandler) -> Result<(), BoxedError> {
+    fn read(&mut self, handler: &mut dyn model::import::RecordHandler) -> Result<(), BoxedError> {
         if let Some(ref runtime) = self.general.runtime {
             let response: Result<CompanyAttendancesProjectsGet200Response, BoxedError> = runtime
                 .block_on(async {

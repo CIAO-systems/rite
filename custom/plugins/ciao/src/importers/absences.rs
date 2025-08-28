@@ -3,7 +3,7 @@ use ciao_rs::ciao::{
     clients::time_tracking::absences::AbsenceClient, common::Date, time_tracking::absences::Absence,
 };
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::{add_field, Field},
     record::Record,
@@ -37,7 +37,7 @@ impl Initializable for Absences {
 impl Importer for Absences {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // 1. Establish connection to gRPC server
         let connection = CiaoConnection::connect(&self.config)?;

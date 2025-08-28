@@ -55,7 +55,7 @@ impl Employees {
     /// Iterate the EmployeesResponse and call the record handler.
     fn handle_employee_response(
         &self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
         employee_response: EmployeesResponse,
     ) -> Result<(), BoxedError> {
         if employee_response.success {

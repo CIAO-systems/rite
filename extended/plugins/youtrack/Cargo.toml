@@ -8,8 +8,7 @@ repository = "https://github.com/CIAO-systems/rite"
 license = "Apache-2.0"
 
 [dependencies]
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
 serde_json = "1.0"
@@ -21,4 +20,3 @@ urlencoding = "2.1"
 [lib]
 name = "rite_youtrack"
 crate-type = ["dylib"]
-

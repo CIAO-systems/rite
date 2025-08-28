@@ -4,9 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
-import = { git = "https://github.com/CIAO-systems/rite-lib-import.git" }
-export = { git ="https://github.com/CIAO-systems/rite-lib-export.git" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 log = "0.4"
 csv = "1.3"
 

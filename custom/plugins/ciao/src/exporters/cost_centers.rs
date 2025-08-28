@@ -1,5 +1,5 @@
 use ciao_rs::ciao::time_tracking::cost_center::{CostCenter, CreateRequest};
-use export::Exporter;
+use model::export::Exporter;
 use model::Initializable;
 
 use crate::connection::CiaoConnection;
@@ -83,7 +83,7 @@ async fn create_cost_center(
 
 #[cfg(test)]
 mod tests {
-    use export::Exporter;
+    use model::export::Exporter;
     use model::{
         field::add_field, record::Record, value::Value, xml::config::Configuration, BoxedError,
         Initializable,

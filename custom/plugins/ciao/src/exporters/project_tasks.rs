@@ -1,5 +1,5 @@
 use ciao_rs::ciao::time_tracking::project::task::{CreateRequest, ProjectTask};
-use export::Exporter;
+use model::export::Exporter;
 use model::Initializable;
 
 use crate::connection::CiaoConnection;
@@ -88,7 +88,7 @@ fn task_from_record(
 
 #[cfg(test)]
 mod tests {
-    use export::Exporter;
+    use model::export::Exporter;
     use model::{
         field::add_field, record::Record, value::Value, xml::config::Configuration, BoxedError,
         Initializable,

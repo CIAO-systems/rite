@@ -1,7 +1,7 @@
 //! Example plugin for a transformer
 
 use string::StringFieldConverter;
-use transform::Transformer;
+use model::transform::Transformer;
 
 pub mod string;
 

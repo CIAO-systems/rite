@@ -4,7 +4,7 @@ use config::mapper::Mapper;
 use model::{
     field::Field, record::Record, value::Value, xml::config::Configuration, Initializable,
 };
-use transform::Transformer;
+use model::transform::Transformer;
 
 mod config;
 

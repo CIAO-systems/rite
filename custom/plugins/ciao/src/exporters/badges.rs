@@ -1,5 +1,5 @@
 use ciao_rs::ciao::{accounts::badges::Badge, clients::accounts::badges::BadgeClient};
-use export::Exporter;
+use model::export::Exporter;
 use model::{BoxedError, Initializable};
 use uuid::Uuid;
 

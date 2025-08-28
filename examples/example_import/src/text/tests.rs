@@ -1,4 +1,4 @@
-use import::{handlers::ClosureRecordHandler, Importer};
+use model::import::{handlers::ClosureRecordHandler, Importer};
 use model::{
     record::Record,
     value::Value,

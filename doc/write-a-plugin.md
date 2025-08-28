@@ -15,7 +15,7 @@ crate-type = ["dylib"]
 At the very least, you will need the dependency to the RITE model library:
 ```toml
 [dependencies]
-model = { git = "https://github.com/CIAO-systems/rite-lib-model.git" }
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 ```
 
 # Implement an importer
@@ -32,14 +32,14 @@ To create an importer, the library needs to provide the function `create_importe
 /// This function creates an importer
 ///
 #[unsafe(no_mangle)]
-pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError>;
+pub fn create_importer(name: &str) -> Result<Box<dyn model::import::Importer>, BoxedError>;
 ```
 When your importer has multiple importers it can create, the parameter `name` tells the function which one to return:
 ```rust
 /// This function creates an importer for the given name
 ///
 #[unsafe(no_mangle)]
-pub fn create_importer(name: &str) -> Result<Box<dyn import::Importer>, BoxedError> {
+pub fn create_importer(name: &str) -> Result<Box<dyn model::import::Importer>, BoxedError> {
     match name {
         "fancy_importer" => Ok(Box::new(FancyImporter::new())),
         "yafi" => Ok(Box::new(YetAnotherFancyImporter::new())),

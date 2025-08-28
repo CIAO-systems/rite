@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
-use helper::get_full_path;
 use log::{debug, error};
+use model::helper::get_full_path;
 use model::xml;
 use moka::sync::Cache;
 
@@ -11,7 +11,7 @@ pub struct Rite {
     processes: Vec<Process>,
 
     // Make sure, the plugin cache is dropped last
-    plugin_cache: Cache<String, Arc<plugin::Plugin>>,
+    plugin_cache: Cache<String, Arc<model::plugin::Plugin>>,
 }
 
 impl Rite {
@@ -48,13 +48,13 @@ impl Rite {
     pub fn load_plugin(
         &self,
         plugin_desc: &xml::plugin::Plugin,
-    ) -> Result<Arc<plugin::Plugin>, Box<dyn std::error::Error>> {
+    ) -> Result<Arc<model::plugin::Plugin>, Box<dyn std::error::Error>> {
         if let Some(cached_plugin) = self.plugin_cache.get(&plugin_desc.id) {
             return Ok(cached_plugin);
         }
 
         // Create the plugin
-        let plugin = Arc::new(plugin::Plugin::new(
+        let plugin = Arc::new(model::plugin::Plugin::new(
             plugin_desc.path.as_deref(),
             &plugin_desc.name,
         )?);

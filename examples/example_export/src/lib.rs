@@ -1,6 +1,6 @@
 //! Example plugin for an exporter
 use console::ConsoleExporter;
-use export::Exporter;
+use model::export::Exporter;
 
 /// Plugin entry function to create an instance of an [Exporter]
 /// # Arguments

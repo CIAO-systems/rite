@@ -1,4 +1,4 @@
-use import::RecordHandler;
+use model::import::RecordHandler;
 use model::{field::Field, record::Record, value::Value};
 
 use crate::importers::youtrack::{

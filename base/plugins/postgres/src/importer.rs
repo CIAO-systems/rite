@@ -1,5 +1,5 @@
 use config::RitePostgresImport;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{
     field::Field,
     record::Record,
@@ -136,7 +136,7 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
 #[cfg(test)]
 mod tests {
 
-    use import::{handlers::ClosureRecordHandler, Importer};
+    use model::import::{handlers::ClosureRecordHandler, Importer};
     use model::{xml, Initializable};
 
     use super::PostgresImporter;

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use futures::StreamExt;
-use import::{Importer, RecordHandler};
+use model::import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, BoxedError, Initializable};
 
 use crate::{

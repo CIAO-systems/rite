@@ -1,5 +1,5 @@
 use csv::ReaderBuilder;
-use import::Importer;
+use model::import::Importer;
 use model::{field::add_field, record::Record, value::Value};
 
 use super::{CFG_FILENAME, CSV};
@@ -7,7 +7,7 @@ use super::{CFG_FILENAME, CSV};
 impl Importer for CSV {
     fn read(
         &mut self,
-        handler: &mut dyn import::RecordHandler,
+        handler: &mut dyn model::import::RecordHandler,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref path) = self.filename {
             let mut reader_builder = ReaderBuilder::new();
@@ -43,7 +43,7 @@ fn convert(headers: &csv::StringRecord, record: &csv::StringRecord) -> model::re
 
 #[cfg(test)]
 mod tests {
-    use import::{handlers::CollectingRecordHandler, Importer};
+    use model::import::{handlers::CollectingRecordHandler, Importer};
     use model::{value::Value, xml::config::Configuration, Initializable};
 
     use crate::csv::CFG_DELIMITER;

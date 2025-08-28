@@ -1,4 +1,4 @@
-use export::Exporter;
+use ::model::{export::Exporter, import::Importer};
 
 pub mod config;
 pub mod connection;
@@ -9,9 +9,7 @@ pub mod model;
 /// This functions creates an importer for CIAO data
 ///
 #[no_mangle]
-pub fn create_importer(
-    name: &str,
-) -> Result<Box<dyn import::Importer>, Box<dyn std::error::Error>> {
+pub fn create_importer(name: &str) -> Result<Box<dyn Importer>, Box<dyn std::error::Error>> {
     match name {
         "absences" => Ok(Box::new(importers::absences::Absences::new())),
         "accounts" => Ok(Box::new(importers::accounts::Accounts::new())),

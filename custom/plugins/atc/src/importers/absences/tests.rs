@@ -1,7 +1,7 @@
 use std::env;
 
 use chrono::{DateTime, Datelike, Timelike, Utc};
-use import::{handlers::CollectingRecordHandler, Importer};
+use model::import::{handlers::CollectingRecordHandler, Importer};
 use model::{xml::config::Configuration, BoxedError, Initializable};
 use prost_types::Timestamp;
 
