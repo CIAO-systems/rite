@@ -7,8 +7,8 @@ use moka::sync::Cache;
 
 use super::process::Process;
 pub struct Rite {
-    rite: xml::Rite,
-    processes: Vec<Process>,
+    pub rite: xml::Rite,
+    pub processes: Vec<Process>,
 
     // Make sure, the plugin cache is dropped last
     plugin_cache: Cache<String, Arc<model::plugin::Plugin>>,
@@ -95,5 +95,3 @@ pub fn create_variables(xml_file_name: &str) -> HashMap<String, String> {
     variables
 }
 
-#[cfg(test)]
-mod tests;

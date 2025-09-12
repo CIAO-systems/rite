@@ -1,9 +1,7 @@
 use clap::Parser;
 use dotenv::dotenv;
 use log::info;
-
-mod processor;
-mod variables;
+use rite::processor;
 
 /// Struct for the command line options for the replay binary
 #[derive(clap::Parser)]

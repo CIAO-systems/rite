@@ -180,3 +180,17 @@ impl Process {
         (i, t, e)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let process = Process::new();
+        assert_eq!(process.id, "");
+        assert!(process.importer.is_none());
+        assert!(process.transformers.is_none());
+        assert!(process.exporters.is_none());
+    }
+}
