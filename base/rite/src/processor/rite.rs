@@ -94,3 +94,6 @@ pub fn create_variables(xml_file_name: &str) -> HashMap<String, String> {
 
     variables
 }
+
+#[cfg(test)]
+mod tests;
