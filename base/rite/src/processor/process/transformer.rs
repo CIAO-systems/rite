@@ -21,7 +21,7 @@ impl<'a> Transformer<'a> {
 #[cfg(test)]
 mod tests {
     use model::{
-        field::{add_field, Field}, transform, value::Value, Initializable
+        field::add_field, transform, value::Value, Initializable
     };
 
     use super::*;
@@ -36,6 +36,7 @@ mod tests {
             Ok(())
         }
     }
+    
     impl transform::Transformer for TestTransformer {
         fn process(&self, record: &Record) -> Result<Record, model::BoxedError> {
             let mut result = record.clone();

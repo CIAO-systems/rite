@@ -187,10 +187,18 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let process = Process::new();
+        let mut process = Process::new();
         assert_eq!(process.id, "");
         assert!(process.importer.is_none());
         assert!(process.transformers.is_none());
         assert!(process.exporters.is_none());
+
+        let (i,t,e) = process.create();
+        assert!(i.is_none());
+        assert!(t.is_none());
+        assert!(e.is_none());
+
+        let result = process.run();
+        assert!(result.is_ok());
     }
 }
