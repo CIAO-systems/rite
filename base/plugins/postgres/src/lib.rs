@@ -20,6 +20,9 @@ pub fn create_exporter(
 }
 
 #[cfg(test)]
+mod embedded;
+
+#[cfg(test)]
 mod tests {
     use crate::{create_exporter, create_importer};
 
