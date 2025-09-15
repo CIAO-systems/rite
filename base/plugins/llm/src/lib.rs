@@ -1,7 +1,6 @@
-use importers::ollama::OllamaImporter;
 use importers::gemini::GeminiImporter;
+use importers::ollama::OllamaImporter;
 use model::BoxedError;
-
 
 pub mod common;
 pub mod importers;
@@ -20,6 +19,7 @@ pub fn create_importer(name: &str) -> Result<Box<dyn model::import::Importer>, B
 
 #[cfg(test)]
 mod tests {
+    use crate::create_importer;
     use dotenv::dotenv;
     use rig::{
         completion::Prompt,
@@ -28,6 +28,28 @@ mod tests {
             gemini,
         },
     };
+
+    fn type_of<T>(_: &T) -> &str {
+        std::any::type_name::<T>()
+    }
+
+    #[test]
+    fn test_create_importer() {
+        let importer = create_importer("any");
+        assert!(importer.is_err_and(|e| e.to_string().eq("Unknown importer 'any'")));
+
+        let importer = create_importer("ollama");
+        assert_eq!(
+            type_of(&importer.unwrap()),
+            "alloc::boxed::Box<dyn model::import::Importer>"
+        );
+
+        let importer = create_importer("gemini");
+        assert_eq!(
+            type_of(&importer.unwrap()),
+            "alloc::boxed::Box<dyn model::import::Importer>"
+        );
+    }
 
     #[tokio::test]
     #[ignore = "for manual testing"]
