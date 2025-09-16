@@ -3,7 +3,6 @@ use std::error::Error;
 use postgres::{Client, NoTls};
 use postgresql_embedded::blocking::PostgreSQL;
 
-
 pub struct Embedded {
     pub postgresql: PostgreSQL,
     pub client: Client,
@@ -12,7 +11,10 @@ pub struct Embedded {
 impl Embedded {
     pub fn new(database: &str) -> Result<Self, Box<dyn Error>> {
         // Needs libxml2-legacy (arch) installed to work, or libxml2 (ubuntu?)
-        let mut postgresql = PostgreSQL::default();
+        let mut settings = PostgreSQL::default().settings().clone();
+        settings.timeout = Some(std::time::Duration::from_secs(60));
+        let mut postgresql = PostgreSQL::new(settings);
+
         postgresql.setup()?;
         postgresql.start()?;
 
