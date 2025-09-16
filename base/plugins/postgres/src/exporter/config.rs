@@ -11,10 +11,11 @@ pub struct RitePostgresExport {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
+    #[serde(rename = "@name")]
     pub name: String,
-    pub create: Option<String>,
-    #[serde(rename = "uniqueFields")]
+    #[serde(rename = "@uniqueFields")]
     pub unique_fields: Option<String>,
+    pub create: Option<String>,
 }
 
 impl Table {
@@ -42,7 +43,7 @@ mod tests {
         let x = serde_xml_rs::to_string(&table);
         assert!(x.is_ok());
         if let Ok(x) = x {
-            assert_eq!("<Table><name>Name</name><create>CREATE-Statement</create><uniqueFields>field1,field2</uniqueFields></Table>".to_string(),
+            assert_eq!("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Table name=\"Name\" uniqueFields=\"field1,field2\"><create>CREATE-Statement</create></Table>".to_string(),
             x
         );
             println!("{:?}", x);

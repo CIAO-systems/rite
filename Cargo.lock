@@ -2832,7 +2832,8 @@ dependencies = [
  "postgres",
  "postgresql_embedded",
  "serde",
- "serde-xml-rs 0.5.1",
+ "serde-xml-rs 0.8.1",
+ "tempfile",
  "tokio",
 ]
 

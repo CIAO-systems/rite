@@ -158,7 +158,6 @@ fn test_table() -> Result<(), Box<dyn std::error::Error>> {
     create_dummy_table(&mut embeded)?;
 
     let postgres = embeded.postgresql.settings();
-    println!("{:?}", postgres);
     let connection_string = format!(
         "host={} port={} user={} password={} dbname={}",
         postgres.host, postgres.port, postgres.username, postgres.password, "test"
