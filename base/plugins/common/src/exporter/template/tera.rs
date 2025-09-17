@@ -28,20 +28,14 @@ fn model_to_tera(value: model::value::Value) -> tera::Value {
         model::value::Value::U16(i) => tera::Value::Number(i.into()),
         model::value::Value::U32(i) => tera::Value::Number(i.into()),
         model::value::Value::U64(i) => tera::Value::Number(i.into()),
-        model::value::Value::F32(f) => {
-            if let Some(number) = tera::Number::from_f64(f as f64) {
-                tera::Value::Number(number)
-            } else {
-                tera::Value::String(value.to_string())
-            }
-        }
-        model::value::Value::F64(f) => {
-            if let Some(number) = tera::Number::from_f64(f) {
-                tera::Value::Number(number)
-            } else {
-                tera::Value::String(value.to_string())
-            }
-        }
+        model::value::Value::F32(f) => tera::Value::Number(
+            tera::Number::from_f64(f as f64)
+                .unwrap_or_else(|| tera::Number::from_f64(f64::MAX).unwrap()),
+        ),
+        model::value::Value::F64(f) => tera::Value::Number(
+            tera::Number::from_f64(f as f64)
+                .unwrap_or_else(|| tera::Number::from_f64(f64::MAX).unwrap()),
+        ),
         _ => tera::Value::String(value.to_string()),
     }
 }

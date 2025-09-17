@@ -32,3 +32,6 @@ impl<'a> Importer<'a> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -86,3 +86,146 @@ pub fn _get_sql_type(value: &Value) -> &'static str {
         _ => "TEXT", // Default for nullable column
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use bytes::BytesMut;
+    use chrono::Local;
+    use model::value::Value;
+    use postgres::types::{IsNull, ToSql, Type};
+
+    use crate::exporter::sql::value::{ValueWrapper, _get_sql_type};
+
+    #[test]
+    fn test_get_sql_type() {
+        assert_eq!(_get_sql_type(&Value::None), "TEXT");
+
+        assert_eq!(_get_sql_type(&Value::Bool(true)), "BOOLEAN");
+        assert_eq!(_get_sql_type(&Value::Char('c')), "CHAR(1)");
+        assert_eq!(_get_sql_type(&Value::I8(1)), "SMALLINT");
+        assert_eq!(_get_sql_type(&Value::I16(2)), "SMALLINT");
+        assert_eq!(_get_sql_type(&Value::I32(3)), "INTEGER");
+        assert_eq!(_get_sql_type(&Value::I64(4)), "BIGINT");
+        assert_eq!(_get_sql_type(&Value::I128(5)), "NUMERIC(39,0)",);
+        assert_eq!(_get_sql_type(&Value::ISize(6)), "INTEGER",);
+        assert_eq!(_get_sql_type(&Value::U8(7)), "SMALLINT",);
+        assert_eq!(_get_sql_type(&Value::U16(8)), "INTEGER",);
+        assert_eq!(_get_sql_type(&Value::U32(9)), "BIGINT",);
+        assert_eq!(_get_sql_type(&Value::U64(10)), "NUMERIC(20,0)",);
+        assert_eq!(_get_sql_type(&Value::U128(11)), "NUMERIC(39,0)",);
+        assert_eq!(_get_sql_type(&Value::USize(12)), "BIGINT",);
+        assert_eq!(_get_sql_type(&Value::F32(1.0)), "REAL",);
+        assert_eq!(_get_sql_type(&Value::F64(1.1)), "DOUBLE PRECISION",);
+        assert_eq!(_get_sql_type(&Value::String("hello".to_string())), "TEXT",);
+        assert_eq!(_get_sql_type(&Value::Blob(vec![])), "BYTEA",);
+        assert_eq!(
+            _get_sql_type(&Value::Date(Local::now().date_naive())),
+            "DATE",
+        );
+    }
+
+    #[test]
+    fn test_to_sql_bool() {
+        let wrapper = ValueWrapper(Value::Bool(true));
+        let mut buf = BytesMut::new();
+        let ty = &Type::BOOL;
+
+        let result = wrapper.to_sql(ty, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::No));
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_to_sql_char() {
+        let wrapper = ValueWrapper(Value::Char('x'));
+        let mut buf = BytesMut::new();
+        let result = wrapper.to_sql(&Type::TEXT, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::No));
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_to_sql_integers() {
+        let values = vec![
+            ValueWrapper(Value::I8(42)),
+            ValueWrapper(Value::I16(42)),
+            ValueWrapper(Value::I32(42)),
+            ValueWrapper(Value::I64(42)),
+            ValueWrapper(Value::I128(42)),
+            ValueWrapper(Value::ISize(42)),
+            ValueWrapper(Value::U8(42)),
+            ValueWrapper(Value::U16(42)),
+            ValueWrapper(Value::U32(42)),
+            ValueWrapper(Value::U64(42)),
+            ValueWrapper(Value::U128(42)),
+            ValueWrapper(Value::USize(42)),
+        ];
+
+        for wrapper in values {
+            let mut buf = BytesMut::new();
+            let result = wrapper.to_sql(&Type::INT8, &mut buf).unwrap();
+            assert!(matches!(result, IsNull::No));
+            assert!(!buf.is_empty());
+        }
+    }
+
+    #[test]
+    fn test_to_sql_floats() {
+        let values = vec![
+            ValueWrapper(Value::F32(3.14)),
+            ValueWrapper(Value::F64(2.718)),
+        ];
+
+        for wrapper in values {
+            let mut buf = BytesMut::new();
+            let result = wrapper.to_sql(&Type::FLOAT8, &mut buf).unwrap();
+            assert!(matches!(result, IsNull::No));
+            assert!(!buf.is_empty());
+        }
+    }
+
+    #[test]
+    fn test_to_sql_string() {
+        let wrapper = ValueWrapper(Value::String("hello".to_string()));
+        let mut buf = BytesMut::new();
+        let ty = &Type::TEXT;
+
+        let result = wrapper.to_sql(ty, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::No));
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_to_sql_blob() {
+        let wrapper = ValueWrapper(Value::Blob(vec![1, 2, 3, 4]));
+        let mut buf = BytesMut::new();
+        let result = wrapper.to_sql(&Type::BYTEA, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::No));
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_to_sql_date() {
+        use chrono::NaiveDate;
+        let date = NaiveDate::from_ymd_opt(2023, 5, 1).unwrap();
+        let wrapper = ValueWrapper(Value::Date(date));
+        let mut buf = BytesMut::new();
+        let ty = &Type::DATE;
+
+        let result = wrapper.to_sql(ty, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::No));
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_to_sql_null_variant() {
+        // Replace with a variant you don't handle in your match arm
+        let wrapper = ValueWrapper(Value::None);
+        let mut buf = BytesMut::new();
+        let ty = &Type::TEXT;
+
+        let result = wrapper.to_sql(ty, &mut buf).unwrap();
+        assert!(matches!(result, IsNull::Yes));
+        assert!(buf.is_empty());
+    }
+}

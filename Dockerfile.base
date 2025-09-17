@@ -10,20 +10,35 @@ RUN apt-get update && \
     apt-get install -y libssl-dev && \
     apt-get install -y git openssh-client && \
     apt-get install -y pkg-config && \
+    apt-get install -y libxml2 && \
     update-ca-certificates
 
+# Create a non-root user and group (needed for tests with embedded postgres)
+RUN groupadd -r build && useradd -r -g build -m -s /bin/bash build
+
 # Create a working directory
-WORKDIR /build
+WORKDIR /home/build
 
 # Add the .cargo directory with the config.toml
-ENV CARGO_HOME=/workdir/.cargo 
+ENV CARGO_HOME=/home/build/.cargo 
 COPY ./.cargo ./.cargo
+# Change ownership of the copied directory to the 'build' user
+RUN chown -R build:build /home/build/.cargo
 
-# Copy the projects into the image
-COPY ./base /build/base
-COPY ./data /build/data
 
-WORKDIR /build/base
+# Copy the projects into the image 
+COPY ./base base 
+COPY ./data data
+COPY ./examples examples
+
+RUN chown -R build:build base && \
+    chown -R build:build data && \
+    chown -R build:build examples
+
+# Switch to the non-root user
+USER build
+
+WORKDIR /home/build/base
 
 # Build workspace with credentials provided via SSH agent
 RUN --mount=type=ssh \
@@ -57,8 +72,8 @@ LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
 WORKDIR /app
 
 # Copy the built binary from the builder image to the WORKDIR
-COPY --from=builder /build/base/target/release/*.so .
-COPY --from=builder /build/base/target/release/rite .
+COPY --from=builder /home/build/base/target/release/*.so .
+COPY --from=builder /home/build/base/target/release/rite .
 
 # Set the library path
 ENV LD_LIBRARY_PATH=/lib:/lib64:/app

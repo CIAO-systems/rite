@@ -3,7 +3,7 @@
 use std::io::{self, Write};
 
 use model::export::Exporter;
-use model::{record::Record, xml, Initializable};
+use model::{Initializable, record::Record, xml};
 
 /// An [Exporter] that writes the [Record] to a [Write]
 pub struct ConsoleExporter {
@@ -48,7 +48,6 @@ impl Exporter for ConsoleExporter {
     fn write(&mut self, record: &Record) -> Result<(), Box<dyn std::error::Error>> {
         let fields = record.fields();
 
-
         let separator = if let Some(ref separator) = self.separator {
             separator.as_str()
         } else {
@@ -61,7 +60,6 @@ impl Exporter for ConsoleExporter {
             ""
         };
 
-
         if let Some(ref prefix) = self.prefix {
             writeln!(&mut self.writer, "{prefix}")?;
         }
@@ -70,7 +68,12 @@ impl Exporter for ConsoleExporter {
             if i > 0 {
                 write!(&mut self.writer, "{separator}")?;
             }
-            write!(&mut self.writer, "{field_prefix}{}={}", field.name(), field.value())?;
+            write!(
+                &mut self.writer,
+                "{field_prefix}{}={}",
+                field.name(),
+                field.value()
+            )?;
         }
         writeln!(&mut self.writer)?;
         if let Some(ref postfix) = self.postfix {
@@ -81,6 +84,11 @@ impl Exporter for ConsoleExporter {
     }
 }
 
+const CFG_PREFIX: &str = "prefix";
+const CFG_POSTFIX: &str = "postfix";
+const CFG_SEPARATOR: &str = "separator";
+const CFG_FIELD_PREFIX: &str = "field-prefix";
+
 impl Initializable for ConsoleExporter {
     /// Initializes the exporter from the configuration variables (it uses the key/values)
     /// # Configuration keys
@@ -90,16 +98,16 @@ impl Initializable for ConsoleExporter {
         config: Option<xml::config::Configuration>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(config) = config {
-            if let Some(prefix) = config.get("prefix") {
+            if let Some(prefix) = config.get(CFG_PREFIX) {
                 self.prefix = Some(String::from(prefix));
             }
-            if let Some(postfix) = config.get("postfix") {
+            if let Some(postfix) = config.get(CFG_POSTFIX) {
                 self.postfix = Some(String::from(postfix));
             }
-            if let Some(separator) = config.get("separator") {
+            if let Some(separator) = config.get(CFG_SEPARATOR) {
                 self.separator = Some(String::from(separator));
             }
-            if let Some(field_prefix) = config.get("field-prefix") {
+            if let Some(field_prefix) = config.get(CFG_FIELD_PREFIX) {
                 self.field_prefix = Some(String::from(field_prefix));
             }
         }

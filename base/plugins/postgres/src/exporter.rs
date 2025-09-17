@@ -194,3 +194,6 @@ impl model::export::Exporter for PostgresExporter {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -165,3 +165,25 @@ fn test_exporter_with_collection() -> Result<(), model::BoxedError> {
 
     Ok(())
 }
+
+#[test]
+fn test_exporter_err() -> Result<(), model::BoxedError> {
+    let mut exporter = TemplateExporter::new();
+    let mut config = Configuration::new();
+    config.insert_str(CFG_TEMPLATE_FILE, TEST_TEMPLATE_WITH_COLLECTION);
+    const TMP_FILE: &str = "/tmp/template_with_collection_output.txt";
+    config.insert_str(CFG_OUTPUT_FILE, TMP_FILE);
+
+    exporter.init(Some(config))?;
+
+    let result = exporter.write_file();
+    assert!(result.is_err_and(|e| {
+        // println!("{e}");
+        e.to_string().starts_with(&format!(
+            "Error rendering {}",
+            TEST_TEMPLATE_WITH_COLLECTION
+        ))
+    }));
+
+    Ok(())
+}
