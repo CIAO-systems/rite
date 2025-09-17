@@ -42,25 +42,26 @@ fn test_rite_new_and_init() {
 
     match rite {
         Ok(mut rite) => {
-            let result = rite.init(); // this will fail, because no dynymic library is in the path
-            assert!(result.is_err());
+            let result = rite.init(); // this will fail, when there are no dynymic libraries in the path
             match result {
-                Ok(_) => {}
-                Err(e) => eprintln!("{e}"),
+                Ok(_) => {
+                    assert_eq!(rite.processes.len(), 1);
+                    let xml = rite.rite;
+                    assert_eq!(xml.plugins.plugins.len(), 3);
+                    assert_eq!(xml.processes.processes.len(), 1);
+
+                    let process = &xml.processes.processes[0];
+
+                    // println!("{:#?}", process);
+                    assert_eq!(process.id, "text-uppercase-console");
+                    assert_eq!(process.importer.plugin, "import_plugin");
+                    assert_eq!(process.importer.name, Some("text".to_string()));
+                }
+                Err(e) => {
+                    eprintln!("{e}");
+                    assert_eq!(rite.processes.len(), 0);
+                }
             }
-
-            let xml = rite.rite;
-
-            assert_eq!(rite.processes.len(), 0);
-            assert_eq!(xml.plugins.plugins.len(), 3);
-            assert_eq!(xml.processes.processes.len(), 1);
-
-            let process = &xml.processes.processes[0];
-
-            // println!("{:#?}", process);
-            assert_eq!(process.id, "text-uppercase-console");
-            assert_eq!(process.importer.plugin, "import_plugin");
-            assert_eq!(process.importer.name, Some("text".to_string()));
         }
         Err(e) => eprintln!("{e}"),
     }

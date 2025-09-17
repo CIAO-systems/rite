@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Dataset {
+    #[serde(rename = "@path")]
     pub path: String,
     pub resource: Option<String>,
     pub query: Option<String>,
@@ -18,7 +19,7 @@ pub struct Fields {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Field {
-    //    #[serde(rename = "@id")]
+    #[serde(rename = "@id")]
     pub id: String,
 }
 
@@ -28,6 +29,7 @@ pub struct RiteYoutrackImport {
 }
 
 impl Fields {
+    /// Returns a comma-separated string of all field ids
     pub fn to_string(&self) -> String {
         let mut result = String::new();
         for field in &self.fields {
@@ -41,14 +43,15 @@ impl Fields {
         result
     }
 
+    /// Returns true, when a field wit the given `id` is contained in the list
     pub fn contains(&self, id: &str) -> bool {
-        self.fields.iter().any(|element| element.id.starts_with(id))
+        self.fields.iter().any(|element| element.id.eq(id))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::importers::generic::config::RiteYoutrackImport;
+    use crate::importers::generic::config::{Field, Fields, RiteYoutrackImport};
     use serde_xml_rs::from_str;
 
     #[test]
@@ -92,6 +95,19 @@ mod tests {
         assert_eq!(result.dataset.fields.fields[7].id, "");
         assert_eq!(result.dataset.fields.fields[8].id, "");
         assert_eq!(result.dataset.fields.fields[9].id, "");
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_fields() -> Result<(), Box<dyn std::error::Error>> {
+        let fields = Fields {
+            fields: vec![Field { id: "id1".into() }, Field { id: "id2".into() }],
+        };
+
+        assert_eq!(fields.to_string(), "id1,id2");
+        assert!(fields.contains("id1"));
+        assert!(!fields.contains("unknown"));
 
         Ok(())
     }

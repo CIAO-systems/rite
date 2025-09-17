@@ -8,6 +8,5 @@ cargo tarpaulin \
     --exclude-files "base/rite/src/processor/process.rs" \
     --exclude-files "base/plugins/llm/src/importers/**" \
     --exclude-files "custom/**" \
-    --exclude-files "extended/**" \
     --out Html \
     --output-dir target/coverage
