@@ -14,9 +14,65 @@ fn test_model_to_tera_string() {
 }
 
 #[test]
+fn test_model_to_tera_i8() {
+    const TEST_VALUE: i8 = 73;
+    let mv = model::value::Value::I8(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_i16() {
+    const TEST_VALUE: i16 = 73;
+    let mv = model::value::Value::I16(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
 fn test_model_to_tera_i32() {
     const TEST_VALUE: i32 = 73;
     let mv = model::value::Value::I32(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_i64() {
+    const TEST_VALUE: i64 = 73;
+    let mv = model::value::Value::I64(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_u8() {
+    const TEST_VALUE: u8 = 73;
+    let mv = model::value::Value::U8(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_u16() {
+    const TEST_VALUE: u16 = 73;
+    let mv = model::value::Value::U16(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_u32() {
+    const TEST_VALUE: u32 = 73;
+    let mv = model::value::Value::U32(TEST_VALUE);
+    let tv = model_to_tera(mv);
+    assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
+}
+
+#[test]
+fn test_model_to_tera_u64() {
+    const TEST_VALUE: u64 = 73;
+    let mv = model::value::Value::U64(TEST_VALUE);
     let tv = model_to_tera(mv);
     assert_eq!(tera::Value::Number(TEST_VALUE.into()), tv);
 }
