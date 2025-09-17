@@ -1,4 +1,4 @@
-use chrono::DateTime;
+use chrono::{DateTime, TimeZone, Utc};
 use model::{field::Field, value::Value};
 
 pub struct Formatter {
@@ -57,14 +57,21 @@ fn convert_unixtime(field: &Field) -> Option<Value> {
 
         // Finally, attempt to parse as a date-only string and assume midnight UTC
         if let Ok(naive_date) = chrono::NaiveDate::parse_from_str(&datetime_str, "%Y-%m-%d") {
-            if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
-                let datetime_utc = Utc.from_utc_datetime(&naive_datetime);
-                return Some(Value::I64(datetime_utc.timestamp_millis()));
-            }
+            return naive_date_to_millis(naive_date);
         }
+    } else if let Value::Date(naive_date) = field.value() {
+        return naive_date_to_millis(naive_date);
     }
 
     // If none of the parsing attempts succeed, return None.
+    None
+}
+
+fn naive_date_to_millis(naive_date: chrono::NaiveDate) -> Option<Value> {
+    if let Some(naive_datetime) = naive_date.and_hms_opt(0, 0, 0) {
+        let datetime_utc = Utc.from_utc_datetime(&naive_datetime);
+        return Some(Value::I64(datetime_utc.timestamp_millis()));
+    }
     None
 }
 

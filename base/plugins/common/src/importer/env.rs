@@ -36,6 +36,7 @@ impl Importer for EnvImporter {
 #[cfg(test)]
 mod tests {
     use model::import::{Importer, handlers::CollectingRecordHandler};
+    use model::Initializable;
     use model::{BoxedError, value::Value};
     use uuid::Uuid;
 
@@ -73,6 +74,14 @@ mod tests {
 
         // Annihilate
         unsafe { std::env::remove_var("TEST_VAR") };
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_importer_init() -> Result<(), BoxedError> {
+        let mut importer = EnvImporter::new();
+        assert!(importer.init(None).is_ok());
 
         Ok(())
     }

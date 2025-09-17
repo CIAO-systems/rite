@@ -114,3 +114,6 @@ impl Transformer for CommonTransformer {
         return Ok(transformed);
     }
 }
+
+#[cfg(test)]
+mod tests;
