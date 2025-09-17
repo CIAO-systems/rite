@@ -125,28 +125,4 @@ pub fn system_prompt() -> &'static str {
 }
 
 #[cfg(test)]
-mod tests {
-    use crate::common::extract_json_structures;
-
-    const JSON: &str = r#"
-[
-    {"alter": 37, "first": "Manuel", "last": "Schmidt"},
-    {"alter": 45, "first": "Sabine", "last": "Müller"},
-    {"alter": 28, "first": "Patrick", "last": "Krause"},
-    {"alter": 53, "first": "Erika", "last": "Schulz"},
-    {"alter": 41, "first": "Jan", "last": "Brandt"},
-    {"alter": 31, "first": "Carina", "last": "Wolff"},
-    {"alter": 62, "first": "Oliver", "last": "Nicolai"},
-    {"alter": 24, "first": "Lena", "last": "Köhler"},
-    {"alter": 39, "first": "Andreas", "last": "Schmitt"},
-    {"alter": 57, "first": "Monika", "last": "Meier"}
-]
-"#;
-
-    #[test]
-    fn test_extract_json_structures() {
-        let objects = extract_json_structures(JSON);
-        assert!(objects.is_ok());
-        assert_eq!(1, objects.unwrap().len());
-    }
-}
+mod tests;
