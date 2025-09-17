@@ -174,5 +174,5 @@ mod tests {
         Ok(())
     }
 
-    mod postrgres;
+    mod postgres;
 }
