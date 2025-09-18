@@ -2818,6 +2818,7 @@ dependencies = [
  "log",
  "model",
  "personio-rs",
+ "serde_json",
  "tokio",
 ]
 

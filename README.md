@@ -1,4 +1,4 @@
-[![Coverage](https://img.shields.io/badge/coverage-91%25-green)](https://ciao-systems.github.io/rite/tarpaulin-report.html)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-green)](https://ciao-systems.github.io/rite/tarpaulin-report.html)
 
 # rite - Rust Import/Transform/Export
 rite is a framework for importing data from a datasource, optionally transform the data, and then exporting it to a datasink
