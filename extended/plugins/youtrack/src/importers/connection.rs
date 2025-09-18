@@ -1,6 +1,7 @@
 pub static CFG_URL: &str = "url";
 pub static CFG_TOKEN: &str = "token";
 
+#[derive(Clone)]
 pub struct YouTrackConnection {
     pub token: Option<String>,
     pub url: Option<String>,

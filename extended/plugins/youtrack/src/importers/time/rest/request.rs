@@ -45,9 +45,14 @@ pub fn make_request(
     let url = create_url(&time_tracking_config, base_url);
 
     let response = client.get(url).bearer_auth(token).send()?;
-    if !response.status().is_success() {
+    let status = response.status();
+    if !status.is_success() {
         let body: serde_json::Value = response.json()?;
-        return Err(format!("{}: {}", body["error"], body["error_description"]).into());
+        return Err(format!(
+            "{}: {}: {}",
+            status, body["error"], body["error_description"]
+        )
+        .into());
     } else {
         // call the response handler
         response_handler(handler, response)?;
