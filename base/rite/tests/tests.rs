@@ -42,7 +42,7 @@ fn test_rite_new_and_init() {
 
     match rite {
         Ok(mut rite) => {
-            let result = rite.init(); // this will fail, when there are no dynymic libraries in the path
+            let result = rite.init(); // this will fail, when there are no dynamic libraries in the path
             match result {
                 Ok(_) => {
                     assert_eq!(rite.processes.len(), 1);
