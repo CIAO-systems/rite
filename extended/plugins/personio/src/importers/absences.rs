@@ -86,3 +86,6 @@ fn add_employee(record: &mut Record, employee: &Option<Box<ShortEmployee>>) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;
