@@ -81,3 +81,6 @@ fn add_status(record: &mut Record, attributes: &Box<personio_rs::personnel::mode
         );
     }
 }
+
+#[cfg(test)]
+mod tests;
