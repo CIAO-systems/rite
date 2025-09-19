@@ -159,3 +159,6 @@ impl Employees {
         Ok(record)
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -73,3 +73,4 @@ pub fn get_absences_page<'a>(
 
     Ok(PageResult::from(result?))
 }
+

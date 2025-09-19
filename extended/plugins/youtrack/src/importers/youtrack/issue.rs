@@ -41,3 +41,7 @@ impl From<Issue> for Record {
         factory::serialize_to_record(value)
     }
 }
+
+#[cfg(test)]
+mod tests;
+

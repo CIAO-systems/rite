@@ -12,7 +12,7 @@ macro_rules! unpack_attribute {
 #[macro_export]
 macro_rules! get_value {
     ($attr:expr, $field:ident) => {
-        if let Some(value) = macros::unpack_attribute!($attr, $field, value) {
+        if let Some(value) = $crate::unpack_attribute!($attr, $field, value) {
             Some(value.clone())
         } else {
             None
@@ -23,7 +23,7 @@ macro_rules! get_value {
 #[macro_export]
 macro_rules! add_field {
     ($fields:expr, $attr:expr, $field:ident) => {
-        if let Some(value) = macros::get_value!($attr, $field) {
+        if let Some(value) = $crate::get_value!($attr, $field) {
             model::field::add_field(
                 $fields,
                 crate::macros::name_from_ident(stringify!($field)),
@@ -87,10 +87,11 @@ macro_rules! add_field_boxed {
 }
 
 pub(crate) use add_field;
-pub(crate) use get_value;
-pub(crate) use unpack_attribute;
 
 pub(crate) use add_field_boxed;
 pub(crate) use add_field_direct;
 pub(crate) use add_field_none;
 pub(crate) use add_field_option;
+
+#[cfg(test)]
+mod tests;

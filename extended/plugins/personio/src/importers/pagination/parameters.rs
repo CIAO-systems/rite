@@ -22,3 +22,31 @@ impl<'a> GeneralParameters<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::error::Error;
+
+    use personio_rs::personnel::apis::configuration::Configuration;
+    use tokio::runtime::Runtime;
+
+    use crate::importers::{
+        configuration::PersonioHeaders, pagination::parameters::GeneralParameters,
+    };
+
+    #[test]
+    fn test_new() -> Result<(), Box<dyn Error>> {
+        let runtime = Runtime::new()?;
+        let configuration = Configuration::new();
+        let personio_headers = PersonioHeaders {
+            partner_id: Some("partner-id".into()),
+            app_id: Some("app-id".into()),
+        };
+        let params = GeneralParameters::new(&runtime, &configuration, &personio_headers);
+
+        assert_eq!(params.personio_headers.partner_id, Some("partner-id".into()));
+        assert_eq!(params.personio_headers.app_id, Some("app-id".into()));
+
+        Ok(())
+    }
+}

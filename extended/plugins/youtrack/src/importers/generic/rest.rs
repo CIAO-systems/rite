@@ -1,7 +1,7 @@
 use model::import::RecordHandler;
 use serde_json::Value;
 
-use crate::importers::generic::config::{Dataset, RiteYoutrackImport};
+use crate::importers::generic::config::{Dataset, Fields, RiteYoutrackImport};
 
 // Define the type alias for the response handler function signature
 type ResponseHandler = fn(
@@ -10,42 +10,51 @@ type ResponseHandler = fn(
     response: reqwest::blocking::Response,
 ) -> Result<(), Box<dyn std::error::Error>>;
 
+fn fields_str(fields: &Fields, sep: char) -> String {
+    let fs = fields.to_string();
+    if fs.is_empty() {
+        "".into()
+    } else {
+        format!("{sep}fields={fs}")
+    }
+}
+
 /// Create a URL string from the dataset values
 pub fn create_url_from_dataset(dataset: &Dataset, base_url: &str) -> String {
     let url = if let Some(ref resource) = dataset.resource {
         if let Some(ref sub_resource) = dataset.sub_resource {
             format!(
-                "{}/api/{}/{}/{}?fields={}",
+                "{}/api/{}/{}/{}{}",
                 base_url,
                 dataset.path,
                 resource,
                 sub_resource,
-                dataset.fields.to_string()
+                fields_str(&dataset.fields, '?')
             )
         } else {
             format!(
-                "{}/api/{}/{}?fields={}",
+                "{}/api/{}/{}{}",
                 base_url,
                 dataset.path,
                 resource,
-                dataset.fields.to_string()
+                fields_str(&dataset.fields, '?')
             )
         }
     } else {
         if let Some(ref query) = dataset.query {
             format!(
-                "{}/api/{}?query={}&fields={}",
+                "{}/api/{}?query={}{}",
                 base_url,
                 dataset.path,
                 urlencoding::encode(query),
-                dataset.fields.to_string()
+                fields_str(&dataset.fields, '&')
             )
         } else {
             format!(
-                "{}/api/{}?fields={}",
+                "{}/api/{}{}",
                 base_url,
                 dataset.path,
-                dataset.fields.to_string()
+                fields_str(&dataset.fields, '?')
             )
         }
     };
@@ -72,3 +81,6 @@ pub fn make_request(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;

@@ -106,33 +106,4 @@ fn init_auth(config: &model::xml::config::Configuration) -> Result<(String, Runt
 }
 
 #[cfg(test)]
-mod tests {
-    use model::{BoxedError, xml::config::Configuration};
-    use tokio::runtime::Runtime;
-
-    use crate::importers::configuration::{CFG_APP_ID, CFG_OPTIONS_LIMIT, CFG_PARTNER_ID};
-
-    use super::GeneralConfiguration;
-
-    #[test]
-    fn test_new() -> Result<(), BoxedError> {
-        let mut config = Configuration::new();
-        config.insert_str(CFG_OPTIONS_LIMIT, "73");
-        config.insert_str(CFG_APP_ID, "test-app-id");
-        config.insert_str(CFG_PARTNER_ID, "test-partner-id");
-        let gc = GeneralConfiguration::with_config_token_and_runtime(
-            &config,
-            "token".to_string(),
-            Runtime::new()?,
-        );
-
-        assert!(gc.limit.is_some());
-        assert_eq!(73, gc.limit.unwrap());
-
-        assert_eq!("token", gc.token.unwrap());
-        assert_eq!("test-app-id", gc.personio_headers.app_id.unwrap());
-        assert_eq!("test-partner-id", gc.personio_headers.partner_id.unwrap());
-
-        Ok(())
-    }
-}
+mod tests;

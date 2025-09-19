@@ -7,7 +7,14 @@ cargo tarpaulin \
     --exclude-files "base/rite/src/main.rs" \
     --exclude-files "base/rite/src/processor/process.rs" \
     --exclude-files "base/plugins/llm/src/importers/**" \
+    --exclude-files "extended/plugins/personio/src/importers/absences/importer.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/absences/initializable.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/attendances/importer.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/attendances/initializable.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/employees/importer.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/employees/initializable.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/projects/importer.rs" \
+    --exclude-files "extended/plugins/personio/src/importers/projects/initializable.rs" \
     --exclude-files "custom/**" \
-    --exclude-files "extended/**" \
     --out Html \
     --output-dir target/coverage

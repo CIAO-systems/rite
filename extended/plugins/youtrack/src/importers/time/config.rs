@@ -13,8 +13,10 @@ pub struct RiteYoutrackImportTime {
 #[serde(rename_all = "kebab-case")]
 pub struct TimeTracking {
     #[serde(with = "optional_date_format")]
+    #[serde(rename = "@start-date")]
     pub start_date: Option<NaiveDate>,
     #[serde(with = "optional_date_format")]
+    #[serde(rename = "@end-date")]
     pub end_date: Option<NaiveDate>,
 }
 

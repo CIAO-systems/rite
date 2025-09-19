@@ -21,16 +21,18 @@ impl YouTrackObject {
     ///
     pub fn from_type(element: &serde_json::Value) -> Result<Self, Box<dyn std::error::Error>> {
         if let Some(object) = element.as_object() {
-            let object_type = &object["$type"];
-
-            if let Some(object_type) = object_type.as_str() {
-                return match object_type {
-                    "Issue" => Ok(YouTrackObject::Issue(create_object(element)?)),
-                    "IssueWorkItem" => Ok(YouTrackObject::IssueWorkItem(create_object(element)?)),
-                    "User" => Ok(YouTrackObject::User(create_object(element)?)),
-                    "Project" => Ok(YouTrackObject::Project(create_object(element)?)),
-                    _ => Ok(YouTrackObject::None),
-                };
+            if let Some(object_type) = &object.get("$type") {
+                if let Some(object_type) = object_type.as_str() {
+                    return match object_type {
+                        "Issue" => Ok(YouTrackObject::Issue(create_object(element)?)),
+                        "IssueWorkItem" => {
+                            Ok(YouTrackObject::IssueWorkItem(create_object(element)?))
+                        }
+                        "User" => Ok(YouTrackObject::User(create_object(element)?)),
+                        "Project" => Ok(YouTrackObject::Project(create_object(element)?)),
+                        _ => Ok(YouTrackObject::None),
+                    };
+                }
             }
         }
         Ok(YouTrackObject::None)
@@ -90,59 +92,4 @@ fn derserialize_and_add(
 }
 
 #[cfg(test)]
-mod tests {
-    use serde_json::Value;
-
-    use crate::importers::youtrack::factory::serialize::YouTrackObject;
-
-    static TEST_DATA: &str = r#"
-[
-  {
-    "description": null,
-    "summary": "Sprint 3. Task 2",
-    "reporter": {
-      "login": "root",
-      "$type": "User"
-    },
-    "idReadable": "SP-38",
-    "id": "2-42",
-    "$type": "Issue"
-  },
-  {
-    "description": "Let's create new issue from REST API",
-    "summary": "Issue from REST #1",
-    "reporter": {
-      "login": "root",
-      "$type": "User"
-    },
-    "idReadable": "SP-7",
-    "id": "2-6",
-    "$type": "Issue"
-  }
-]    
-    "#;
-
-    #[test]
-    fn test_automatic_type_creation() -> Result<(), Box<dyn std::error::Error>> {
-        let json: Value = serde_json::from_str(TEST_DATA)?;
-        // println!("{:#?}", json);
-
-        assert!(json.is_array());
-
-        match json.as_array() {
-            Some(array) => {
-                // Get object type from first element of the array
-                assert!(array.len() > 0);
-                // Iterate over the array
-                for element in array {
-                    // Create a rust object from the JSON, based on $type
-                    let x = YouTrackObject::from_type(element)?;
-                    println!("{:#?}", x);
-                }
-            }
-            None => panic!("Not an array"),
-        }
-
-        Ok(())
-    }
-}
+mod tests;
