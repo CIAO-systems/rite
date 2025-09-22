@@ -15,6 +15,7 @@ cargo tarpaulin \
     --exclude-files "extended/plugins/personio/src/importers/employees/initializable.rs" \
     --exclude-files "extended/plugins/personio/src/importers/projects/importer.rs" \
     --exclude-files "extended/plugins/personio/src/importers/projects/initializable.rs" \
-    --exclude-files "custom/**" \
+    --exclude-files "custom/target/**" \
+    --exclude-files "custom/plugins/ciao/ciao-rs/**" \
     --out Html \
     --output-dir target/coverage
