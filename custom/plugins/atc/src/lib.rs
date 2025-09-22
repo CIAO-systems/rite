@@ -1,3 +1,4 @@
+#[allow(non_camel_case_types, non_upper_case_globals, dead_code)]
 pub mod com {
     pub mod atoss {
         pub mod atc {
