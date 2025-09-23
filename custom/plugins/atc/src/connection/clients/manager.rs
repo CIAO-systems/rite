@@ -23,47 +23,25 @@ impl ClientManager {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use std::{collections::HashMap, time::Duration};
 
     use grpc_utils_rs::interceptors;
-    use tokio::net::TcpListener;
     use tokio_stream::StreamExt;
-    use tonic::transport::Server;
 
     use crate::{
-        com::atoss::atc::protobuf::{
-            absences_service_server::AbsencesServiceServer,
-            data_set_service_server::DataSetServiceServer, field::Value, AbsencesRequest, Filter,
-        },
+        com::atoss::atc::protobuf::{field::Value, AbsencesRequest, Filter},
         connection::{
-            clients::manager::{
-                tests::mocks::{MockAbsenceService, MockDataSetService},
-                ClientManager,
-            },
+            clients::manager::{tests::mocks::start_mock_server, ClientManager},
             interceptor::ATCClientInterceptor,
         },
     };
 
-    mod mocks;
+    pub mod mocks;
 
     #[tokio::test]
     async fn test_new() {
-        let listener = TcpListener::bind("127.0.0.1:50051").await.unwrap(); // Force IPv4
-        let addr = listener.local_addr().unwrap();
-
-        // Spawn server in the background
-        tokio::spawn(async move {
-            println!("spawn mock server");
-            let result = Server::builder()
-                .add_service(DataSetServiceServer::new(MockDataSetService))
-                .add_service(AbsencesServiceServer::new(MockAbsenceService))
-                .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(listener))
-                .await;
-            println!("{:?}", result);
-            assert!(result.is_ok());
-            result.unwrap();
-        });
+        let addr = start_mock_server(50052).await;
 
         let url = format!("http://{}", addr);
         println!("connect the client to {url}");

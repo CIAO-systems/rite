@@ -3,19 +3,19 @@ use model::BoxedError;
 
 use super::{clients::manager::ClientManager, interceptor::ATCClientInterceptor};
 
-const CFG_URL: &str = "url";
-const CFG_AUTH_TOKEN: &str = "auth-token";
-const CFG_USER: &str = "user";
-const CFG_PASSWORD: &str = "password";
+pub const CFG_URL: &str = "url";
+pub const CFG_AUTH_TOKEN: &str = "auth-token";
+pub const CFG_USER: &str = "user";
+pub const CFG_PASSWORD: &str = "password";
 
 pub const CFG_FILTER_TABLE: &str = "filter.table";
 
 #[derive(Debug)]
 pub struct ConnectionConfiguration {
-    url: Option<String>,
-    auth_token: Option<String>,
-    user: Option<String>,
-    password: Option<String>,
+    pub(crate) url: Option<String>,
+    pub(crate) auth_token: Option<String>,
+    pub(crate) user: Option<String>,
+    pub(crate) password: Option<String>,
 }
 
 impl ConnectionConfiguration {

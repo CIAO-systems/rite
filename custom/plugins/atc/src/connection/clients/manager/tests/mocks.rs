@@ -1,11 +1,14 @@
 use std::{collections::HashMap, pin::Pin};
 
 use futures::Stream;
-use tonic::{Request, Response, Status};
+use tokio::net::TcpListener;
+use tonic::{transport::Server, Request, Response, Status};
 
 use crate::com::atoss::atc::protobuf::{
-    absences_service_server::AbsencesService, data_set_service_server::DataSetService,
-    field::Value, Absence, AbsencesRequest, Field, Filter, Record,
+    absences_service_server::{AbsencesService, AbsencesServiceServer},
+    data_set_service_server::{DataSetService, DataSetServiceServer},
+    field::Value,
+    Absence, AbsencesRequest, Field, Filter, Record,
 };
 pub struct MockDataSetService;
 pub struct MockAbsenceService;
@@ -72,4 +75,27 @@ impl AbsencesService for MockAbsenceService {
 
         Ok(Response::new(Box::pin(output)))
     }
+}
+
+/// Starts a mock gRPC server
+pub async fn start_mock_server(port: u32) -> std::net::SocketAddr {
+    let listener = TcpListener::bind(format!("127.0.0.1:{port}"))
+        .await
+        .unwrap(); // Force IPv4
+    let addr = listener.local_addr().unwrap();
+
+    // Spawn server in the background
+    tokio::spawn(async move {
+        println!("spawn mock server");
+        let result = Server::builder()
+            .add_service(DataSetServiceServer::new(MockDataSetService))
+            .add_service(AbsencesServiceServer::new(MockAbsenceService))
+            .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(listener))
+            .await;
+        println!("{:?}", result);
+        assert!(result.is_ok());
+        result.unwrap();
+    });
+
+    addr
 }
