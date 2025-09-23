@@ -1,11 +1,11 @@
-use std::pin::Pin;
+use std::{collections::HashMap, pin::Pin};
 
 use futures::Stream;
 use tonic::{Request, Response, Status};
 
 use crate::com::atoss::atc::protobuf::{
-    absences_service_server::AbsencesService, data_set_service_server::DataSetService, Absence,
-    AbsencesRequest, Filter, Record,
+    absences_service_server::AbsencesService, data_set_service_server::DataSetService,
+    field::Value, Absence, AbsencesRequest, Field, Filter, Record,
 };
 pub struct MockDataSetService;
 pub struct MockAbsenceService;
@@ -14,9 +14,21 @@ pub struct MockAbsenceService;
 impl DataSetService for MockDataSetService {
     type getStream = Pin<Box<dyn Stream<Item = Result<Record, Status>> + Send + 'static>>;
 
-    async fn get(&self, _request: Request<Filter>) -> Result<Response<Self::getStream>, Status> {
+    async fn get(&self, request: Request<Filter>) -> Result<Response<Self::getStream>, Status> {
+        println!("{:?}", request);
+
         // Create fake records based on filter
-        let records = vec![];
+        let mut fields = HashMap::new();
+        fields.insert(
+            String::from("table"),
+            Field {
+                name: "table".into(),
+                value: Some(Value::StringValue(request.into_inner().table.clone())),
+            },
+        );
+        let record = Record { field: fields };
+
+        let records = vec![record];
 
         // Turn Vec<Record> into a stream of Result<Record, Status>
         let output = tokio_stream::iter(records.into_iter().map(|r| Ok(r)));
@@ -35,7 +47,26 @@ impl AbsencesService for MockAbsenceService {
         _request: Request<AbsencesRequest>,
     ) -> Result<Response<Self::getSingleDayAbsencesStream>, Status> {
         // mock response stream
-        let absences = vec![];
+        let absence = Absence {
+            start_date: None,
+            end_date: None,
+            account_id: 0,
+            employee_id: "employee".into(),
+            weight_start: 1.0,
+            weight_end: 1.0,
+            plan_version: 0,
+            remark: "remark".into(),
+            application: "application".into(),
+            substitute: "substitute".into(),
+            state: 0,
+            display_token: "display".into(),
+            description: "description".into(),
+            display_color: 0,
+            text_color: 0,
+            date: None,
+            time: None,
+        };
+        let absences = vec![absence];
 
         let output = tokio_stream::iter(absences.into_iter().map(|a| Ok(a)));
 

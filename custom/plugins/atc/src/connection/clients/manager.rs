@@ -24,14 +24,17 @@ impl ClientManager {
 
 #[cfg(test)]
 mod tests {
+    use std::{collections::HashMap, time::Duration};
+
     use grpc_utils_rs::interceptors;
     use tokio::net::TcpListener;
+    use tokio_stream::StreamExt;
     use tonic::transport::Server;
 
     use crate::{
         com::atoss::atc::protobuf::{
             absences_service_server::AbsencesServiceServer,
-            data_set_service_server::DataSetServiceServer,
+            data_set_service_server::DataSetServiceServer, field::Value, AbsencesRequest, Filter,
         },
         connection::{
             clients::manager::{
@@ -45,26 +48,32 @@ mod tests {
     mod mocks;
 
     #[tokio::test]
-    #[ignore = "FIXME Does not connect to mock server: tonic::transport::Error(Transport, InvalidDnsNameError)"]
     async fn test_new() {
-        let listener = TcpListener::bind("localhost:50051").await.unwrap();
+        let listener = TcpListener::bind("127.0.0.1:50051").await.unwrap(); // Force IPv4
         let addr = listener.local_addr().unwrap();
 
         // Spawn server in the background
         tokio::spawn(async move {
-            Server::builder()
+            println!("spawn mock server");
+            let result = Server::builder()
                 .add_service(DataSetServiceServer::new(MockDataSetService))
                 .add_service(AbsencesServiceServer::new(MockAbsenceService))
                 .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(listener))
-                .await
-                .unwrap();
+                .await;
+            println!("{:?}", result);
+            assert!(result.is_ok());
+            result.unwrap();
         });
 
-        // Wait did not hel
-        // let _ = tokio::time::sleep(Duration::from_millis(5000));
+        let url = format!("http://{}", addr);
+        println!("connect the client to {url}");
+
+        let wait_millis = 50;
+        println!("wait for {wait_millis} milliseconds...");
+        tokio::time::sleep(Duration::from_millis(wait_millis)).await;
 
         let cm = ClientManager::new(
-            &format!("http://{}", addr),
+            &url,
             interceptors!(ATCClientInterceptor::new(
                 &String::from("auth_token"),
                 &String::from("user"),
@@ -73,6 +82,54 @@ mod tests {
         )
         .await;
         println!("{:?}", cm);
-        assert!(cm.is_err());
+        assert!(cm.is_ok());
+
+        let mut cm = cm.unwrap();
+        let request = Filter {
+            table: "table".into(),
+            parameter_meta_data: HashMap::new(),
+        };
+
+        let mut stream = cm
+            .dataset_client
+            .inner_mut()
+            .get(request)
+            .await
+            .unwrap()
+            .into_inner();
+        while let Some(response) = stream.next().await {
+            assert!(response.is_ok());
+            let response = response.unwrap();
+            let field = response.field.get("table");
+            assert!(field.is_some());
+            let field = field.unwrap();
+            let value = field.value.clone();
+            assert!(value.is_some());
+            let value = value.unwrap();
+            println!("{:?}", value);
+            assert_eq!(value, Value::StringValue("table".into()));
+        }
+
+        let request = AbsencesRequest {
+            employee_ids: Vec::new(),
+            start_date: None,
+            end_date: None,
+            account_ids: Vec::new(),
+            plan_version: 0,
+            options: None,
+        };
+
+        let mut stream = cm
+            .absences_client
+            .inner_mut()
+            .get_single_day_absences(request)
+            .await
+            .unwrap()
+            .into_inner();
+        while let Some(response) = stream.next().await {
+            assert!(response.is_ok());
+            let response = response.unwrap();
+            assert_eq!(response.employee_id, "employee");
+        }
     }
 }

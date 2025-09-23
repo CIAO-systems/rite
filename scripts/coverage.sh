@@ -18,5 +18,6 @@ cargo tarpaulin \
     --exclude-files "custom/target/**" \
     --exclude-files "custom/plugins/ciao/ciao-rs/**" \
     --exclude-files "custom/plugins/atc/bin/**" \
+    --exclude-files "custom/plugins/atc/src/connection/clients/manager/tests/**" \
     --out Html \
     --output-dir target/coverage
