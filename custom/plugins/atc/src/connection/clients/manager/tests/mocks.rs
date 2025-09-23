@@ -1,14 +1,18 @@
-use std::{collections::HashMap, pin::Pin};
+use std::{collections::HashMap, error::Error, pin::Pin};
 
 use futures::Stream;
+use grpc_utils_rs::interceptors;
 use tokio::net::TcpListener;
 use tonic::{transport::Server, Request, Response, Status};
 
-use crate::com::atoss::atc::protobuf::{
-    absences_service_server::{AbsencesService, AbsencesServiceServer},
-    data_set_service_server::{DataSetService, DataSetServiceServer},
-    field::Value,
-    Absence, AbsencesRequest, Field, Filter, Record,
+use crate::{
+    com::atoss::atc::protobuf::{
+        absences_service_server::{AbsencesService, AbsencesServiceServer},
+        data_set_service_server::{DataSetService, DataSetServiceServer},
+        field::Value,
+        Absence, AbsencesRequest, Field, Filter, Record,
+    },
+    connection::{clients::manager::ClientManager, interceptor::ATCClientInterceptor},
 };
 pub struct MockDataSetService;
 pub struct MockAbsenceService;
@@ -57,7 +61,7 @@ impl AbsencesService for MockAbsenceService {
             employee_id: "employee".into(),
             weight_start: 1.0,
             weight_end: 1.0,
-            plan_version: 0,
+            plan_version: 1, // ATC valid version
             remark: "remark".into(),
             application: "application".into(),
             substitute: "substitute".into(),
@@ -98,4 +102,18 @@ pub async fn start_mock_server(port: u32) -> std::net::SocketAddr {
     });
 
     addr
+}
+
+pub async fn get_mock_client_manager(port: u32) -> Result<ClientManager, Box<dyn Error>> {
+    let addr = start_mock_server(port).await;
+
+    ClientManager::new(
+        &format!("http://{}", addr),
+        interceptors!(ATCClientInterceptor::new(
+            &String::from("auth_token"),
+            &String::from("user"),
+            &String::from("password"),
+        )),
+    )
+    .await
 }

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use grpc_utils_rs::interceptors;
 use model::{import::handlers::ClosureRecordHandler, xml::config::Configuration, Initializable};
 
 use crate::{
@@ -8,10 +7,7 @@ use crate::{
         parameter_meta_data::First::{Lower, Value},
         ParameterMetaData,
     },
-    connection::{
-        clients::manager::{tests::mocks::start_mock_server, ClientManager},
-        interceptor::ATCClientInterceptor,
-    },
+    connection::clients::manager::tests::mocks::get_mock_client_manager,
     importers::clock_records::{
         call_get_clock_records, create_period_filter_field, ClockRecords, ATC_FILTER_EMPLOYEE,
         ATC_FILTER_TIMESTAMP,
@@ -139,17 +135,9 @@ fn test_init() -> Result<(), Box<dyn std::error::Error>> {
 
 #[tokio::test]
 async fn test_call_get_clock_records() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = start_mock_server(50055).await;
+    let cm = get_mock_client_manager(50055).await;
+    assert!(cm.is_ok());
 
-    let cm = ClientManager::new(
-        &format!("http://{}", addr),
-        interceptors!(ATCClientInterceptor::new(
-            &String::from("auth_token"),
-            &String::from("user"),
-            &String::from("password"),
-        )),
-    )
-    .await;
     let config = Configuration::new();
     let mut expected_record_found = false;
     let mut handler = ClosureRecordHandler::new(|r| {

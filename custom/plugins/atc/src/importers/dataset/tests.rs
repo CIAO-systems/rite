@@ -1,4 +1,3 @@
-use grpc_utils_rs::interceptors;
 use model::{
     import::{handlers::ClosureRecordHandler, Importer},
     xml::config::Configuration,
@@ -7,9 +6,8 @@ use model::{
 
 use crate::{
     connection::{
-        clients::manager::{tests::mocks::start_mock_server, ClientManager},
+        clients::manager::tests::mocks::get_mock_client_manager,
         config::CFG_FILTER_TABLE,
-        interceptor::ATCClientInterceptor,
     },
     importers::dataset::{call_dataset_get, Dataset},
 };
@@ -30,18 +28,7 @@ fn test_importer() {
 
 #[tokio::test]
 async fn test_importer_with_mock_server() {
-    let addr = start_mock_server(50053).await;
-
-    let cm = ClientManager::new(
-        &format!("http://{}", addr),
-        interceptors!(ATCClientInterceptor::new(
-            &String::from("auth_token"),
-            &String::from("user"),
-            &String::from("password"),
-        )),
-    )
-    .await;
-    println!("{:?}", cm);
+    let cm = get_mock_client_manager(50053).await;
     assert!(cm.is_ok());
 
     let mut config = Configuration::new();
@@ -63,17 +50,9 @@ async fn test_importer_with_mock_server() {
 
 #[tokio::test]
 async fn test_call_dataset_get_err() {
-    let addr = start_mock_server(50054).await;
+    let cm = get_mock_client_manager(50054).await;
+    assert!(cm.is_ok());
 
-    let cm = ClientManager::new(
-        &format!("http://{}", addr),
-        interceptors!(ATCClientInterceptor::new(
-            &String::from("auth_token"),
-            &String::from("user"),
-            &String::from("password"),
-        )),
-    )
-    .await;
     let config = Configuration::new();
     let mut handler = ClosureRecordHandler::new(|r| {
         println!("{:?}", r);

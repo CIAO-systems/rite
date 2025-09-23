@@ -26,41 +26,23 @@ impl ClientManager {
 pub mod tests {
     use std::{collections::HashMap, time::Duration};
 
-    use grpc_utils_rs::interceptors;
     use tokio_stream::StreamExt;
 
     use crate::{
         com::atoss::atc::protobuf::{field::Value, AbsencesRequest, Filter},
-        connection::{
-            clients::manager::{tests::mocks::start_mock_server, ClientManager},
-            interceptor::ATCClientInterceptor,
-        },
+        connection::clients::manager::tests::mocks::get_mock_client_manager,
     };
 
     pub mod mocks;
 
     #[tokio::test]
     async fn test_new() {
-        let addr = start_mock_server(50052).await;
-
-        let url = format!("http://{}", addr);
-        println!("connect the client to {url}");
+        let cm = get_mock_client_manager(50052).await;
+        assert!(cm.is_ok());
 
         let wait_millis = 50;
         println!("wait for {wait_millis} milliseconds...");
         tokio::time::sleep(Duration::from_millis(wait_millis)).await;
-
-        let cm = ClientManager::new(
-            &url,
-            interceptors!(ATCClientInterceptor::new(
-                &String::from("auth_token"),
-                &String::from("user"),
-                &String::from("password"),
-            )),
-        )
-        .await;
-        println!("{:?}", cm);
-        assert!(cm.is_ok());
 
         let mut cm = cm.unwrap();
         let request = Filter {

@@ -1,10 +1,13 @@
 use std::env;
 
 use chrono::{DateTime, Datelike, Timelike, Utc};
+use model::import::handlers::ClosureRecordHandler;
 use model::import::{handlers::CollectingRecordHandler, Importer};
 use model::{xml::config::Configuration, BoxedError, Initializable};
 use prost_types::Timestamp;
 
+use crate::connection::clients::manager::tests::mocks::get_mock_client_manager;
+use crate::importers::absences::call_get_absences;
 use crate::{
     com::atoss::atc::protobuf::AbsencesRequest,
     importers::absences::{
@@ -96,4 +99,42 @@ fn test_utc_to_atc_cest() {
     // Assert the converted time is as expected
     assert_eq!(result_datetime.hour(), 0);
     assert_eq!(result_datetime.day(), 3);
+}
+
+#[test]
+fn test_importer() {
+    let mut absences = Absences::new();
+    let mut config = Configuration::new();
+    config.insert_str("key", "value");
+    let result = absences.init(Some(config));
+    assert!(result.is_ok());
+    assert!(absences
+        .config
+        .as_ref()
+        .is_some_and(|c| c.get("key").is_some_and(|v| v.to_string() == "value")));
+
+    let mut handler = ClosureRecordHandler::new(|r| println!("{:?}", r));
+    let result = absences.read(&mut handler);
+    println!("{:?}", result);
+    assert!(result.is_err_and(|e| e.to_string() == "url not configured"));
+}
+
+#[tokio::test]
+async fn test_importer_with_mock_server() {
+    let cm = get_mock_client_manager(50056).await;
+    assert!(cm.is_ok());
+
+    let mut config = Configuration::new();
+    config.insert_str(CFG_FILTER_ACCOUNTS, "0");
+
+    let mut expected_record_found = false;
+    let mut handler = ClosureRecordHandler::new(|r| {
+        expected_record_found = true; // mock returns one moocked absence
+        println!("{:?}", r);
+    });
+
+    let result = call_get_absences(&config, cm.unwrap().absences_client, &mut handler).await;
+    println!("{:?}", result);
+
+    assert!(expected_record_found);
 }
