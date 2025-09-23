@@ -11,7 +11,7 @@ use crate::{
             parameter_meta_data::{First, TreatmentType},
             ParameterMetaData,
         },
-        DoubleCollection, DurationCollection, Field, IntCollection, StringCollection,
+        DoubleCollection, DurationCollection, Field, IntCollection, List, Record, StringCollection,
         TimestampCollection,
     },
     importers::common::{
@@ -312,7 +312,7 @@ fn test_parse_period_empty() {
 
 #[test]
 fn test_parse_period_invalid() {
-    let (start, end) = parse_period("this is not a date or a period");
+    let (start, end) = parse_period("this is not a date or a period:nor is this");
     assert_eq!(start, None);
     assert_eq!(end, None);
 }
@@ -394,4 +394,27 @@ fn test_date_to_protobuf_future_date() {
     let timestamp = result.unwrap();
     assert_eq!(timestamp.seconds, expected_seconds);
     assert_eq!(timestamp.nanos, 0);
+}
+
+#[test]
+fn test_list_value() {
+    let list = List { list: vec![] };
+
+    let result = atc_value_to_model_value(Some(ATC_Value::ListValue(list)));
+    assert!(result.is_none()); // until implemented
+}
+
+#[test]
+fn test_record_value() {
+    let record = Record {
+        field: HashMap::new(),
+    };
+    let result = atc_value_to_model_value(Some(ATC_Value::RecordValue(record)));
+    assert!(result.is_none()); // until implemented
+}
+
+#[test]
+fn test_none() {
+    let result = atc_value_to_model_value(None);
+    assert!(result.is_none()); 
 }

@@ -161,7 +161,7 @@ pub fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError>
         };
         Ok(timestamp)
     } else {
-        Err("Could not add midnight to date".into())
+        unreachable!()
     }
 }
 
