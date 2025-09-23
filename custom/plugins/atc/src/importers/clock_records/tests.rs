@@ -1,13 +1,21 @@
 use std::collections::HashMap;
 
-use model::xml::config::Configuration;
+use grpc_utils_rs::interceptors;
+use model::{import::handlers::ClosureRecordHandler, xml::config::Configuration, Initializable};
 
 use crate::{
     com::atoss::atc::protobuf::filter::{
         parameter_meta_data::First::{Lower, Value},
         ParameterMetaData,
     },
-    importers::clock_records::{ATC_FILTER_EMPLOYEE, ATC_FILTER_TIMESTAMP},
+    connection::{
+        clients::manager::{tests::mocks::start_mock_server, ClientManager},
+        interceptor::ATCClientInterceptor,
+    },
+    importers::clock_records::{
+        call_get_clock_records, create_period_filter_field, ClockRecords, ATC_FILTER_EMPLOYEE,
+        ATC_FILTER_TIMESTAMP,
+    },
 };
 
 use super::{add_employee_filter, add_period_filter, CFG_FILTER_EMPLOYEE, CFG_FILTER_PERIOD};
@@ -106,6 +114,53 @@ fn test_add_period_filter_none() -> Result<(), Box<dyn std::error::Error>> {
     add_period_filter(&mut parameter_meta_data, &config)?;
 
     assert!(!parameter_meta_data.contains_key(ATC_FILTER_TIMESTAMP));
+
+    Ok(())
+}
+
+#[test]
+fn test_create_period_filter_field() -> Result<(), Box<dyn std::error::Error>> {
+    let result = create_period_filter_field(None);
+    assert!(result.is_ok_and(|v| v == None));
+    Ok(())
+}
+
+#[test]
+fn test_init() -> Result<(), Box<dyn std::error::Error>> {
+    let mut importer = ClockRecords::new();
+    let mut config = Configuration::new();
+    config.insert_str("key", "value");
+    importer.init(Some(config))?;
+    assert!(importer
+        .config
+        .is_some_and(|c| c.get("key").is_some_and(|v| v.to_string() == "value")));
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_call_get_clock_records() -> Result<(), Box<dyn std::error::Error>> {
+    let addr = start_mock_server(50055).await;
+
+    let cm = ClientManager::new(
+        &format!("http://{}", addr),
+        interceptors!(ATCClientInterceptor::new(
+            &String::from("auth_token"),
+            &String::from("user"),
+            &String::from("password"),
+        )),
+    )
+    .await;
+    let config = Configuration::new();
+    let mut expected_record_found = false;
+    let mut handler = ClosureRecordHandler::new(|r| {
+        expected_record_found = r
+            .field_by_name("table")
+            .is_some_and(|f| f.value().to_string() == "Clockin");
+        println!("{:?}", r);
+    });
+    let result = call_get_clock_records(&config, cm.unwrap().dataset_client, &mut handler).await;
+    println!("{:?}", result);
+    assert!(expected_record_found);
 
     Ok(())
 }
