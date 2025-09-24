@@ -3,11 +3,13 @@ use std::env;
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use model::import::handlers::ClosureRecordHandler;
 use model::import::{handlers::CollectingRecordHandler, Importer};
+use model::record::Record;
+use model::value::Value;
 use model::{xml::config::Configuration, BoxedError, Initializable};
 use prost_types::Timestamp;
 
 use crate::connection::clients::manager::tests::mocks::get_mock_client_manager;
-use crate::importers::absences::call_get_absences;
+use crate::importers::absences::{add_timestamp_field, call_get_absences, get_start_and_end_date};
 use crate::{
     com::atoss::atc::protobuf::AbsencesRequest,
     importers::absences::{
@@ -137,4 +139,67 @@ async fn test_importer_with_mock_server() {
     println!("{:?}", result);
 
     assert!(expected_record_found);
+}
+
+#[test]
+fn test_add_timestamp_field() {
+    let mut record = Record::new();
+    let value = Some(Timestamp {
+        seconds: 0,
+        nanos: 0,
+    });
+    add_timestamp_field(record.fields_as_mut(), "field_name", value);
+    println!("{:?}", record);
+    assert_eq!(
+        record.field_by_name("field_name").unwrap().value(),
+        Value::String("1970-01-01T01:00:00Z".into())
+    )
+}
+
+#[test]
+fn test_utc_to_atc_none() {
+    let value = Timestamp {
+        seconds: 2_146_764_484 * 86_400, // too big
+        nanos: 0,
+    };
+    let result = utc_to_atc(value);
+    assert!(result.is_err_and(|e| e.to_string() == "utc_to_atc failed"));
+}
+
+#[test]
+fn test_get_start_and_end_date() {
+    let mut config = Configuration::new();
+    config.insert_str(CFG_FILTER_PERIOD, "2025-01-01"); // Only start
+    let result = get_start_and_end_date(&config);
+    println!("{:?}", result);
+    assert!(result.is_ok());
+    let (start,end) = result.unwrap();
+    assert!(start.is_some());
+    assert!(end.is_some());
+    let (start,end) = (start.unwrap(),end.unwrap());
+    assert_eq!(start.seconds, 1735689600);
+    assert_eq!(end.seconds, 1790208000);
+
+    config.insert_str(CFG_FILTER_PERIOD, ":2025-01-01"); // Only end
+    let result = get_start_and_end_date(&config);
+    println!("{:?}", result);
+    assert!(result.is_ok());
+    let (start,end) = result.unwrap();
+    assert!(start.is_some());
+    assert!(end.is_some());
+    let (start,end) = (start.unwrap(),end.unwrap());
+    assert_eq!(start.seconds, 1758672000);
+    assert_eq!(end.seconds, 1735689600);
+
+    config.insert_str(CFG_FILTER_PERIOD, "2025-01-01:2025-01-01"); // start and end
+    let result = get_start_and_end_date(&config);
+    println!("{:?}", result);
+    assert!(result.is_ok());
+    let (start,end) = result.unwrap();
+    assert!(start.is_some());
+    assert!(end.is_some());
+    let (start,end) = (start.unwrap(),end.unwrap());
+    assert_eq!(start.seconds, 1735689600);
+    assert_eq!(end.seconds, 1735689600);
+
 }
