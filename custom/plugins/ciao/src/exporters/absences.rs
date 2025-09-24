@@ -90,3 +90,6 @@ fn absence_from_record(record: &model::record::Record) -> Result<Absence, BoxedE
         deleted,
     })
 }
+
+#[cfg(test)]
+mod tests;

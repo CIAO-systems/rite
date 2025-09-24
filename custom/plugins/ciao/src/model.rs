@@ -134,7 +134,7 @@ pub fn get_bool(record: &Record, field_name: &str, default: bool) -> bool {
 }
 
 /// Gets a CIAO date value from a string field in record. String can be in format
-/// YYY-MM-DD or ISO 8601
+/// YYYY-MM-DD or ISO 8601
 ///
 pub fn get_date(
     record: &Record,
