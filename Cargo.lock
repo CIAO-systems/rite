@@ -2843,6 +2843,7 @@ dependencies = [
  "serde-xml-rs 0.8.1",
  "tempfile",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
