@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 grpc-utils-rs = { git="https://github.com/CIAO-systems/grpc-utils-rs" }
-ciao-rs = {version = "0.1", path = "ciao-rs"}
+ciao-rs = {version = "1", path = "ciao-rs"}
 
 log = "0.4"
 prost = "0.13"

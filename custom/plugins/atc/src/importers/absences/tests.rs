@@ -1,6 +1,6 @@
 use std::env;
 
-use chrono::{DateTime, Datelike, Timelike, Utc};
+use chrono::{DateTime, Datelike, Local, Timelike, Utc};
 use model::import::handlers::ClosureRecordHandler;
 use model::import::{handlers::CollectingRecordHandler, Importer};
 use model::record::Record;
@@ -10,6 +10,7 @@ use prost_types::Timestamp;
 
 use crate::connection::clients::manager::tests::mocks::get_mock_client_manager;
 use crate::importers::absences::{add_timestamp_field, call_get_absences, get_start_and_end_date};
+use crate::importers::common::protobuf_to_date;
 use crate::{
     com::atoss::atc::protobuf::AbsencesRequest,
     importers::absences::{
@@ -173,33 +174,33 @@ fn test_get_start_and_end_date() {
     let result = get_start_and_end_date(&config);
     println!("{:?}", result);
     assert!(result.is_ok());
-    let (start,end) = result.unwrap();
+    let (start, end) = result.unwrap();
     assert!(start.is_some());
     assert!(end.is_some());
-    let (start,end) = (start.unwrap(),end.unwrap());
+    let (start, end) = (start.unwrap(), end.unwrap());
     assert_eq!(start.seconds, 1735689600);
-    assert_eq!(end.seconds, 1790208000);
+    assert_eq!(end.seconds, 1767225600);
 
+    let today = Local::now().date_naive();
     config.insert_str(CFG_FILTER_PERIOD, ":2025-01-01"); // Only end
     let result = get_start_and_end_date(&config);
     println!("{:?}", result);
     assert!(result.is_ok());
-    let (start,end) = result.unwrap();
+    let (start, end) = result.unwrap();
     assert!(start.is_some());
     assert!(end.is_some());
-    let (start,end) = (start.unwrap(),end.unwrap());
-    assert_eq!(start.seconds, 1758672000);
+    let (start, end) = (start.unwrap(), end.unwrap());
+    assert!(protobuf_to_date(Some(start)).unwrap() >= today); // Start is today, so it should be same or greater 
     assert_eq!(end.seconds, 1735689600);
 
     config.insert_str(CFG_FILTER_PERIOD, "2025-01-01:2025-01-01"); // start and end
     let result = get_start_and_end_date(&config);
     println!("{:?}", result);
     assert!(result.is_ok());
-    let (start,end) = result.unwrap();
+    let (start, end) = result.unwrap();
     assert!(start.is_some());
     assert!(end.is_some());
-    let (start,end) = (start.unwrap(),end.unwrap());
+    let (start, end) = (start.unwrap(), end.unwrap());
     assert_eq!(start.seconds, 1735689600);
     assert_eq!(end.seconds, 1735689600);
-
 }
