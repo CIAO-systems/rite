@@ -135,31 +135,4 @@ fn handle_account(
 }
 
 #[cfg(test)]
-mod tests {
-    use model::import::{handlers::CollectingRecordHandler, Importer};
-    use model::{xml::config::Configuration, Initializable};
-
-    use crate::importers::accounts::Accounts;
-
-    #[test]
-    #[ignore = "for manual testing"]
-    fn test_accounts_importer() -> Result<(), Box<dyn std::error::Error>> {
-        let mut importer = Accounts::new();
-        let mut config = Configuration::new();
-        config.insert("url".to_string(), "http://localhost:50051".to_string());
-        config.insert("api-key".to_string(), "top-secret-api-key".to_string());
-
-        importer.init(Some(config))?;
-        let mut records = Vec::new();
-        let mut handler = CollectingRecordHandler::new(&mut records);
-        importer.read(&mut handler)?;
-
-        assert!(records.len() > 0);
-        for account in records {
-            println!("{:?}", account);
-            assert!(account.field_by_name("id").is_some());
-            assert!(account.field_by_name("email").is_some());
-        }
-        Ok(())
-    }
-}
+mod tests;
