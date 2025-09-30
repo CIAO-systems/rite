@@ -52,6 +52,8 @@ jobs:
                 push: true
                 tags: ${{ steps.setup_container_build.outputs.tags }}
                 labels: ${{ steps.setup_container_build.outputs.labels }}
+                secrets: |
+                  github_token=${{ secrets.GITHUB_TOKEN }}
                 ssh: default
 
     build_extended:

@@ -42,6 +42,8 @@ WORKDIR /home/build/base
 
 # Build workspace with credentials provided via SSH agent
 RUN --mount=type=ssh \
+    --mount=type=secret,id=github_token \
+    GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
     cargo update && \
     cargo clean && \
     cargo build --release --workspace && \
