@@ -52,6 +52,8 @@ jobs:
                 push: true
                 tags: ${{ steps.setup_container_build.outputs.tags }}
                 labels: ${{ steps.setup_container_build.outputs.labels }}
+                # Pass the GITHUB_TOKEN to the container build for postgressql_embedded 
+                # (see https://docs.rs/postgresql_embedded/latest/postgresql_embedded/#information)
                 secrets: |
                   github_token=${{ secrets.GITHUB_TOKEN }}
                 ssh: default
