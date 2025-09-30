@@ -55,3 +55,7 @@ To update the submodule to the latest commit in the branch, execute:
 ```bash
 git submodule update --remote --merge
 ```
+To reset the project and all submodules:
+```bash
+git reset --hard --recurse-submodules
+```
