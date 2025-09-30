@@ -113,3 +113,6 @@ fn handle_badge(badge: &Badge, handler: &mut dyn RecordHandler) -> Result<(), Bo
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
