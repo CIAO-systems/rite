@@ -82,3 +82,6 @@ fn badge_from_record(record: &model::record::Record) -> Result<Badge, BoxedError
         description,
     })
 }
+
+#[cfg(test)]
+mod tests;
