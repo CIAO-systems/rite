@@ -12,7 +12,6 @@ env:
   BASE_IMAGE_TAG: main
   IMAGE_NAME_BASE: ${{ github.repository }}-base
   IMAGE_NAME_EXTENDED: ${{ github.repository }}-extended
-  IMAGE_NAME_CUSTOM: ${{ github.repository }}
 
 permissions:
   packages: write
@@ -100,46 +99,3 @@ jobs:
                 build-args: |
                   BASE_IMAGE_TAG=${{ env.BASE_IMAGE_TAG }}
                   REGISTRY=${{ env.REGISTRY }}/ciao-systems/
-
-    build_custom:
-        name: Build Custom Image
-        needs: build_extended
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                submodules: recursive
-                token: ${{ secrets.ORG_GITHUB_PAT }}
-
-            - name: Set up SSH agent
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRPC_UTILS }}
-  
-            - name: Setup container build
-              uses: ./.github/actions/action-setup-container-build
-              id: setup_container_build
-              with:
-                image_name: ${{ env.IMAGE_NAME_CUSTOM }}
-                registry: ${{ env.REGISTRY }}
-                username: ${{ github.actor }}
-                password: ${{ secrets.GITHUB_TOKEN }}
-                event_name: ${{ github.event_name }}
-                pull_request_number: ${{ github.event.pull_request.number }}
-                ref_name: ${{ github.ref_name }}
-  
-            - name: Build and push container image
-              uses: docker/build-push-action@v4
-              id: build-and-push
-              with:
-                context: .
-                file: ./Dockerfile.custom
-                push: true
-                tags: ${{ steps.setup_container_build.outputs.tags }}
-                labels: ${{ steps.setup_container_build.outputs.labels }}
-                ssh: default
-                build-args: |
-                  BASE_IMAGE_TAG=${{ env.BASE_IMAGE_TAG }}
-                  REGISTRY=${{ env.REGISTRY }}/ciao-systems/
-

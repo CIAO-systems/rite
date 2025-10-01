@@ -36,9 +36,6 @@ The base executable and common plugins. See the [README](base/README.md)
 ### extended
 A set of dynamic libraries to be used as [plugins](extended/README.md) for rite
 
-### custom
-A set of dynamic libraries to be used as [plugins](custom/README.md) for rite
-
 ## Building
 ### git submodules
 Some of the projects use git submodules. To initialize all of them, including 

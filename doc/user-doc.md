@@ -10,7 +10,4 @@
 ### extended
 [Plugins for special applications with open APIs](../extended/plugins/README.md)
 
-### custom
-[Plugins for proprietary applications](../custom/plugins/README.md)
-
 
