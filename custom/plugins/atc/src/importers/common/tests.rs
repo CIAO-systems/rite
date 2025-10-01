@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::{Local, NaiveDate};
 use model::{value::Value, xml::config::Configuration};
 use prost_types::{Duration, Timestamp};
 
@@ -11,12 +11,12 @@ use crate::{
             parameter_meta_data::{First, TreatmentType},
             ParameterMetaData,
         },
-        DoubleCollection, DurationCollection, Field, IntCollection, StringCollection,
+        DoubleCollection, DurationCollection, Field, IntCollection, List, Record, StringCollection,
         TimestampCollection,
     },
     importers::common::{
         add_fields_filter, atc_value_to_model_value, date_to_protobuf, duration_to_i64,
-        parse_period, timestamp_to_string, CFG_FILTER_FIELDS,
+        parse_period, protobuf_to_date, timestamp_to_string, CFG_FILTER_FIELDS,
     },
 };
 
@@ -312,7 +312,7 @@ fn test_parse_period_empty() {
 
 #[test]
 fn test_parse_period_invalid() {
-    let (start, end) = parse_period("this is not a date or a period");
+    let (start, end) = parse_period("this is not a date or a period:nor is this");
     assert_eq!(start, None);
     assert_eq!(end, None);
 }
@@ -394,4 +394,118 @@ fn test_date_to_protobuf_future_date() {
     let timestamp = result.unwrap();
     assert_eq!(timestamp.seconds, expected_seconds);
     assert_eq!(timestamp.nanos, 0);
+}
+
+#[test]
+fn test_list_value() {
+    let list = List { list: vec![] };
+
+    let result = atc_value_to_model_value(Some(ATC_Value::ListValue(list)));
+    assert!(result.is_none()); // until implemented
+}
+
+#[test]
+fn test_record_value() {
+    let record = Record {
+        field: HashMap::new(),
+    };
+    let result = atc_value_to_model_value(Some(ATC_Value::RecordValue(record)));
+    assert!(result.is_none()); // until implemented
+}
+
+#[test]
+fn test_none() {
+    let result = atc_value_to_model_value(None);
+    assert!(result.is_none());
+}
+
+#[test]
+fn test_protobuf_to_date_none() {
+    // Get the current local date at the time the test runs.
+    let expected_local_date = Local::now().date_naive();
+
+    let result = protobuf_to_date(None).unwrap();
+
+    // Result must be equal or greater (in the rare case, expected_local_date is
+    // before midnight and result after midnight)
+    assert!(result >= expected_local_date);
+}
+
+#[test]
+fn test_protobuf_to_date_some_valid() {
+    // Example UTC time: 2025-09-29T10:00:00Z
+    let seconds = 1759130400;
+    let nanos = 500_000_000;
+
+    let timestamp = Some(Timestamp { seconds, nanos });
+
+    // The date component of this UTC timestamp is always 2025-09-29.
+    let expected_date = NaiveDate::from_ymd_opt(2025, 9, 29).unwrap();
+
+    let result = protobuf_to_date(timestamp);
+
+    assert!(result.is_ok(), "Conversion failed: {:?}", result.err());
+    assert_eq!(
+        result.unwrap(),
+        expected_date,
+        "Must correctly extract the date component from a valid UTC timestamp."
+    );
+}
+
+#[test]
+fn test_protobuf_to_date_utc_cross_day_negative() {
+    // Just after midnight UTC: 2026-01-01T00:00:01Z
+    let seconds = 1767225601;
+
+    let timestamp = Some(Timestamp { seconds, nanos: 0 });
+
+    let expected_date = NaiveDate::from_ymd_opt(2026, 1, 1).unwrap();
+
+    let result = protobuf_to_date(timestamp);
+    assert_eq!(
+        result.unwrap(),
+        expected_date,
+        "Must handle timestamps near the start of the day boundary."
+    );
+}
+
+#[test]
+fn test_protobuf_to_date_utc_cross_day_positive() {
+    // Just before midnight UTC: 2026-01-01T23:59:59.999Z
+    let seconds = 1767311999;
+
+    let timestamp = Some(Timestamp {
+        seconds,
+        nanos: 999_999_999,
+    });
+
+    let expected_date = NaiveDate::from_ymd_opt(2026, 1, 1).unwrap();
+
+    let result = protobuf_to_date(timestamp);
+    assert_eq!(
+        result.unwrap(),
+        expected_date,
+        "Must handle timestamps near the end of the day boundary."
+    );
+}
+
+#[test]
+fn test_protobuf_to_date_some_invalid() {
+    // Use a time far outside the representable range for a typical i64-based time library
+    let seconds = i64::MAX;
+    let nanos = 0;
+
+    let timestamp = Some(Timestamp { seconds, nanos });
+
+    let result = protobuf_to_date(timestamp);
+
+    assert!(
+        result.is_err(),
+        "Expected an error for an invalid/out-of-range timestamp."
+    );
+    let error_message = format!("{:?}", result.unwrap_err());
+    assert!(
+        error_message.contains("Invalid timestamp value"),
+        "Error message should be informative."
+    );
 }

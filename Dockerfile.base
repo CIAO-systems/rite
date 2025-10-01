@@ -14,7 +14,7 @@ RUN apt-get update && \
     update-ca-certificates
 
 # Create a non-root user and group (needed for tests with embedded postgres)
-RUN groupadd -r build && useradd -r -g build -m -s /bin/bash build
+RUN groupadd -r build && useradd -r -u 1001 -g build -m -s /bin/bash build
 
 # Create a working directory
 WORKDIR /home/build
@@ -40,8 +40,11 @@ USER build
 
 WORKDIR /home/build/base
 
-# Build workspace with credentials provided via SSH agent
+# Build workspace with credentials provided via SSH agent and the GITHUB_TOKEN as secret for postgressql_embedded: 
+# see https://docs.rs/postgresql_embedded/latest/postgresql_embedded/#information    
 RUN --mount=type=ssh \
+    --mount=type=secret,id=github_token,uid=1001 \
+    GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
     cargo update && \
     cargo clean && \
     cargo build --release --workspace && \

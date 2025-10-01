@@ -56,3 +56,47 @@ impl ATCConnection {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use model::xml::config::Configuration;
+
+    use crate::connection::{
+        clients::manager::tests::mocks::start_mock_server,
+        config::{CFG_AUTH_TOKEN, CFG_PASSWORD, CFG_URL, CFG_USER},
+        ATCConnection,
+    };
+
+    #[test]
+    fn test_connect_no_config() {
+        let result = ATCConnection::connect(&None);
+        assert!(result.is_err_and(|e| e.to_string() == "Configuration incomplete"));
+    }
+
+    #[test]
+    fn test_connect_empty_config() {
+        let config = Configuration::new();
+        let result = ATCConnection::connect(&Some(config));
+        println!("{:?}", result);
+        assert!(result.is_err_and(|e| e.to_string() == "url not configured"));
+    }
+
+    #[tokio::test]
+    async fn test_connect_success() {
+        let addr = start_mock_server(50051).await;
+
+        let mut config = Configuration::new();
+        config.insert_str(CFG_URL, &format!("http://{}", addr));
+        config.insert_str(CFG_USER, "user");
+        config.insert_str(CFG_PASSWORD, "password");
+        config.insert_str(CFG_AUTH_TOKEN, "auth-token");
+
+        let result = ATCConnection::_connect(&config).await;
+        println!("{:?}", result);
+        assert!(result.is_ok());
+
+        let (connection_config, _client_manager) = result.unwrap();
+        assert_eq!(connection_config.url, Some("http://127.0.0.1:50051".into()));
+    }
+}

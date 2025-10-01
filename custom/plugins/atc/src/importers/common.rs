@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::{NaiveDate, TimeZone, Utc};
+use chrono::{Local, NaiveDate, TimeZone, Utc};
 use model::{value::Value, BoxedError};
 use prost_types::Timestamp;
 
@@ -161,7 +161,33 @@ pub fn date_to_protobuf(naive_date: &NaiveDate) -> Result<Timestamp, BoxedError>
         };
         Ok(timestamp)
     } else {
-        Err("Could not add midnight to date".into())
+        unreachable!()
+    }
+}
+
+/// Converts an optional protobuf [Timestamp] to a [NaiveDate]
+/// If the `timestamp` is None, the current date will be returned.
+pub fn protobuf_to_date(timestamp: Option<Timestamp>) -> Result<NaiveDate, BoxedError> {
+    match timestamp {
+        Some(ts) => {
+            // Convert the timestamp to a NaiveDate
+            let datetime_utc = Utc
+                .timestamp_opt(ts.seconds, ts.nanos as u32)
+                .single()
+                .ok_or_else(|| {
+                    format!(
+                        "Invalid timestamp value: seconds={}, nanos={}",
+                        ts.seconds, ts.nanos
+                    )
+                })?;
+
+            Ok(datetime_utc.date_naive())
+        }
+        None =>
+        // If the timestamp is None, return the current date in the **local timezone**.
+        {
+            Ok(Local::now().date_naive())
+        }
     }
 }
 

@@ -5,6 +5,7 @@ use model::import::{Importer, RecordHandler};
 use model::{field::add_field, record::Record, value::Value, BoxedError, Initializable};
 use prost_types::Timestamp;
 
+use crate::importers::common::protobuf_to_date;
 use crate::{
     com::atoss::atc::protobuf::AbsencesRequest,
     connection::ATCConnection,
@@ -194,9 +195,10 @@ fn get_start_and_end_date(
         if let Some(end) = end {
             end_date = Some(date_to_protobuf(&end)?);
         } else {
-            // If end date is missing, take a one year period
-            let today = Local::now().date_naive();
-            if let Some(date) = today.with_year(today.year() + 1) {
+            // If end date is missing, take a one year period from the start date
+            // (or today, if start_date is None)
+            let reference_date = protobuf_to_date(start_date)?;
+            if let Some(date) = reference_date.with_year(reference_date.year() + 1) {
                 end_date = Some(date_to_protobuf(&date)?);
             }
         }

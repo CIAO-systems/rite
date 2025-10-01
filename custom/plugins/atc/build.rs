@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let basepath = format!("{}/proto", base);
 
     tonic_build::configure()
-        .build_server(false)
+        .build_server(true) 
         .build_client(true)
         .build_transport(true)
         .compile_protos(

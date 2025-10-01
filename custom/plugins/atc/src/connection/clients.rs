@@ -20,10 +20,21 @@ impl DataSetClient {
         url: &str,
         interceptors: Interceptors,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let tls = tonic::transport::ClientTlsConfig::new().with_native_roots();
         match Channel::from_shared(String::from(url)) {
             Ok(endpoint) => {
-                let channel = channel(tls, endpoint).await?;
+                let channel = if url.starts_with("https") {
+                    // With TLS
+                    let tls = tonic::transport::ClientTlsConfig::new().with_native_roots();
+                    channel(tls, endpoint).await?
+                } else {
+                    // Plain text
+                    endpoint
+                        .keep_alive_while_idle(true)
+                        .tcp_keepalive(Some(std::time::Duration::from_secs(60)))
+                        .connect()
+                        .await?
+                };
+
                 Ok(Self {
                     inner: DataSetServiceClient::with_interceptor(
                         channel,

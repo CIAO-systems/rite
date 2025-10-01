@@ -1,3 +1,4 @@
+#[allow(non_camel_case_types, non_upper_case_globals, dead_code)]
 pub mod com {
     pub mod atoss {
         pub mod atc {
@@ -27,7 +28,7 @@ pub fn create_importer(
 mod tests {
     use std::collections::HashMap;
 
-    use crate::com::atoss::atc::protobuf::{field::Value, AbsencesRequest, Field, Record};
+    use crate::{com::atoss::atc::protobuf::{field::Value, AbsencesRequest, Field, Record}, create_importer};
 
     #[test]
     fn test_absences() {
@@ -74,5 +75,29 @@ mod tests {
             }
             None => panic!("No value in field"),
         }
+    }
+
+    fn type_of<T>(_: &T) -> &str {
+        std::any::type_name::<T>()
+    }
+
+    fn test_create_importer_ok(name: &str) {
+        let importer = create_importer(name);
+        assert!(importer.is_ok());
+        let importer = importer.unwrap();
+        assert_eq!(
+            type_of(&importer),
+            "alloc::boxed::Box<dyn model::import::Importer>"
+        );
+    }
+
+    #[test]
+    fn test_create_importer() {
+        test_create_importer_ok("absences");
+        test_create_importer_ok("dataset");
+        test_create_importer_ok("clock_records");
+
+        let importer = create_importer("any");
+        assert!(importer.is_err_and(|e|e.to_string()=="Importer 'any' not found"));
     }
 }

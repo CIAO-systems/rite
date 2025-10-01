@@ -143,3 +143,6 @@ fn handle_absence(absence: &Absence, handler: &mut dyn RecordHandler) -> Result<
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;

@@ -128,3 +128,6 @@ fn handle_clock_entry(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;

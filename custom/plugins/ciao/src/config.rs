@@ -5,8 +5,8 @@ use ciao_rs::ciao::{
 use grpc_utils_rs::{grpc::interceptor::APIKeyClientInterceptor, interceptors};
 use model::{xml::config::get_config_value, BoxedError};
 
-const CFG_URL: &str = "url";
-const CFG_API_KEY: &str = "api-key";
+pub const CFG_URL: &str = "url";
+pub const CFG_API_KEY: &str = "api-key";
 
 #[derive(Debug)]
 pub struct ConnectionConfiguration {
@@ -80,109 +80,4 @@ pub fn get_config_time_range(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_valid_time_range() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert(
-            "my_range.startTime".to_string(),
-            "2024-07-20T10:00:00Z".to_string(),
-        );
-        config.insert(
-            "my_range.endTime".to_string(),
-            "2024-07-21T12:00:00Z".to_string(),
-        );
-        let config = Some(config);
-
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_some());
-        let time_range = time_range.unwrap();
-        assert_eq!(
-            time_range.start_time,
-            Some(Timestamp::parse_from("2024-07-20T10:00:00Z").unwrap())
-        );
-        assert_eq!(
-            time_range.end_time,
-            Some(Timestamp::parse_from("2024-07-21T12:00:00Z").unwrap())
-        );
-    }
-
-    #[test]
-    fn test_missing_start_time() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert(
-            "my_range.endTime".to_string(),
-            "2024-07-21T12:00:00Z".to_string(),
-        );
-        let config = Some(config);
-
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-
-    #[test]
-    fn test_missing_end_time() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert(
-            "my_range.startTime".to_string(),
-            "2024-07-20T10:00:00Z".to_string(),
-        );
-        let config = Some(config);
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-
-    #[test]
-    fn test_invalid_start_time_format() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert("my_range.startTime".to_string(), "invalid_time".to_string());
-        config.insert(
-            "my_range.endTime".to_string(),
-            "2024-07-21T12:00:00Z".to_string(),
-        );
-        let config = Some(config);
-
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-
-    #[test]
-    fn test_invalid_end_time_format() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert(
-            "my_range.startTime".to_string(),
-            "2024-07-20T10:00:00Z".to_string(),
-        );
-        config.insert("my_range.endTime".to_string(), "invalid_time".to_string());
-        let config = Some(config);
-
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-
-    #[test]
-    fn test_empty_config() {
-        let config = None;
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-
-    #[test]
-    fn test_config_with_wrong_key() {
-        let mut config = model::xml::config::Configuration::new();
-        config.insert(
-            "other_key.startTime".to_string(),
-            "2024-07-20T10:00:00Z".to_string(),
-        );
-        config.insert(
-            "other_key.endTime".to_string(),
-            "2024-07-21T12:00:00Z".to_string(),
-        );
-        let config = Some(config);
-
-        let time_range = get_config_time_range(&config, "my_range");
-        assert!(time_range.is_none());
-    }
-}
+mod tests;
