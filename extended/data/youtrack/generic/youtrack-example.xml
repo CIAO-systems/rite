@@ -7,7 +7,7 @@
         <process id="Generic example">
             <importer plugin="youtrack">
                 <configuration xml="$RITE_CONFIG_PATH/youtrack-$YOUTRACK_CONFIG.xml">
-                    <config key="url" value="https://ciao-systems.youtrack.cloud" />
+                    <config key="url" value="$YOUTRACK_URL" />
                     <config key="token" value="$YOUTRACK_TOKEN" />
                 </configuration>
             </importer>

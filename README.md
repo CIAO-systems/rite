@@ -9,23 +9,9 @@ Go to the [user documentation](doc/user-doc.md) to learn how to create a rite im
 ### model
 This [library](https://github.com/CIAO-systems/rite-lib-model) describes the data model of the framework
 
-### import
-This [library](https://github.com/CIAO-systems/rite-lib-import) defines the traits for the import interface
-
-### transform
-This [library](https://github.com/CIAO-systems/rite-lib-transform) defines the traits for the transformer interface
-
-### export
-This [library](https://github.com/CIAO-systems/rite-lib-export) defines the traits for the export interface
-
-### plugin
-A [library](https://github.com/CIAO-systems/rite-lib-plugin) for managing import/transfom/export dynamic libraries
-
-### helper
-A [library](https://github.com/CIAO-systems/rite-lib-helper) with some useful functions
-
 ### examples
 Some [example](examples/README.md) implementations for plugins
+
 ## Creating a plugin
 To get started creating a RITE plugin, read the [How to write a plugin guide](doc/write-a-plugin.md)
 

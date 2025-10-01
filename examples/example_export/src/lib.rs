@@ -8,7 +8,7 @@ use model::export::Exporter;
 ///     to determined, what exporter to return
 /// # Available exporters
 /// * `console` - An [Exporter] to write to the stdout
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn create_exporter(name: &str) -> Result<Box<dyn Exporter>, Box<dyn std::error::Error>> {
     match name {
         "console" => Ok(Box::new(ConsoleExporter::new())),

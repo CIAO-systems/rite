@@ -332,58 +332,6 @@
                 "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
             }
         },
-
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "CIAO CSV-import, account export",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=rite",
-                    "--package=rite"
-                ],
-                "filter": {
-                    "name": "rite",
-                    "kind": "bin"
-                }
-            },
-            "args": [
-                "-f",
-                "${env:HOME}/data/ciao/customer/ringer/accounts.xml"
-            ],
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
-            }
-
-        },
-
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "CIAO data/ciao/tests/accounts/",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=rite",
-                    "--package=rite"
-                ],
-                "filter": {
-                    "name": "rite",
-                    "kind": "bin"
-                }
-            },
-            "args": [
-                "-f",
-                "${env:HOME}/data/ciao/tests/accounts/accounts.xml"
-            ],
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
-            }
-
-        },
         {
             "type": "lldb",
             "request": "launch",

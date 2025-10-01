@@ -16,7 +16,7 @@ To use it, define a process and add the importer **without** any name to your pr
 ```xml
 <importer plugin="youtrack">
     <configuration xml="$RITE_CONFIG_PATH/users.xml">
-        <config key="url" value="https://ciao-systems.youtrack.cloud" />
+        <config key="url" value="$YOUTRACK_URL" />
         <config key="token" value="$YOUTRACK_TOKEN" />
     </configuration>
 </importer>
@@ -66,7 +66,7 @@ To use it, define a process and add the importer with the name `time` to your pr
 ```xml
 <importer plugin="youtrack" name="time">
     <configuration xml="$RITE_CONFIG_PATH/time.xml">
-        <config key="url" value="https://ciao-systems.youtrack.cloud" />
+        <config key="url" value="$YOUTRACK_URL" />
         <config key="token" value="$YOUTRACK_TOKEN" />
     </configuration>
 </importer>

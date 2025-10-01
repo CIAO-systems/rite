@@ -1,7 +1,7 @@
 [package]
 name = "rite"
 version = "0.1.2"
-edition = "2021"
+edition = "2024"
 description = "RITE - rust import/transform/export"
 readme = "README.md"
 repository = "https://github.com/CIAO-systems/rite"

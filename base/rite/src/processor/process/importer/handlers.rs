@@ -21,7 +21,7 @@ impl<'a> TransformAndExportRecordHandler<'a> {
     }
 
     pub fn event(&mut self, signal: Signal) -> Result<(), Box<dyn std::error::Error>> {
-        if let Some(ref mut exporter) = self.exporter {
+        if let Some(exporter) = self.exporter {
             exporter.event(signal)?;
         }
 
@@ -42,7 +42,7 @@ fn import_read_handler<'a>(
     record: &Record,
 ) {
     let modified_record; // for it to life past the if/match blocks
-    let transformed_record: &Record = if let Some(ref transformer) = transformer {
+    let transformed_record: &Record = if let Some(transformer) = transformer {
         match transformer.transform(record) {
             Ok(transformed_record) => {
                 if let Some(transformed_record) = transformed_record {
@@ -61,7 +61,7 @@ fn import_read_handler<'a>(
         record
     };
 
-    if let Some(ref mut exporter) = exporter {
+    if let Some(exporter) = exporter {
         if let Err(e) = exporter.export(transformed_record) {
             log::error!("Error while exporting records: {}", e);
         }

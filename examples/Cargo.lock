@@ -61,7 +61,7 @@ dependencies = [
  "js-sys",
  "num-traits",
  "wasm-bindgen",
- "windows-link",
+ "windows-link 0.1.1",
 ]
 
 [[package]]
@@ -84,9 +84,7 @@ dependencies = [
 name = "example_export"
 version = "0.1.1"
 dependencies = [
- "export",
  "gag",
- "helper",
  "model",
 ]
 
@@ -94,24 +92,12 @@ dependencies = [
 name = "example_import"
 version = "0.1.1"
 dependencies = [
- "helper",
- "import",
  "model",
 ]
 
 [[package]]
 name = "example_transform"
 version = "0.1.1"
-dependencies = [
- "helper",
- "model",
- "transform",
-]
-
-[[package]]
-name = "export"
-version = "0.1.1"
-source = "git+https://github.com/CIAO-systems/rite-lib-export.git#e293159a230bd12664ad0d5abde27f8e63be1082"
 dependencies = [
  "model",
 ]
@@ -156,14 +142,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "helper"
-version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-helper.git#15a481449250c20cec145e64d1bf2d45d7560c5c"
-dependencies = [
- "log",
-]
-
-[[package]]
 name = "iana-time-zone"
 version = "0.1.63"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -185,14 +163,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f31827a206f56af32e590ba56d5d2d085f558508192593743f16b2306495269f"
 dependencies = [
  "cc",
-]
-
-[[package]]
-name = "import"
-version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-import.git#48e234860f6bdc581769c831efefb621c7092cc7"
-dependencies = [
- "model",
 ]
 
 [[package]]
@@ -218,6 +188,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
 
 [[package]]
+name = "libloading"
+version = "0.8.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7c4b02199fee7c5d21a5ae7d8cfa79a6ef5bb2fc834d6e9058e89c825efdc55"
+dependencies = [
+ "cfg-if",
+ "windows-link 0.2.0",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -238,9 +218,11 @@ checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 [[package]]
 name = "model"
 version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git#b8dccbfb9830353609dd729fbeb5b8fcf9ed6151"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#395b8c2dcb9fc77c284b5ae908fb57ed1c16dbdb"
 dependencies = [
  "chrono",
+ "libloading",
+ "log",
  "serde",
  "serde-xml-rs",
  "serde_json",
@@ -417,14 +399,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "transform"
-version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-transform.git#d9078c008416127986ae8f4475abcceeea26b8ff"
-dependencies = [
- "model",
-]
-
-[[package]]
 name = "unicode-ident"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -533,7 +507,7 @@ checksum = "4763c1de310c86d75a878046489e2e5ba02c649d185f21c67d4cf8a56d098980"
 dependencies = [
  "windows-implement",
  "windows-interface",
- "windows-link",
+ "windows-link 0.1.1",
  "windows-result",
  "windows-strings",
 ]
@@ -567,12 +541,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "76840935b766e1b0a05c0066835fb9ec80071d4c09a16f6bd5f7e655e3c14c38"
 
 [[package]]
+name = "windows-link"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "45e46c0661abb7180e7b9c281db115305d49ca1709ab8242adf09666d2173c65"
+
+[[package]]
 name = "windows-result"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c64fd11a4fd95df68efcfee5f44a294fe71b8bc6a91993e2791938abcc712252"
 dependencies = [
- "windows-link",
+ "windows-link 0.1.1",
 ]
 
 [[package]]
@@ -581,7 +561,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2ba9642430ee452d5a7aa78d72907ebe8cfda358e8cb7918a2050581322f97"
 dependencies = [
- "windows-link",
+ "windows-link 0.1.1",
 ]
 
 [[package]]
