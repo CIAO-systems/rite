@@ -1,12 +1,14 @@
 use config::RitePostgresImport;
 use model::import::{Importer, RecordHandler};
 use model::{
+    Initializable,
     field::Field,
     record::Record,
     value::Value,
     xml::{self, file::load_and_substitute_from_env},
-    Initializable,
 };
+use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 
 mod config;
 
@@ -38,7 +40,7 @@ impl Initializable for PostgresImporter {
                                         "Cannot parse contents from {}: {}",
                                         xml, e
                                     )
-                                    .into())
+                                    .into());
                                 }
                             };
                         self.postgres = Some(postgres);
@@ -80,18 +82,26 @@ impl Importer for PostgresImporter {
     }
 }
 
+/// convert a postgres::Row to a Record
+/// See PostgresSQL datatypes: https://www.postgresql.org/docs/current/datatype.html
 fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> {
     let mut record = Record::new();
     for (idx, column) in row.columns().iter().enumerate() {
         let field_type = column.type_().name();
         match field_type {
-            "int4" => {
+            "smallint" | "smallserial" | "int2" => {
+                let value: i16 = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::I16(value)));
+            }
+            "integer" | "serial" | "int4" => {
                 let value: i32 = row.get(idx);
                 record
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::I32(value)));
             }
-            "int8" => {
+            "int8" | "bigserial" => {
                 let value: i64 = row.get(idx);
                 record
                     .fields_as_mut()
@@ -121,6 +131,22 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::F64(value)));
             }
+            "numeric" => {
+                let value: Decimal = row.get(idx);
+                if let Some(value) = value.to_f64() {
+                    record
+                        .fields_as_mut()
+                        .push(Field::new_value(column.name(), Value::F64(value)));
+                } else {
+                    return Err(format!("Cannot convert Decimal to f64: {value}").into());
+                }
+            }
+            "bytea" => {
+                let value: Vec<u8> = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::Blob(value)));
+            }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }
     }
@@ -128,51 +154,4 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
 }
 
 #[cfg(test)]
-mod tests {
-
-    use model::import::{handlers::ClosureRecordHandler, Importer};
-    use model::{xml, Initializable};
-
-    use super::PostgresImporter;
-
-    #[test]
-    #[ignore = "for manual testing"]
-    fn test_import() -> Result<(), Box<dyn std::error::Error>> {
-        let mut importer = PostgresImporter::new();
-        let config = xml::config::Configuration::with_xml("../../data/postgres-import-config.xml");
-
-        importer.init(Some(config))?;
-
-        let mut count = 0;
-        let mut handler = ClosureRecordHandler::new(|_record| {
-            count = count + 1;
-        });
-        importer.read(&mut handler)?;
-
-        assert!(count > 0);
-        Ok(())
-    }
-
-    #[test]
-    fn test_config() -> Result<(), Box<dyn std::error::Error>> {
-        let config = xml::config::Configuration::with_xml("../../data/postgres-import-config.xml");
-        let mut importer = PostgresImporter::new();
-        importer.init(Some(config))?;
-
-        assert!(importer.postgres.is_some());
-        let postgres = importer.postgres.unwrap();
-        assert_eq!(postgres.connection.host, "localhost".to_string());
-        assert_eq!(postgres.connection.port, 5432);
-        assert_eq!(postgres.connection.database, "postgres".to_string());
-        assert_eq!(postgres.connection.user, "postgres".to_string());
-        assert_eq!(
-            postgres.connection.password,
-            "6d598907-a775-4383-ab6f-de525c5ac0bf".to_string()
-        );
-
-        assert_eq!(postgres.sql, "select * from customers".to_string());
-        Ok(())
-    }
-
-    mod postgres;
-}
+mod tests;

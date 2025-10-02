@@ -1,16 +1,18 @@
 use std::error::Error;
 
 use model::{
-    import::{handlers::ClosureRecordHandler, Importer},
+    Initializable,
+    import::{Importer, handlers::ClosureRecordHandler},
     value::Value,
-    xml, Initializable,
+    xml,
 };
 use postgres::Client;
+use rust_decimal::{Decimal, dec};
 
 use crate::{
     common::Connection,
     embedded::Embedded,
-    importer::{config::RitePostgresImport, handle_row, PostgresImporter},
+    importer::{PostgresImporter, config::RitePostgresImport, handle_row},
 };
 
 #[test]
@@ -20,29 +22,74 @@ fn test_handle_row() -> Result<(), Box<dyn std::error::Error>> {
 
     test_supported(&mut embeded.client)?;
 
-    test_unsuported(&mut embeded.client)?;
-
     Ok(())
 }
+
+const CREATE_QUERY: &str = r#"
+    CREATE TABLE 
+        dummy(
+            f1 int4, 
+            f2 int8, 
+            f3 text, 
+            f4 bool, 
+            f5 float4, 
+            f6 float8, 
+            f7 smallserial,
+            f8 int2,
+            f9 integer,
+            f10 bigint,
+            f11 real,
+            f12 double precision,
+            f13 numeric,
+            f14 bytea,
+            f100 serial,
+            f101 bigserial
+        );
+    "#;
+
+const INSERT_QUERY: &str = r#"
+    INSERT INTO dummy 
+            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14) 
+        VALUES 
+            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) 
+        RETURNING 
+            f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
+    "#;
+
+const SELECT_QUERY: &str = r#"
+    SELECT 
+        f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
+    FROM dummy
+    "#;
 
 fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
     let mut transaction = embeded.client.transaction()?;
 
-    transaction.execute(
-        "CREATE TABLE dummy(f1 int4, f2 int8, f3 text, f4 bool, f5 float4, f6 float8, f7 smallserial);",
-        &[],
-    )?;
+    transaction.execute(CREATE_QUERY, &[])?;
+    let blob: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let params = (
-        73,
-        73 as i64,
-        "This are not the droids you are looking for",
-        true,
-        73.0 as f32,
-        73.0 as f64,
-        73 as i16,
+        73,                                            // f1
+        73 as i64,                                     // f2
+        "This are not the droids you are looking for", // f3
+        true,                                          // f4
+        73.0 as f32,                                   // f5
+        73.0 as f64,                                   // f6
+        73 as i16,                                     // f7
+        42 as i16,                                     // f8
+        4273 as i32,                                   // f9
+        4273_7342 as i64,                              // f10
+        4273.7342 as f32,                              // f11
+        4273.7342 as f64,                              // f12
+        dec!(42.73),                                   // f13
+        blob,                                          // f14
     );
-    let rec = transaction.query_one("INSERT INTO dummy (f1,f2,f3,f4,f5,f6,f7) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING f1,f2,f3,f4,f5,f6,f7",
-        &[&params.0,&params.1,&params.2,&params.3,&params.4,&params.5,&params.6])?;
+    let rec = transaction.query_one(
+        INSERT_QUERY,
+        &[
+            &params.0, &params.1, &params.2, &params.3, &params.4, &params.5, &params.6, &params.7,
+            &params.8, &params.9, &params.10, &params.11, &params.12, &params.13,
+        ],
+    )?;
     test_insert(rec);
 
     transaction.commit()?;
@@ -65,10 +112,29 @@ fn test_insert(rec: postgres::Row) {
     assert_eq!(value, 73.0);
     let value: i16 = rec.get("f7");
     assert_eq!(value, 73);
+    let value: i16 = rec.get("f8");
+    assert_eq!(value, 42);
+    let value: i32 = rec.get("f9");
+    assert_eq!(value, 4273);
+    let value: i64 = rec.get("f10");
+    assert_eq!(value, 4273_7342);
+    let value: f32 = rec.get("f11");
+    assert_eq!(value, 4273.7342);
+    let value: f64 = rec.get("f12");
+    assert_eq!(value, 4273.7342);
+    let value: Decimal = rec.get("f13");
+    assert_eq!(value, dec!(42.73));
+    let value: Vec<u8> = rec.get("f14");
+    assert_eq!(value, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+    let value: i32 = rec.get("f100");
+    assert_eq!(value, 1);
+    let value: i64 = rec.get("f101");
+    assert_eq!(value, 1);
 }
 
 fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn Error>> {
-    let recs = client.query("SELECT f1,f2,f3,f4,f5,f6 FROM dummy", &[])?;
+    let recs = client.query(SELECT_QUERY, &[])?;
     assert_eq!(recs.len(), 1);
     let row = recs.first();
     assert!(row.is_some());
@@ -80,12 +146,15 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::I32(73)));
+
     let f = record.field_by_name("f2");
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::I64(73)));
+
     let f = record.field_by_name("f3");
     assert!(f.is_some());
+
     let value = f.unwrap().value();
     assert!(matches!(value, Value::String(_)));
     assert_eq!(
@@ -96,27 +165,68 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::Bool(true)));
+
     let f = record.field_by_name("f5");
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::F32(73.0)));
+
     let f = record.field_by_name("f6");
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::F64(73.0)));
+
+    let f = record.field_by_name("f7");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I16(73)));
+
+    let f = record.field_by_name("f8");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I16(42)));
+
+    let f = record.field_by_name("f9");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I32(4273)));
+
+    let f = record.field_by_name("f10");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I64(4273_7342)));
+
+    let f = record.field_by_name("f11");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::F32(4273.7342)));
+
+    let f = record.field_by_name("f12");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::F64(4273.7342)));
+
+    let f = record.field_by_name("f13");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::F64(42.73)));
+
+    let f = record.field_by_name("f14");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Blob(_)));
+
+    let f = record.field_by_name("f100");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I32(1)));
+
+    let f = record.field_by_name("f101");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I64(1)));
+
     Ok(record)
-}
-
-fn test_unsuported(client: &mut Client) -> Result<(), Box<dyn Error>> {
-    let recs = client.query("SELECT f7 FROM dummy", &[])?;
-    assert_eq!(recs.len(), 1);
-    let row = recs.first();
-    assert!(row.is_some());
-
-    let result = handle_row(row.unwrap().clone());
-    assert!(result.is_err_and(|e| e.to_string().eq("Unsupported type: int2")));
-
-    Ok(())
 }
 
 #[test]
