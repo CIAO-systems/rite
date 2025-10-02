@@ -141,6 +141,12 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                     return Err(format!("Cannot convert Decimal to f64: {value}").into());
                 }
             }
+            "bytea" => {
+                let value: Vec<u8> = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::Blob(value)));
+            }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }
     }

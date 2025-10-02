@@ -7,7 +7,7 @@ use model::{
     xml,
 };
 use postgres::Client;
-use rust_decimal::{dec, Decimal};
+use rust_decimal::{Decimal, dec};
 
 use crate::{
     common::Connection,
@@ -41,6 +41,7 @@ const CREATE_QUERY: &str = r#"
             f11 real,
             f12 double precision,
             f13 numeric,
+            f14 bytea,
             f100 serial,
             f101 bigserial
         );
@@ -48,16 +49,16 @@ const CREATE_QUERY: &str = r#"
 
 const INSERT_QUERY: &str = r#"
     INSERT INTO dummy 
-            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13) 
+            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14) 
         VALUES 
-            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) 
+            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) 
         RETURNING 
-            f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f100,f101
+            f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
     "#;
 
 const SELECT_QUERY: &str = r#"
     SELECT 
-        f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f100,f101
+        f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
     FROM dummy
     "#;
 
@@ -65,6 +66,7 @@ fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
     let mut transaction = embeded.client.transaction()?;
 
     transaction.execute(CREATE_QUERY, &[])?;
+    let blob: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let params = (
         73,                                            // f1
         73 as i64,                                     // f2
@@ -79,12 +81,13 @@ fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
         4273.7342 as f32,                              // f11
         4273.7342 as f64,                              // f12
         dec!(42.73),                                   // f13
+        blob,                                          // f14
     );
     let rec = transaction.query_one(
         INSERT_QUERY,
         &[
             &params.0, &params.1, &params.2, &params.3, &params.4, &params.5, &params.6, &params.7,
-            &params.8, &params.9, &params.10, &params.11, &params.12,
+            &params.8, &params.9, &params.10, &params.11, &params.12, &params.13,
         ],
     )?;
     test_insert(rec);
@@ -121,6 +124,8 @@ fn test_insert(rec: postgres::Row) {
     assert_eq!(value, 4273.7342);
     let value: Decimal = rec.get("f13");
     assert_eq!(value, dec!(42.73));
+    let value: Vec<u8> = rec.get("f14");
+    assert_eq!(value, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
     let value: i32 = rec.get("f100");
     assert_eq!(value, 1);
@@ -205,6 +210,11 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     assert!(f.is_some());
     let value = f.unwrap().value();
     assert!(matches!(value, Value::F64(42.73)));
+
+    let f = record.field_by_name("f14");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Blob(_)));
 
     let f = record.field_by_name("f100");
     assert!(f.is_some());
