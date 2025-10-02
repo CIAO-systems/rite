@@ -1,0 +1,73 @@
+//! Example transformer to convert string fields
+
+use model::{field::Field, record::Record, Initializable};
+
+use model::transform::Transformer;
+
+/// The type of conversion to apply
+pub enum StringFieldConversion {
+    /// Convert to upper case
+    UpperCase,
+    /// Convert to lower case
+    LowerCase,
+}
+
+pub struct StringFieldConverter {
+    conversion: StringFieldConversion,
+}
+
+impl StringFieldConverter {
+    /// Creates a new [StringFieldConverter]
+    /// # Arguments
+    /// * `conversion` - The type of conversion to apply
+    pub fn new(conversion: StringFieldConversion) -> Self {
+        StringFieldConverter { conversion }
+    }
+}
+
+impl Initializable for StringFieldConverter {
+    /// Initializes the transformer from the configuration
+    /// This transformer does not have any configuration
+    fn init(
+        &mut self,
+        _config: Option<model::xml::config::Configuration>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        Ok(())
+    }
+}
+
+impl Transformer for StringFieldConverter {
+    fn process(
+        &self,
+        record: &model::record::Record,
+    ) -> Result<model::record::Record, Box<dyn std::error::Error>> {
+        let mut result = Record::new();
+        for field in record.fields() {
+            match field.value() {
+                model::value::Value::String(value) => {
+                    let converted = match self.conversion {
+                        StringFieldConversion::UpperCase => value.to_uppercase(),
+                        StringFieldConversion::LowerCase => value.to_lowercase(),
+                    };
+                    result.fields_as_mut().push(Field::new_value(
+                        field.name(),
+                        model::value::Value::String(converted),
+                    ));
+                }
+                _ => {
+                    // clone the field into the result record
+                    result
+                        .fields_as_mut()
+                        .push(Field::new_value(field.name(), field.value()));
+                }
+            }
+        }
+
+        Ok(result)
+    }
+}
+
+pub mod doubler;
+
+#[cfg(test)]
+mod test;

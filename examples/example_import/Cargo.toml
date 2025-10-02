@@ -1,0 +1,14 @@
+[package]
+name = "example_import"
+version = "0.1.1"
+edition = "2024"
+description = "RITE example importer"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+
+[dependencies]
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
+
+[lib]
+name = "example_import"
+crate-type = ["dylib"]

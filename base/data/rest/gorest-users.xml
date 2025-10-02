@@ -1,0 +1,26 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="$RITE_CONFIG_PATH/../../target/debug" name="rite_common"/>
+        <plugin id="rest" path="$RITE_CONFIG_PATH/../../target/debug" name="rite_rest"/>
+    </plugins>
+    <processes>
+        <process id="Test authorized get access to https://gorest.co">
+            <importer plugin="rest">
+                <configuration>
+                    <config key="url" value="https://gorest.co.in/public/v2/users" />
+                    <config key="auth.bearer" value="$GOREST_TOKEN" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="{" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

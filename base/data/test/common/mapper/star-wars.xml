@@ -1,0 +1,35 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="star-wars" name="rite_rest"/>
+    </plugins>
+    <processes>
+        <process id="read-from-star-wars-api-map-and-print">
+            <importer plugin="star-wars">
+                <configuration>
+                    <config key="url" value="https://swapi.info/api/films" />
+                </configuration>
+            </importer>
+            <transformers>
+                <transformer plugin="common">
+                    <configuration>
+                        <config key="ignore_field" value="opening_crawl,director,producer" />
+                    </configuration>
+                </transformer>
+                <transformer plugin="common" name="mapper">
+                    <configuration xml="$RITE_CONFIG_PATH/mapper-regex.xml" />
+                </transformer>
+            </transformers>
+            <exporters>
+                <exporter plugin="common" name="console">
+                    <configuration>
+                        <config key="prefix" value="Film {" />
+                        <config key="postfix" value="}" />
+                        <config key="separator" value="&#xA;" />
+                        <config key="field-prefix" value=" " />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

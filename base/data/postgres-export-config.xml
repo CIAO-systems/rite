@@ -1,0 +1,20 @@
+<rite-postgres-export>
+    <connection 
+        host="localhost"
+        port="5432"
+        database="postgres"
+        user="postgres"
+        password="${POSTGRES_PASSWROD:6d598907-a775-4383-ab6f-de525c5ac0bf}"
+    />
+    <table name="backup_customer" uniqueFields="id">
+        <create>
+        <![CDATA[
+CREATE TABLE IF NOT EXISTS backup_customer (
+	id serial4 NOT NULL,
+	"name" varchar NOT NULL,
+	CONSTRAINT backup_customers_pkey PRIMARY KEY (id)
+);        
+        ]]>
+        </create>
+    </table>
+</rite-postgres-export>

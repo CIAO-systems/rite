@@ -1,0 +1,25 @@
+[package]
+name = "rite_youtrack"
+version = "0.1.0"
+edition = "2024"
+description = "RITE YouTrack plugin"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+
+[dependencies]
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
+log = "0.4"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde-xml-rs = "0.8"
+chrono = "0.4"
+urlencoding = "2.1"
+
+[lib]
+name = "rite_youtrack"
+crate-type = ["dylib"]
+
+[dev-dependencies]
+mockito = "1"

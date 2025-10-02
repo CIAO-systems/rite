@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [ 
+    # Examples
+    "examples/example_import", 
+    "examples/example_export", 
+    "examples/example_transform", 
+    # Executable
+    "base/rite", 
+    # Base plugins
+    "base/plugins/common", 
+    "base/plugins/postgres", 
+    "base/plugins/rest", 
+    "base/plugins/faker", 
+    "base/plugins/csv", 
+    "base/plugins/llm", 
+    # Extended plugins
+    "extended/plugins/youtrack", 
+    "extended/plugins/personio",
+]

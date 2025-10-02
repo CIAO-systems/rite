@@ -1,0 +1,19 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+        <plugin id="llm" name="rite_llm"/>
+    </plugins>
+    <processes>
+        <process id="llm.ollama">
+            <importer plugin="llm" name="ollama">
+                <configuration>
+                    <config key="agent" value="qwen2.5:7b" />
+                    <config key="prompt-file" value="$RITE_CONFIG_PATH/prompt.txt" />
+                </configuration>
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

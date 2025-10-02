@@ -1,0 +1,19 @@
+<rite>
+    <plugins>
+        <plugin id="rite_postgres" path="$RITE_CONFIG_PATH/../target/debug" name="rite_postgres"/>
+        <plugin id="common" path="$RITE_CONFIG_PATH/../target/debug" name="rite_common"/>
+    </plugins>
+    <processes>
+        <process id="read-from-table-print-on-console">
+            <importer plugin="rite_postgres">
+                <configuration xml="$RITE_CONFIG_PATH/postgres-import-config.xml" />
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+                <exporter plugin="rite_postgres">
+                    <configuration xml="$RITE_CONFIG_PATH/postgres-export-config.xml" />
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

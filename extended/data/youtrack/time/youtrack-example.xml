@@ -1,0 +1,26 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="youtrack" path="target/debug" name="rite_youtrack"/>
+    </plugins>
+    <processes>
+        <process id="Time example">
+            <importer plugin="youtrack" name="time">
+                <configuration xml="$RITE_CONFIG_PATH/time.xml">
+                    <config key="url" value="$YOUTRACK_URL" />
+                    <config key="token" value="$YOUTRACK_TOKEN" />
+                </configuration>
+            </importer>
+            <transformers>
+                <transformer plugin="common">
+                    <configuration>
+                        <config key="format_field" value="created:isodate" />
+                    </configuration>
+                </transformer>
+            </transformers>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

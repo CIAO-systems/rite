@@ -1,0 +1,23 @@
+<rite>
+    <plugins>
+        <plugin id="common" path="target/debug" name="rite_common"/>
+        <plugin id="faker" path="target/debug" name="rite_faker"/>
+        <plugin id="csv" path="target/debug" name="rite_csv"/>
+    </plugins>
+    <processes>
+        <process id="Random data to CSV example">
+            <importer plugin="faker">
+                <configuration xml="$RITE_CONFIG_PATH/fake-records-generator.xml" />
+            </importer>
+            <exporters>
+                <exporter plugin="common" name="console" />
+                <exporter plugin="csv">
+                    <configuration>
+                        <config key="filename" value="/tmp/random-data.csv" />
+                        <config key="overwrite" value="true" />
+                    </configuration>
+                </exporter>
+            </exporters>
+        </process>
+    </processes>
+</rite>

@@ -1,0 +1,92 @@
+# Builder stage
+FROM rust:slim AS builder
+
+# Install dependencies
+# See https://stackoverflow.com/questions/65553557/why-rust-is-failing-to-build-command-for-openssl-sys-v0-9-60-even-after-local-in
+# See https://stackoverflow.com/questions/65538591/run-protoc-command-into-docker-container
+RUN apt-get update && \
+    apt-get install -y bash && \
+    apt-get install -y protobuf-compiler && \
+    apt-get install -y libssl-dev && \
+    apt-get install -y git openssh-client && \
+    apt-get install -y pkg-config && \
+    apt-get install -y libxml2 && \
+    update-ca-certificates
+
+# Create a non-root user and group (needed for tests with embedded postgres)
+RUN groupadd -r build && useradd -r -u 1001 -g build -m -s /bin/bash build
+
+# Create a working directory
+WORKDIR /home/build
+
+# Add the .cargo directory with the config.toml
+ENV CARGO_HOME=/home/build/.cargo 
+COPY ./.cargo ./.cargo
+# Change ownership of the copied directory to the 'build' user
+RUN chown -R build:build /home/build/.cargo
+
+
+# Copy the projects into the image 
+COPY ./base base 
+COPY ./data data
+COPY ./examples examples
+
+RUN chown -R build:build base && \
+    chown -R build:build data && \
+    chown -R build:build examples
+
+# Switch to the non-root user
+USER build
+
+WORKDIR /home/build/base
+
+# Build workspace with credentials provided via SSH agent and the GITHUB_TOKEN as secret for postgressql_embedded: 
+# see https://docs.rs/postgresql_embedded/latest/postgresql_embedded/#information    
+RUN --mount=type=ssh \
+    --mount=type=secret,id=github_token,uid=1001 \
+    GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
+    cargo update && \
+    cargo clean && \
+    cargo build --release --workspace && \
+    cargo test --release
+
+# -----
+# Take a debian image as base (must be the same as the builder image base, to have the same libc)
+# See https://stackoverflow.com/questions/69010070/rust-linux-version-glibc-not-found-compile-for-different-glibc-libc6-version
+# More information on the builder image: https://hub.docker.com/layers/library/rust/slim/images/sha256-ed7795c6eaccae53be35939e883e8c3de0197b21e8eddbd9f04b0c4bc757c094?context=explore
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y bash && \
+    apt-get install -y file && \
+    apt-get install -y binutils && \
+    apt-get install -y libssl-dev && \
+    apt-get install -y pkg-config && \
+    apt-get install -y ca-certificates && \
+    update-ca-certificates
+
+# Define some labels
+LABEL org.opencontainers.image.title="RITE - Rust Import/Transform/Export" \
+      org.opencontainers.image.description="RITE - Rust Import/Transform/Export" \
+      org.opencontainers.image.base.name="debian:bookworm-slim" \
+      org.opencontainers.image.vendor="CIAO Systems GmbH"
+
+# Setup the application directory
+WORKDIR /app
+
+# Copy the built binary from the builder image to the WORKDIR
+COPY --from=builder /home/build/base/target/release/*.so .
+COPY --from=builder /home/build/base/target/release/rite .
+
+# Set the library path
+ENV LD_LIBRARY_PATH=/lib:/lib64:/app
+
+# Create mount point for input files
+RUN mkdir /data /app/logs
+
+COPY ./log4rs.yaml /data
+RUN ln -s /data/log4rs.yaml /app/log4rs.yaml
+
+RUN echo 'export PS1="rite-container@\\h:\\w \\$ "' >> /etc/bash.bashrc
+# Command to run the binary
+ENTRYPOINT ["/app/rite", "-f"]

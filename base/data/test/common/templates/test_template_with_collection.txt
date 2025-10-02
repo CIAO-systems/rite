@@ -1,0 +1,5 @@
+{% for record in records %}
+{% for v in record.collection %}
+{{ v }}
+{% endfor %}
+{% endfor %}

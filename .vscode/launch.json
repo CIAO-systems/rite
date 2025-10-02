@@ -1,0 +1,433 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "gRPC reflection",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=reflection",
+                ]
+            },
+            "args": [
+                "https://consulting-app.moretime.cloud:443"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "CSV random data exporter",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/csv/write-csv.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Postgres-Example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/postgres.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Star-Wars/Postgres example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/star-wars.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "YouTrack Generic example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/youtrack/generic/youtrack-example.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "YouTrack Time example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/youtrack/time/youtrack-example.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Rite execution experiments",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "/this/path/does/not/exist"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Star-Wars/Mapper example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/star-wars-mapper.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "GoRest Bearer token",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/rest/gorest-users.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "KeyManager list customers",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/rest/key-manager.xml"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Star-Wars/Regex-Mapper example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/common/mapper/star-wars.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: cargo build",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Personio employees example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/personio/personio-employees.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: cargo build",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Personio projects example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/personio/personio-projects.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: cargo build",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Personio attendances example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/personio/personio-attendances.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: cargo build",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Personio absences example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "extended/data/personio/personio-absences.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: cargo build",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "LLM data/test/llm/ollama.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/test/llm/ollama.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "LLM data/test/llm/gemini.xml",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/test/llm/gemini.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Print env base/data/common/env",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/common/env/env-print.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Adders Test base/data/common/adders",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rite",
+                    "--package=rite"
+                ],
+                "filter": {
+                    "name": "rite",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-f",
+                "base/data/common/adders.xml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${LD_LIBRARY_PATH}:${workspaceFolder}/target/debug"
+            }
+        },
+     ]
+}

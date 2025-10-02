@@ -1,0 +1,2 @@
+mod manual;
+mod xml;

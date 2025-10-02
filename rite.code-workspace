@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../rite-lib-model"
+		}
+	],
+	"settings": {
+		"rust-analyzer.checkOnSave": true
+	}
+}

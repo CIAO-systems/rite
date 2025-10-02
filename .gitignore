@@ -1,0 +1,5 @@
+target/
+logs/
+.env
+Dockerfile.test
+tarpaulin-report.html

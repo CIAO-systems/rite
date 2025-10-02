@@ -1,0 +1,21 @@
+<rite>
+    <plugins>
+        <plugin id="common" name="rite_common"/>
+    </plugins>
+    <processes>
+        <process id="adders.test">
+            <importer plugin="common" name="env" />
+            <transformers>
+                <transformer plugin="common">
+                    <configuration>
+                        <config key="add_field" value="time:now" />
+                        <config key="add_field" value="something:value('Hello')" />
+                    </configuration>
+                </transformer>
+            </transformers>
+            <exporters>
+                <exporter plugin="common" name="console" />
+            </exporters>
+        </process>
+    </processes>
+</rite>

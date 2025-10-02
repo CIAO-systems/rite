@@ -1,0 +1,21 @@
+<mapper>
+   <field>
+     <name source="episode_id" target="episode" />
+     <type source="string" target="string" />
+     <values>
+        <value source="1" target="One" />
+        <value source="2" target="Two" />
+        <value source="3" target="Three" />
+        <value source="4" target="Four" />
+        <value source="5" target="Five" />
+        <value source="6" target="Six" />
+     </values>
+   </field>
+   <field>
+     <name source="title" target="title" />
+     <type source="string" target="string" />
+     <values>
+        <value source="A New Hope" target="Hope? Really!?" />
+     </values>
+   </field>
+</mapper>

@@ -1,0 +1,11 @@
+<rite-random-import>
+  <generator number="10">
+     <field name="timeUtc" function="milliseconds" />
+     <field name="timeZone" function="timezone" />
+     <field name="userId" function="uuid" optional="true" />
+
+     <field name="deviceId" function="i32" />
+     <field name="timeTypeId" function="f32" />
+     <field name="projectId" function="string" />
+  </generator>
+</rite-random-import>

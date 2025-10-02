@@ -1,0 +1,18 @@
+[package]
+name = "rite"
+version = "0.1.2"
+edition = "2024"
+description = "RITE - rust import/transform/export"
+readme = "README.md"
+repository = "https://github.com/CIAO-systems/rite"
+license = "Apache-2.0"
+
+[dependencies]
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
+gag = "1.0"
+log = "0.4"
+log4rs = "1.3"
+moka = {version="0.12", features = ["sync"]}
+clap = { version= "4.5", features = ["derive"] }
+dotenv = "0.15.0"
+colored = "3.0.0"

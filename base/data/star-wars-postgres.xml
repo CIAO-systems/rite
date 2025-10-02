@@ -1,0 +1,22 @@
+<rite-postgres-export>
+    <connection 
+        host="localhost"
+        port="5432"
+        database="postgres"
+        user="postgres"
+        password="${POSTGRES_PASSWROD:6d598907-a775-4383-ab6f-de525c5ac0bf}"
+    />
+    <table name="films" uniqueFields="episode">
+        <create>
+        <![CDATA[
+CREATE TABLE IF NOT EXISTS films (
+    number int4 NOT NULL,
+    id varchar NOT NULL,
+    episode varchar NOT NULL,
+	"title" varchar NOT NULL,
+	CONSTRAINT films_pkey PRIMARY KEY (episode)
+);        
+        ]]>
+        </create>
+    </table>
+</rite-postgres-export>

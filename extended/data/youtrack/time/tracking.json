@@ -1,0 +1,77 @@
+[
+    {
+        "$type": "IssueWorkItem",
+        "author": {
+            "$type": "User",
+            "email": "chuck.norris@ciao-systems.com",
+            "id": "1-2"
+        },
+        "created": 1735898372898,
+        "duration": {
+            "$type": "DurationValue",
+            "minutes": 240
+        },
+        "id": "168-159",
+        "issue": {
+            "$type": "Issue",
+            "id": "2-437",
+            "idReadable": "RIT-3",
+            "project": {
+                "$type": "Project",
+                "id": "0-11",
+                "name": "Rust Import/Transform/Export"
+            },
+            "summary": "YouTrack import plugin"
+        }
+    },
+    {
+        "$type": "IssueWorkItem",
+        "author": {
+            "$type": "User",
+            "email": "chuck.norris@ciao-systems.com",
+            "id": "1-2"
+        },
+        "created": 1736265092926,
+        "duration": {
+            "$type": "DurationValue",
+            "minutes": 480
+        },
+        "id": "168-160",
+        "issue": {
+            "$type": "Issue",
+            "id": "2-437",
+            "idReadable": "RIT-3",
+            "project": {
+                "$type": "Project",
+                "id": "0-11",
+                "name": "Rust Import/Transform/Export"
+            },
+            "summary": "YouTrack import plugin"
+        }
+    },
+    {
+        "$type": "IssueWorkItem",
+        "author": {
+            "$type": "User",
+            "email": "chuck.norris@ciao-systems.com",
+            "id": "1-2"
+        },
+        "created": 1736350943187,
+        "duration": {
+            "$type": "DurationValue",
+            "minutes": 480
+        },
+        "id": "168-161",
+        "issue": {
+            "$type": "Issue",
+            "id": "2-437",
+            "idReadable": "RIT-3",
+            "project": {
+                "$type": "Project",
+                "id": "0-11",
+                "name": "Rust Import/Transform/Export"
+            },
+            "summary": "YouTrack import plugin"
+        }
+    }
+]

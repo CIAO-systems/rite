@@ -1,0 +1,48 @@
+refresh_rate: 30 seconds
+appenders:
+  stdout:
+    kind: console
+    target: stdout
+    encoder:
+      pattern: "{d} - {l} - {t} - {m}{n}"
+  stderr:
+    kind: console
+    target: stderr
+    encoder:
+      pattern: "{d} - {l} - {t} - {m}{n}"
+
+  file:
+    kind: file
+    path: "logs/output.log"
+    encoder:
+      pattern: "{d} - {l} - {m}{n}"
+
+root:
+  # level: debug
+  level: error
+  appenders:
+    - stderr
+    - file
+
+loggers:
+  serde_xml_rs::de:
+    level: error
+    appenders:
+      - stderr
+    additive: false
+
+#   rite::processor:
+#     level: debug
+#     appenders:
+#       - stderr
+#     additive: false
+#   plugin:
+#     level: error
+#     appenders:
+#       - stderr
+#     additive: false
+#   rite::processor::process::importer:
+#     level: error
+#     appenders:
+#       - stderr
+#     additive: false
