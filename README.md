@@ -1,4 +1,8 @@
-[![Coverage](https://img.shields.io/badge/coverage-93%25-green)](https://ciao-systems.github.io/rite/tarpaulin-report.html)
+[![Workflow Status](https://github.com/CIAO-systems/rite/actions/workflows/coverage.yml/badge.svg)](https://github.com/CIAO-systems/rite/actions/workflows/coverage.yml)
+[![Workflow Status](https://github.com/CIAO-systems/rite/actions/workflows/create-all-images.yml/badge.svg)](https://github.com/CIAO-systems/rite/actions/workflows/create-all-images.yml)
+[![codecov](https://codecov.io/gh/CIAO-systems/rite/branch/main/graph/badge.svg)](https://codecov.io/gh/CIAO-systems/rite/)
+[![GitHub License](https://img.shields.io/github/license/CIAO-systems/rite?style=flat)](https://github.com/CIAO-systems/rite?tab=Apache-2.0-1-ov-file)
+
 
 # rite - Rust Import/Transform/Export
 rite is a framework for importing data from a datasource, optionally transform the data, and then exporting it to a datasink
