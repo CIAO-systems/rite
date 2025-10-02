@@ -1,12 +1,14 @@
 use config::RitePostgresImport;
 use model::import::{Importer, RecordHandler};
 use model::{
+    Initializable,
     field::Field,
     record::Record,
     value::Value,
     xml::{self, file::load_and_substitute_from_env},
-    Initializable,
 };
+use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 
 mod config;
 
@@ -38,7 +40,7 @@ impl Initializable for PostgresImporter {
                                         "Cannot parse contents from {}: {}",
                                         xml, e
                                     )
-                                    .into())
+                                    .into());
                                 }
                             };
                         self.postgres = Some(postgres);
@@ -87,13 +89,19 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
     for (idx, column) in row.columns().iter().enumerate() {
         let field_type = column.type_().name();
         match field_type {
+            "smallint" | "smallserial" | "int2" => {
+                let value: i16 = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::I16(value)));
+            }
             "integer" | "serial" | "int4" => {
                 let value: i32 = row.get(idx);
                 record
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::I32(value)));
             }
-            "int8" => {
+            "int8" | "bigserial" => {
                 let value: i64 = row.get(idx);
                 record
                     .fields_as_mut()
@@ -122,6 +130,16 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                 record
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::F64(value)));
+            }
+            "numeric" => {
+                let value: Decimal = row.get(idx);
+                if let Some(value) = value.to_f64() {
+                    record
+                        .fields_as_mut()
+                        .push(Field::new_value(column.name(), Value::F64(value)));
+                } else {
+                    return Err(format!("Cannot convert Decimal to f64: {value}").into());
+                }
             }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }
