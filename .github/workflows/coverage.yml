@@ -1,104 +1,36 @@
-name: Deploy Coverage Report
+name: Code Coverage
 
 on:
-    push:
-      branches: [ main ]
-    pull_request:
-        branches: [ "main" ]
-
-env:
-  CARGO_TERM_COLOR: always
-  RUSTFLAGS: "-Dwarnings"
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    deploy-coverage:
-       runs-on: ubuntu-latest
-       steps:
-        - uses: actions/checkout@v4
-          with:
-            submodules: recursive
-            token: ${{ secrets.ORG_GITHUB_PAT }}
-        # Install protobuf compiler using a dedicated GitHub Action
-        - name: Install Protobuf
-          uses: arduino/setup-protoc@v2
-          with:
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
+  coverage:
+    runs-on: ubuntu-latest
 
-        # Cache dependencies and tarpaulin
-        - name: Cache cargo dependencies and tarpaulin
-          id: cache-cargo
-          uses: actions/cache@v3
-          with:
-            path: |
-              ~/.cargo/bin/
-              ~/.cargo/registry/index/
-              ~/.cargo/registry/cache/
-              ~/.cargo/git/db/
-              target/
-            key: ${{ runner.os }}-cargo-tarpaulin-${{ hashFiles('**/Cargo.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-cargo-tarpaulin-
-              ${{ runner.os }}-cargo-
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-        - uses: actions-rs/toolchain@v1
-          with:
-            profile: minimal
-            toolchain: stable
-            override: true
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
 
-        # Check if tarpaulin is already installed
-        - name: Check for tarpaulin installation
-          id: check-tarpaulin
-          run: |
-            if [ -f ~/.cargo/bin/cargo-tarpaulin ]; then
-              echo "Tarpaulin found in cache"
-              echo "tarpaulin-installed=true" >> $GITHUB_OUTPUT
-            else
-              echo "Tarpaulin not found in cache"
-              echo "tarpaulin-installed=false" >> $GITHUB_OUTPUT
-            fi
+    - name: Install cargo-tarpaulin
+      run: cargo install cargo-tarpaulin
 
-        - name: Install cargo-tarpaulin
-          if: steps.check-tarpaulin.outputs.tarpaulin-installed != 'true'
-          run: |
-            cargo install cargo-tarpaulin
+    - name: Generate code coverage
+      run: sh scripts/coverage.sh
 
-        - name: Generate HTML coverage report
-          run: |
-            sh scripts/coverage.sh
-
-          # Don't fail the workflow if tarpaulin has issues
-          continue-on-error: true
-
-        # Upload coverage report as an artifact
-        - name: Archive code coverage results
-          uses: actions/upload-artifact@v4
-          if: always()
-          with:
-            name: code-coverage-report
-            path: |
-              tarpaulin-report.html
-
-        - name: Setup Pages
-          uses: actions/configure-pages@v5
-
-        - name: Upload artifact
-          uses: actions/upload-pages-artifact@v3
-          with:
-            path: 'target/coverage/'
-
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v4
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: target/coverage/cobertura.xml
+        fail_ci_if_error: true
