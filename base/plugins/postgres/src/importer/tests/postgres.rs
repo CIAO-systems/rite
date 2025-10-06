@@ -48,6 +48,9 @@ const CREATE_QUERY: &str = r#"
             f17 timestamp,
             f18 date,
             f19 time,
+            f20 integer[],
+            f21 smallint[],
+            f22 int8[],
 
             f100 serial,
             f101 bigserial
@@ -56,23 +59,31 @@ const CREATE_QUERY: &str = r#"
 
 const INSERT_QUERY: &str = r#"
     INSERT INTO dummy 
-            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19) 
+            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22) 
         VALUES 
-            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) 
+            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22) 
         RETURNING 
-            f100,f101,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19
+            f100,f101,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22
     "#;
 
-const SELECT_QUERY: &str = r#"
-    SELECT 
-        f100,f101,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19
-    FROM dummy
-    "#;
+const SELECT_QUERY: &str = "SELECT * FROM dummy";
 
 const TEST_TS: NaiveDateTime = NaiveDate::from_ymd_opt(2025, 10, 6)
     .unwrap()
     .and_hms_opt(8, 0, 0)
     .unwrap();
+
+fn smallint_array() -> Vec<i16> {
+    vec![1, 2, 3]
+}
+
+fn integer_array() -> Vec<i32> {
+    vec![1, 2, 3]
+}
+
+fn bigint_array() -> Vec<i64> {
+    vec![1, 2, 3]
+}
 
 fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
     let mut transaction = embeded.client.transaction()?;
@@ -100,13 +111,16 @@ fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
         TEST_TS,                                       // f17
         TEST_TS.date(),                                // f18
         TEST_TS.time(),                                // f19
+        integer_array(),                               // f20
+        smallint_array(),                              // f21
+        bigint_array(),                                // f22
     );
     let rec = transaction.query_one(
         INSERT_QUERY,
         &[
             &params.0, &params.1, &params.2, &params.3, &params.4, &params.5, &params.6, &params.7,
             &params.8, &params.9, &params.10, &params.11, &params.12, &params.13, &params.14,
-            &params.15, &params.16, &params.17, &params.18,
+            &params.15, &params.16, &params.17, &params.18, &params.19, &params.20, &params.21,
         ],
     )?;
     test_insert(rec);
@@ -159,6 +173,12 @@ fn test_insert(rec: postgres::Row) {
     assert_eq!(value, TEST_TS.date());
     let value: NaiveTime = rec.get("f19");
     assert_eq!(value, TEST_TS.time());
+    let value: Vec<i16> = rec.get("f21");
+    assert_eq!(value, vec![1, 2, 3]);
+    let value: Vec<i32> = rec.get("f20");
+    assert_eq!(value, vec![1, 2, 3]);
+    let value: Vec<i64> = rec.get("f22");
+    assert_eq!(value, vec![1, 2, 3]);
 }
 
 fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn Error>> {
@@ -247,7 +267,10 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     let f = record.field_by_name("f13");
     assert!(f.is_some());
     let value = f.unwrap().value();
-    assert!(matches!(value, Value::F64(42.73)));
+    assert!(matches!(value, Value::Decimal(_)));
+    if let Value::Decimal(d) = value {
+        assert_eq!(dec!(42.73), d);
+    }
 
     let f = record.field_by_name("f14");
     assert!(f.is_some());
@@ -286,6 +309,42 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     assert!(matches!(value, Value::Time(_)));
     if let Value::Time(time) = value {
         assert_eq!(time, TEST_TS.time());
+    }
+
+    let f = record.field_by_name("f20");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Collection(_)));
+    if let Value::Collection(collection) = value {
+        for i in 0..=2i32 {
+            if let Value::I32(v) = collection[i as usize] {
+                assert_eq!(i + 1, v);
+            }
+        }
+    }
+
+    let f = record.field_by_name("f21");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Collection(_)));
+    if let Value::Collection(collection) = value {
+        for i in 0..=2i16 {
+            if let Value::I16(v) = collection[i as usize] {
+                assert_eq!(i + 1, v);
+            }
+        }
+    }
+
+    let f = record.field_by_name("f22");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Collection(_)));
+    if let Value::Collection(collection) = value {
+        for i in 0..=2i64 {
+            if let Value::I64(v) = collection[i as usize] {
+                assert_eq!(i + 1, v);
+            }
+        }
     }
 
     Ok(record)

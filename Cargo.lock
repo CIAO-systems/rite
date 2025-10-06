@@ -1716,11 +1716,12 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#5904108061154fc0284f84ed5d9a63ed5762810c"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#61b824573b7b8c72ba0f906f0b9f52fec1284265"
 dependencies = [
  "chrono",
  "libloading",
  "log",
+ "rust_decimal",
  "serde",
  "serde-xml-rs 0.5.1",
  "serde_json",
@@ -2677,6 +2678,7 @@ dependencies = [
  "log4rs",
  "model",
  "postgres",
+ "postgres-types",
  "postgresql_embedded",
  "rust_decimal",
  "serde",

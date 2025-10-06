@@ -9,9 +9,9 @@ use model::{
     xml::{self, file::load_and_substitute_from_env},
 };
 use rust_decimal::Decimal;
-use rust_decimal::prelude::ToPrimitive;
 
 mod config;
+mod types;
 
 #[derive(Debug)]
 pub struct PostgresImporter {
@@ -83,88 +83,104 @@ impl Importer for PostgresImporter {
     }
 }
 
+fn map_array<'a, T>(
+    row: &'a postgres::Row,
+    idx: usize,
+    column_name: &str,
+) -> Result<Field, Box<dyn std::error::Error>>
+where
+    T: postgres::types::FromSql<'a> + Into<Value> + Clone,
+{
+    let value: Vec<T> = row.get(idx);
+    let collection = Value::Collection(value.into_iter().map(|i| i.into()).collect());
+    Ok(Field::new_value(column_name, collection))
+}
+
 /// convert a postgres::Row to a Record
 /// See PostgresSQL datatypes: https://www.postgresql.org/docs/current/datatype.html
 fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> {
     let mut record = Record::new();
+    let fields = record.fields_as_mut();
+
+    // Pre allocate memory for expected field count
+    fields.reserve_exact(row.columns().len());
+
     for (idx, column) in row.columns().iter().enumerate() {
-        let field_type = column.type_().name();
+        let field_type = column.type_().oid();
         match field_type {
-            "smallint" | "smallserial" | "int2" => {
+            types::Int2 => {
+                // "smallint" | "int2"
                 let value: i16 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::I16(value)));
+                fields.push(Field::new_value(column.name(), Value::I16(value)));
             }
-            "integer" | "serial" | "int4" => {
+
+            types::Int4 => {
+                // "integer" | "serial" | "int4"
                 let value: i32 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::I32(value)));
+                fields.push(Field::new_value(column.name(), Value::I32(value)));
             }
-            "int8" | "bigserial" => {
+
+            types::Int8 => {
+                // "int8" | "bigserial"
                 let value: i64 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::I64(value)));
+                fields.push(Field::new_value(column.name(), Value::I64(value)));
             }
-            "text" | "bpchar" | "varchar" => {
+            types::Text | types::Varchar | types::Char | types::Bpchar => {
+                // "text" | "bpchar" | "varchar"
                 let value: String = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::String(value)));
+                fields.push(Field::new_value(column.name(), Value::String(value)));
             }
-            "bool" | "boolean" => {
+            types::Bool => {
+                //"bool" | "boolean"
                 let value: bool = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::Bool(value)));
+                fields.push(Field::new_value(column.name(), Value::Bool(value)));
             }
-            "float4" => {
+            types::Float4 => {
+                // "float4"
                 let value: f32 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::F32(value)));
+                fields.push(Field::new_value(column.name(), Value::F32(value)));
             }
-            "float8" => {
+            types::Float8 => {
+                // "float8"
                 let value: f64 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::F64(value)));
+                fields.push(Field::new_value(column.name(), Value::F64(value)));
             }
-            "numeric" => {
+            types::Numeric => {
+                // "numeric" => {
                 let value: Decimal = row.get(idx);
-                if let Some(value) = value.to_f64() {
-                    record
-                        .fields_as_mut()
-                        .push(Field::new_value(column.name(), Value::F64(value)));
-                } else {
-                    return Err(format!("Cannot convert Decimal to f64: {value}").into());
-                }
+                fields.push(Field::new_value(column.name(), Value::Decimal(value)));
             }
-            "bytea" => {
+            types::Bytea => {
+                // "bytea"
                 let value: Vec<u8> = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::Blob(value)));
+                fields.push(Field::new_value(column.name(), Value::Blob(value)));
             }
-            "date" => {
+            types::Date => {
+                // "date"
                 let value: NaiveDate = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::Date(value)));
+                fields.push(Field::new_value(column.name(), Value::Date(value)));
             }
-            "time" => {
+            types::Time => {
+                // "time"
                 let value: NaiveTime = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::Time(value)));
+                fields.push(Field::new_value(column.name(), Value::Time(value)));
             }
-            "timestamp" => {
+            types::Timestamp => {
+                // "timestamp"
                 let value: NaiveDateTime = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::DateTime(value)));
+                fields.push(Field::new_value(column.name(), Value::DateTime(value)));
+            }
+            types::Int2Array => {
+                // "_int2"
+                fields.push(map_array::<i16>(&row, idx, column.name())?);
+            }
+            types::Int4Array => {
+                // "_int4"
+                fields.push(map_array::<i32>(&row, idx, column.name())?);
+            }
+            types::Int8Array => {
+                // "_int8"
+                fields.push(map_array::<i64>(&row, idx, column.name())?);
             }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }
