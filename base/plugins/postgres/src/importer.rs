@@ -1,14 +1,17 @@
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use config::RitePostgresImport;
 use model::import::{Importer, RecordHandler};
 use model::{
+    Initializable,
     field::Field,
     record::Record,
     value::Value,
     xml::{self, file::load_and_substitute_from_env},
-    Initializable,
 };
+use rust_decimal::Decimal;
 
 mod config;
+mod types;
 
 #[derive(Debug)]
 pub struct PostgresImporter {
@@ -38,7 +41,7 @@ impl Initializable for PostgresImporter {
                                         "Cannot parse contents from {}: {}",
                                         xml, e
                                     )
-                                    .into())
+                                    .into());
                                 }
                             };
                         self.postgres = Some(postgres);
@@ -80,46 +83,104 @@ impl Importer for PostgresImporter {
     }
 }
 
+fn map_array<'a, T>(
+    row: &'a postgres::Row,
+    idx: usize,
+    column_name: &str,
+) -> Result<Field, Box<dyn std::error::Error>>
+where
+    T: postgres::types::FromSql<'a> + Into<Value> + Clone,
+{
+    let value: Vec<T> = row.get(idx);
+    let collection = Value::Collection(value.into_iter().map(|i| i.into()).collect());
+    Ok(Field::new_value(column_name, collection))
+}
+
+/// convert a postgres::Row to a Record
+/// See PostgresSQL datatypes: https://www.postgresql.org/docs/current/datatype.html
 fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> {
     let mut record = Record::new();
+    let fields = record.fields_as_mut();
+
+    // Pre allocate memory for expected field count
+    fields.reserve_exact(row.columns().len());
+
     for (idx, column) in row.columns().iter().enumerate() {
-        let field_type = column.type_().name();
+        let field_type = column.type_().oid();
         match field_type {
-            "int4" => {
+            types::Int2 => {
+                // "smallint" | "int2"
+                let value: i16 = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::I16(value)));
+            }
+
+            types::Int4 => {
+                // "integer" | "serial" | "int4"
                 let value: i32 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::I32(value)));
+                fields.push(Field::new_value(column.name(), Value::I32(value)));
             }
-            "int8" => {
+
+            types::Int8 => {
+                // "int8" | "bigserial"
                 let value: i64 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::I64(value)));
+                fields.push(Field::new_value(column.name(), Value::I64(value)));
             }
-            "text" | "varchar" => {
+            types::Text | types::Varchar | types::Char | types::Bpchar => {
+                // "text" | "bpchar" | "varchar"
                 let value: String = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::String(value)));
+                fields.push(Field::new_value(column.name(), Value::String(value)));
             }
-            "bool" => {
+            types::Bool => {
+                //"bool" | "boolean"
                 let value: bool = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::Bool(value)));
+                fields.push(Field::new_value(column.name(), Value::Bool(value)));
             }
-            "float4" => {
+            types::Float4 => {
+                // "float4"
                 let value: f32 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::F32(value)));
+                fields.push(Field::new_value(column.name(), Value::F32(value)));
             }
-            "float8" => {
+            types::Float8 => {
+                // "float8"
                 let value: f64 = row.get(idx);
-                record
-                    .fields_as_mut()
-                    .push(Field::new_value(column.name(), Value::F64(value)));
+                fields.push(Field::new_value(column.name(), Value::F64(value)));
+            }
+            types::Numeric => {
+                // "numeric" => {
+                let value: Decimal = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::Decimal(value)));
+            }
+            types::Bytea => {
+                // "bytea"
+                let value: Vec<u8> = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::Blob(value)));
+            }
+            types::Date => {
+                // "date"
+                let value: NaiveDate = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::Date(value)));
+            }
+            types::Time => {
+                // "time"
+                let value: NaiveTime = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::Time(value)));
+            }
+            types::Timestamp => {
+                // "timestamp"
+                let value: NaiveDateTime = row.get(idx);
+                fields.push(Field::new_value(column.name(), Value::DateTime(value)));
+            }
+            types::Int2Array => {
+                // "_int2"
+                fields.push(map_array::<i16>(&row, idx, column.name())?);
+            }
+            types::Int4Array => {
+                // "_int4"
+                fields.push(map_array::<i32>(&row, idx, column.name())?);
+            }
+            types::Int8Array => {
+                // "_int8"
+                fields.push(map_array::<i64>(&row, idx, column.name())?);
             }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }
@@ -128,51 +189,4 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
 }
 
 #[cfg(test)]
-mod tests {
-
-    use model::import::{handlers::ClosureRecordHandler, Importer};
-    use model::{xml, Initializable};
-
-    use super::PostgresImporter;
-
-    #[test]
-    #[ignore = "for manual testing"]
-    fn test_import() -> Result<(), Box<dyn std::error::Error>> {
-        let mut importer = PostgresImporter::new();
-        let config = xml::config::Configuration::with_xml("../../data/postgres-import-config.xml");
-
-        importer.init(Some(config))?;
-
-        let mut count = 0;
-        let mut handler = ClosureRecordHandler::new(|_record| {
-            count = count + 1;
-        });
-        importer.read(&mut handler)?;
-
-        assert!(count > 0);
-        Ok(())
-    }
-
-    #[test]
-    fn test_config() -> Result<(), Box<dyn std::error::Error>> {
-        let config = xml::config::Configuration::with_xml("../../data/postgres-import-config.xml");
-        let mut importer = PostgresImporter::new();
-        importer.init(Some(config))?;
-
-        assert!(importer.postgres.is_some());
-        let postgres = importer.postgres.unwrap();
-        assert_eq!(postgres.connection.host, "localhost".to_string());
-        assert_eq!(postgres.connection.port, 5432);
-        assert_eq!(postgres.connection.database, "postgres".to_string());
-        assert_eq!(postgres.connection.user, "postgres".to_string());
-        assert_eq!(
-            postgres.connection.password,
-            "6d598907-a775-4383-ab6f-de525c5ac0bf".to_string()
-        );
-
-        assert_eq!(postgres.sql, "select * from customers".to_string());
-        Ok(())
-    }
-
-    mod postgres;
-}
+mod tests;
