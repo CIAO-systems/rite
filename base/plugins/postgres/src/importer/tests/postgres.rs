@@ -1,5 +1,6 @@
 use std::error::Error;
 
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use model::{
     Initializable,
     import::{Importer, handlers::ClosureRecordHandler},
@@ -42,6 +43,12 @@ const CREATE_QUERY: &str = r#"
             f12 double precision,
             f13 numeric,
             f14 bytea,
+            f15 bpchar,
+            f16 boolean,
+            f17 timestamp,
+            f18 date,
+            f19 time,
+
             f100 serial,
             f101 bigserial
         );
@@ -49,24 +56,30 @@ const CREATE_QUERY: &str = r#"
 
 const INSERT_QUERY: &str = r#"
     INSERT INTO dummy 
-            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14) 
+            (f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19) 
         VALUES 
-            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) 
+            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) 
         RETURNING 
-            f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
+            f100,f101,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19
     "#;
 
 const SELECT_QUERY: &str = r#"
     SELECT 
-        f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f100,f101
+        f100,f101,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19
     FROM dummy
     "#;
+
+const TEST_TS: NaiveDateTime = NaiveDate::from_ymd_opt(2025, 10, 6)
+    .unwrap()
+    .and_hms_opt(8, 0, 0)
+    .unwrap();
 
 fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
     let mut transaction = embeded.client.transaction()?;
 
     transaction.execute(CREATE_QUERY, &[])?;
     let blob: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
     let params = (
         73,                                            // f1
         73 as i64,                                     // f2
@@ -82,12 +95,18 @@ fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
         4273.7342 as f64,                              // f12
         dec!(42.73),                                   // f13
         blob,                                          // f14
+        "Another text",                                // f15
+        false,                                         // f16
+        TEST_TS,                                       // f17
+        TEST_TS.date(),                                // f18
+        TEST_TS.time(),                                // f19
     );
     let rec = transaction.query_one(
         INSERT_QUERY,
         &[
             &params.0, &params.1, &params.2, &params.3, &params.4, &params.5, &params.6, &params.7,
-            &params.8, &params.9, &params.10, &params.11, &params.12, &params.13,
+            &params.8, &params.9, &params.10, &params.11, &params.12, &params.13, &params.14,
+            &params.15, &params.16, &params.17, &params.18,
         ],
     )?;
     test_insert(rec);
@@ -98,6 +117,10 @@ fn create_dummy_table(embeded: &mut Embedded) -> Result<(), Box<dyn Error>> {
 }
 
 fn test_insert(rec: postgres::Row) {
+    let value: i32 = rec.get("f100");
+    assert_eq!(value, 1);
+    let value: i64 = rec.get("f101");
+    assert_eq!(value, 1);
     let value: i32 = rec.get("f1");
     assert_eq!(value, 73);
     let value: i64 = rec.get("f2");
@@ -126,11 +149,16 @@ fn test_insert(rec: postgres::Row) {
     assert_eq!(value, dec!(42.73));
     let value: Vec<u8> = rec.get("f14");
     assert_eq!(value, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-    let value: i32 = rec.get("f100");
-    assert_eq!(value, 1);
-    let value: i64 = rec.get("f101");
-    assert_eq!(value, 1);
+    let value: &str = rec.get("f15");
+    assert_eq!(value, "Another text");
+    let value: bool = rec.get("f16");
+    assert_eq!(value, false);
+    let value: NaiveDateTime = rec.get("f17");
+    assert_eq!(value, TEST_TS);
+    let value: NaiveDate = rec.get("f18");
+    assert_eq!(value, TEST_TS.date());
+    let value: NaiveTime = rec.get("f19");
+    assert_eq!(value, TEST_TS.time());
 }
 
 fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn Error>> {
@@ -141,6 +169,16 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     let row = row.unwrap();
 
     let record = handle_row(row.clone())?;
+
+    let f = record.field_by_name("f100");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I32(1)));
+
+    let f = record.field_by_name("f101");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::I64(1)));
 
     let f = record.field_by_name("f1");
     assert!(f.is_some());
@@ -154,13 +192,13 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
 
     let f = record.field_by_name("f3");
     assert!(f.is_some());
-
     let value = f.unwrap().value();
     assert!(matches!(value, Value::String(_)));
     assert_eq!(
         value.to_string(),
         "This are not the droids you are looking for"
     );
+
     let f = record.field_by_name("f4");
     assert!(f.is_some());
     let value = f.unwrap().value();
@@ -216,15 +254,39 @@ fn test_supported(client: &mut Client) -> Result<model::record::Record, Box<dyn 
     let value = f.unwrap().value();
     assert!(matches!(value, Value::Blob(_)));
 
-    let f = record.field_by_name("f100");
-    assert!(f.is_some());
+    let f = record.field_by_name("f15");
     let value = f.unwrap().value();
-    assert!(matches!(value, Value::I32(1)));
+    assert!(matches!(value, Value::String(_)));
+    assert_eq!(value.to_string(), "Another text");
 
-    let f = record.field_by_name("f101");
+    let f = record.field_by_name("f16");
     assert!(f.is_some());
     let value = f.unwrap().value();
-    assert!(matches!(value, Value::I64(1)));
+    assert!(matches!(value, Value::Bool(false)));
+
+    let f = record.field_by_name("f17");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::DateTime(_)));
+    if let Value::DateTime(ts) = value {
+        assert_eq!(ts, TEST_TS);
+    }
+
+    let f = record.field_by_name("f18");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Date(_)));
+    if let Value::Date(date) = value {
+        assert_eq!(date, TEST_TS.date());
+    }
+
+    let f = record.field_by_name("f19");
+    assert!(f.is_some());
+    let value = f.unwrap().value();
+    assert!(matches!(value, Value::Time(_)));
+    if let Value::Time(time) = value {
+        assert_eq!(time, TEST_TS.time());
+    }
 
     Ok(record)
 }

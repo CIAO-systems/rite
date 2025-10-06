@@ -13,7 +13,7 @@ model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "
 
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
-postgres = "0.19"
+postgres = { version = "0.19", features = ["with-chrono-0_4"] } 
 chrono = "0.4"
 bytes = "1.9"
 log = "0.4"

@@ -1,3 +1,4 @@
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use config::RitePostgresImport;
 use model::import::{Importer, RecordHandler};
 use model::{
@@ -107,13 +108,13 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::I64(value)));
             }
-            "text" | "varchar" => {
+            "text" | "bpchar" | "varchar" => {
                 let value: String = row.get(idx);
                 record
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::String(value)));
             }
-            "bool" => {
+            "bool" | "boolean" => {
                 let value: bool = row.get(idx);
                 record
                     .fields_as_mut()
@@ -146,6 +147,24 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                 record
                     .fields_as_mut()
                     .push(Field::new_value(column.name(), Value::Blob(value)));
+            }
+            "date" => {
+                let value: NaiveDate = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::Date(value)));
+            }
+            "time" => {
+                let value: NaiveTime = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::Time(value)));
+            }
+            "timestamp" => {
+                let value: NaiveDateTime = row.get(idx);
+                record
+                    .fields_as_mut()
+                    .push(Field::new_value(column.name(), Value::DateTime(value)));
             }
             _ => return Err(format!("Unsupported type: {}", field_type).into()),
         }

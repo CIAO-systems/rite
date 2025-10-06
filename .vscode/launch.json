@@ -7,20 +7,6 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "gRPC reflection",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=reflection",
-                ]
-            },
-            "args": [
-                "https://consulting-app.moretime.cloud:443"
-            ]
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
             "name": "CSV random data exporter",
             "cargo": {
                 "args": [
