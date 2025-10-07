@@ -10,6 +10,7 @@ members = [
     # Base plugins
     "base/plugins/common", 
     "base/plugins/postgres", 
+    "base/plugins/mariadb", 
     "base/plugins/rest", 
     "base/plugins/faker", 
     "base/plugins/csv", 
