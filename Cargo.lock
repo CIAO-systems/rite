@@ -1894,6 +1894,7 @@ dependencies = [
  "num-bigint",
  "num-traits",
  "regex",
+ "rust_decimal",
  "saturating",
  "serde",
  "serde_json",
@@ -2879,6 +2880,7 @@ version = "0.1.0"
 dependencies = [
  "model",
  "mysql",
+ "rust_decimal",
  "serde",
  "serde-xml-rs 0.8.1",
 ]
