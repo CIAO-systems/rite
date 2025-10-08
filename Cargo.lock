@@ -2353,6 +2353,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77a120daaabfcb0e324d5bf6e411e9222994cb3795c79943a0ef28ed27ea76e4"
 dependencies = [
  "bytes",
+ "chrono",
  "fallible-iterator",
  "postgres-protocol",
 ]
@@ -2903,7 +2904,9 @@ dependencies = [
  "log4rs",
  "model",
  "postgres",
+ "postgres-types",
  "postgresql_embedded",
+ "rust_decimal",
  "serde",
  "serde-xml-rs 0.8.1",
  "tempfile",
@@ -4773,6 +4776,15 @@ name = "windows_x86_64_msvc"
 version = "0.53.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"
+
+[[package]]
+name = "winnow"
+version = "0.7.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21a0236b59786fed61e2a80582dd500fe61f18b5dca67a4a067d0bc9039339cf"
+dependencies = [
+ "memchr",
+]
 
 [[package]]
 name = "winnow"
