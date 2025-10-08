@@ -1,11 +1,10 @@
+use model::xml::common::DatabaseConnection;
 use serde::{Deserialize, Serialize};
-
-use crate::common::Connection;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename = "rite-postgres-import")]
 pub struct RitePostgresImport {
-    pub connection: Connection,
+    pub connection: DatabaseConnection,
     pub sql: String,
 }
 
@@ -52,7 +51,7 @@ mod tests {
                 let postgres: RitePostgresImport = match serde_xml_rs::from_str(&xml_contents) {
                     Ok(x) => x,
                     Err(e) => {
-                        return Err(format!("Cannot parse contents from {}: {}", xml_file, e).into())
+                        return Err(format!("Cannot parse contents from {}: {}", xml_file, e).into());
                     }
                 };
 

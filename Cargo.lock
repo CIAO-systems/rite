@@ -1804,7 +1804,7 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#61b824573b7b8c72ba0f906f0b9f52fec1284265"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#d0f233222b64298c836c36df6cab13380efca1e7"
 dependencies = [
  "chrono",
  "libloading",
@@ -2878,6 +2878,8 @@ version = "0.1.0"
 dependencies = [
  "model",
  "mysql",
+ "serde",
+ "serde-xml-rs 0.8.1",
 ]
 
 [[package]]

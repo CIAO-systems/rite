@@ -1,21 +1,21 @@
 use std::{error::Error, io::Write};
 
-use model::{export::Exporter, field::add_field, record::Record, value::Value, xml, Initializable};
+use model::{Initializable, export::Exporter, field::add_field, record::Record, value::Value, xml};
 
 use crate::{
-    common::Connection,
     embedded::Embedded,
     exporter::{
-        config::{RitePostgresExport, Table},
         PostgresExporter,
+        config::{RitePostgresExport, Table},
     },
 };
+use model::xml::common::DatabaseConnection;
 use tempfile::NamedTempFile;
 
 fn create_test_config(embeded: &Embedded) -> Result<NamedTempFile, Box<dyn Error>> {
     let settings = embeded.postgresql.settings();
     let postgres = Some(RitePostgresExport {
-        connection: Connection {
+        connection: DatabaseConnection {
             host: settings.host.clone(),
             port: settings.port,
             database: "test".to_string(),
@@ -25,7 +25,8 @@ fn create_test_config(embeded: &Embedded) -> Result<NamedTempFile, Box<dyn Error
         table: Table {
             name: "dummy".to_string(),
             create: Some(
-                "CREATE TABLE IF NOT EXISTS dummy (id int4 NOT NULL UNIQUE, f1 text, f2 int4)".to_string(),
+                "CREATE TABLE IF NOT EXISTS dummy (id int4 NOT NULL UNIQUE, f1 text, f2 int4)"
+                    .to_string(),
             ),
             unique_fields: Some("id".to_string()),
         },
@@ -87,7 +88,6 @@ fn test_export() -> Result<(), Box<dyn std::error::Error>> {
     add_field(record.fields_as_mut(), "f2", Value::I32(42));
 
     exporter.write(&record)?;
-
 
     // Assert (update)
     let rows = embeded.client.query("select id,f1,f2 from dummy", &[])?;
