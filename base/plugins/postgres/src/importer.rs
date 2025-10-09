@@ -182,7 +182,7 @@ fn handle_row(row: postgres::Row) -> Result<Record, Box<dyn std::error::Error>> 
                 // "_int8"
                 fields.push(map_array::<i64>(&row, idx, column.name())?);
             }
-            _ => return Err(format!("Unsupported type: {}", field_type).into()),
+            _ => return Err(format!("Unsupported type: {} for {}", field_type, column.name()).into()),
         }
     }
     Ok(record)

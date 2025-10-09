@@ -12,12 +12,12 @@ pub struct MockTableRow {
 
 impl MockTableRow {
     /// Creates a new mock row from raw MySQL `Value`s and column metadata.
-    // pub fn new(values: Vec<Value>, columns: Vec<Column>) -> Self {
-    //     Self {
-    //         values,
-    //         cols: Arc::from(columns),
-    //     }
-    // }
+    pub fn new(values: Vec<Value>, columns: Vec<Column>) -> Self {
+        Self {
+            values,
+            cols: Arc::from(columns),
+        }
+    }
 
     /// Creates a simplified mock row without column metadata.
     /// Useful when you only need the values for basic testing.

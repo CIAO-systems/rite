@@ -1,9 +1,10 @@
-use model::record::Record;
-use mysql::Value;
+use model::{record::Record, xml::config::Configuration};
+use mysql::{Column, Value};
 use rust_decimal::dec;
 
 use crate::importer::{tests::mock::MockTableRow, *};
 
+mod manual;
 mod mock;
 
 const THE_NAME_OF_THE_FIELD: &str = "the_name_of_the_field";
@@ -239,11 +240,171 @@ fn test_handle_time() {
     assert_eq!(field.value(), model::value::Value::Time(time));
 }
 
+fn new_column(ct: ColumnType, name: &str) -> Column {
+    Column::new(ct).with_name(name.as_bytes())
+}
+
 #[test]
 fn test_handle_row() {
-    let values = vec![];
-    let mock_row = MockTableRow::from_values(values);
+    let time = NaiveTime::from_hms_opt(12, 13, 14).unwrap();
+    let date = NaiveDate::from_ymd_opt(1991, 11, 24).unwrap();
+    let datetime = NaiveDateTime::new(date, time);
+
+    let values = vec![
+        Value::from(time),
+        Value::from(date),
+        Value::from(datetime),
+        Value::from(TEST_STRING_VALUE.as_bytes()),
+        Value::from(dec!(42.73)),
+        Value::from(1 as u8),
+        Value::from(2 as u16),
+        Value::from(3 as u32),
+        Value::from(4 as u64),
+        Value::from(42.73 as f32),
+        Value::from(73.42 as f64),
+        Value::from(2025 as u32),
+        Value::NULL,
+        Value::from(time),
+        Value::from(date),
+        Value::from(datetime),
+    ];
+    let columns = vec![
+        new_column(ColumnType::MYSQL_TYPE_TIME, "time"),
+        new_column(ColumnType::MYSQL_TYPE_DATE, "date"),
+        new_column(ColumnType::MYSQL_TYPE_DATETIME, "datetime"),
+        new_column(ColumnType::MYSQL_TYPE_VARCHAR, "varchar"),
+        new_column(ColumnType::MYSQL_TYPE_DECIMAL, "decimal"),
+        new_column(ColumnType::MYSQL_TYPE_TINY, "tiny")
+            .with_flags(consts::ColumnFlags::UNSIGNED_FLAG),
+        new_column(ColumnType::MYSQL_TYPE_SHORT, "short")
+            .with_flags(consts::ColumnFlags::UNSIGNED_FLAG),
+        new_column(ColumnType::MYSQL_TYPE_LONG, "long")
+            .with_flags(consts::ColumnFlags::UNSIGNED_FLAG),
+        new_column(ColumnType::MYSQL_TYPE_LONGLONG, "longlong")
+            .with_flags(consts::ColumnFlags::UNSIGNED_FLAG),
+        new_column(ColumnType::MYSQL_TYPE_FLOAT, "float"),
+        new_column(ColumnType::MYSQL_TYPE_DOUBLE, "double"),
+        new_column(ColumnType::MYSQL_TYPE_YEAR, "year")
+            .with_flags(consts::ColumnFlags::UNSIGNED_FLAG),
+        new_column(ColumnType::MYSQL_TYPE_NULL, "null"),
+        new_column(ColumnType::MYSQL_TYPE_TIME2, "time2"),
+        new_column(ColumnType::MYSQL_TYPE_NEWDATE, "newdate"),
+        new_column(ColumnType::MYSQL_TYPE_DATETIME2, "datetime2"),
+    ];
+
+    let mock_row = MockTableRow::new(values, columns);
 
     let result = handle_row(&mock_row);
-    assert!(result.is_ok())
+    println!("{:?}", result);
+    assert!(result.is_ok());
+
+    let record = result.ok().unwrap();
+    assert_eq!(
+        record.field_by_name("time").unwrap().value(),
+        model::value::Value::Time(time)
+    );
+    assert_eq!(
+        record.field_by_name("date").unwrap().value(),
+        model::value::Value::Date(date)
+    );
+    assert_eq!(
+        record.field_by_name("datetime").unwrap().value(),
+        model::value::Value::DateTime(datetime)
+    );
+    assert_eq!(
+        record.field_by_name("time2").unwrap().value(),
+        model::value::Value::Time(time)
+    );
+    assert_eq!(
+        record.field_by_name("newdate").unwrap().value(),
+        model::value::Value::Date(date)
+    );
+    assert_eq!(
+        record.field_by_name("datetime2").unwrap().value(),
+        model::value::Value::DateTime(datetime)
+    );
+    assert_eq!(
+        record.field_by_name("varchar").unwrap().value(),
+        model::value::Value::String(TEST_STRING_VALUE.into())
+    );
+
+    assert_eq!(
+        record.field_by_name("decimal").unwrap().value(),
+        model::value::Value::Decimal(dec!(42.73))
+    );
+
+    assert_eq!(
+        record.field_by_name("tiny").unwrap().value(),
+        model::value::Value::U8(1)
+    );
+    assert_eq!(
+        record.field_by_name("short").unwrap().value(),
+        model::value::Value::U16(2)
+    );
+    assert_eq!(
+        record.field_by_name("long").unwrap().value(),
+        model::value::Value::U32(3)
+    );
+    assert_eq!(
+        record.field_by_name("longlong").unwrap().value(),
+        model::value::Value::U64(4)
+    );
+    assert_eq!(
+        record.field_by_name("float").unwrap().value(),
+        model::value::Value::F32(42.73)
+    );
+    assert_eq!(
+        record.field_by_name("double").unwrap().value(),
+        model::value::Value::F64(73.42)
+    );
+    assert_eq!(
+        record.field_by_name("year").unwrap().value(),
+        model::value::Value::U32(2025)
+    );
+    assert_eq!(
+        record.field_by_name("null").unwrap().value(),
+        model::value::Value::None
+    );
+}
+
+#[test]
+fn test_handle_row_with_unknown() {
+    let values = vec![
+        Value::from(1),
+        Value::from(2.0),
+        Value::from(vec![]),
+        Value::from(TEST_STRING_VALUE.as_bytes()),
+    ];
+    let columns = vec![
+        Column::new(ColumnType::MYSQL_TYPE_TINY).with_name("tiny".as_bytes()),
+        Column::new(ColumnType::MYSQL_TYPE_FLOAT).with_name("float".as_bytes()),
+        Column::new(ColumnType::MYSQL_TYPE_BLOB).with_name("blob".as_bytes()),
+        Column::new(ColumnType::MYSQL_TYPE_VARCHAR).with_name("varchar".as_bytes()),
+        Column::new(ColumnType::MYSQL_TYPE_UNKNOWN).with_name("unknown".as_bytes()),
+    ];
+
+    let mock_row = MockTableRow::new(values, columns);
+
+    let result = handle_row(&mock_row);
+    println!("{:?}", result);
+    assert!(
+        result.is_err_and(|e| e.to_string() == "Unsupported type: MYSQL_TYPE_UNKNOWN for unknown")
+    );
+}
+
+#[test]
+fn test_init() {
+    let mut importer = MariaDBImporter::new();
+    let xml_file = "../../data/test/mariadb/mariadb-import-config.xml";
+    let config = Configuration::with_xml(xml_file);
+    let result = importer.init(Some(config));
+    assert!(result.is_ok());
+    assert!(importer.mariadb.is_some());
+    let mariadb = importer.mariadb.unwrap();
+    assert_eq!(mariadb.connection.host, "localhost");
+    assert_eq!(mariadb.connection.port, 3306);
+    assert_eq!(mariadb.connection.database, "mariadb");
+    assert_eq!(mariadb.connection.user, "user");
+    assert_eq!(mariadb.connection.password, "topsecret");
+    assert_eq!(mariadb.sql, "select * from customers");
 }
