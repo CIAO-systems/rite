@@ -1,0 +1,10 @@
+<rite-mariadb-import>
+    <connection 
+        host="localhost"
+        port="3306"
+        database="mariadb"
+        user="user"
+        password="${MARIADB_PASSWORD:topsecret}"
+    />
+    <sql>select * from customers</sql>
+</rite-mariadb-import>

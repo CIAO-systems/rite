@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::common::Connection;
+use model::xml::common::DatabaseConnection;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename = "rite-postgres-export")]
 pub struct RitePostgresExport {
-    pub connection: Connection,
+    pub connection: DatabaseConnection,
     pub table: Table,
 }
 

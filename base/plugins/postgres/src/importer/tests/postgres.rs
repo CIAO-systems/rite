@@ -11,10 +11,10 @@ use postgres::Client;
 use rust_decimal::{Decimal, dec};
 
 use crate::{
-    common::Connection,
     embedded::Embedded,
     importer::{PostgresImporter, config::RitePostgresImport, handle_row},
 };
+use model::xml::common::DatabaseConnection;
 
 #[test]
 fn test_handle_row() -> Result<(), Box<dyn std::error::Error>> {
@@ -362,7 +362,7 @@ fn test_import() -> Result<(), Box<dyn std::error::Error>> {
     // Overwrite config
     let settings = embeded.postgresql.settings();
     importer.postgres = Some(RitePostgresImport {
-        connection: Connection {
+        connection: DatabaseConnection {
             host: settings.host.clone(),
             port: settings.port,
             database: "test".to_string(),

@@ -4,6 +4,7 @@ members = [
     "rite", 
     "plugins/common", 
     "plugins/postgres", 
+    "plugins/mariadb", 
     "plugins/rest", 
     "plugins/faker", 
     "plugins/csv", 

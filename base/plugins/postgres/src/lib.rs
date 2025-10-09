@@ -1,7 +1,6 @@
 use exporter::PostgresExporter;
 use importer::PostgresImporter;
 
-mod common;
 mod exporter;
 mod importer;
 
