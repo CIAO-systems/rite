@@ -1,3 +1,4 @@
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use model::field::Field;
 use model::import::{Importer, RecordHandler};
 use model::record::Record;
@@ -7,14 +8,16 @@ use model::{
     Initializable,
     xml::{self},
 };
-use mysql::consts::ColumnType;
+use mysql::consts::{ColumnFlags, ColumnType};
 use mysql::prelude::Queryable;
 use mysql::{Opts, Pool, consts};
 use rust_decimal::Decimal;
 
 use crate::importer::config::RiteMariaDBImport;
+use crate::importer::tablerow::TableRow;
 
 mod config;
+mod tablerow;
 
 pub struct MariaDBImporter {
     mariadb: Option<RiteMariaDBImport>,
@@ -79,7 +82,7 @@ impl Importer for MariaDBImporter {
             for row in rows {
                 let row = row?;
 
-                let mut record = handle_row(row)?;
+                let mut record = handle_row(&row)?;
                 handler.handle_record(&mut record)?;
             }
         }
@@ -88,7 +91,7 @@ impl Importer for MariaDBImporter {
     }
 }
 
-fn handle_row(row: mysql::Row) -> Result<Record, Box<dyn std::error::Error>> {
+fn handle_row<R: TableRow>(row: &R) -> Result<Record, Box<dyn std::error::Error>> {
     let mut record = Record::new();
     let fields = record.fields_as_mut();
 
@@ -98,70 +101,23 @@ fn handle_row(row: mysql::Row) -> Result<Record, Box<dyn std::error::Error>> {
 
     for (index, column) in columns.iter().enumerate() {
         let col_type = column.column_type();
+        let col_name = &column.name_str().to_string();
+        let col_flags = &column.flags();
         match col_type {
             ColumnType::MYSQL_TYPE_DECIMAL | ColumnType::MYSQL_TYPE_NEWDECIMAL => {
-                row.get::<Decimal, _>(index).map(|value| {
-                    fields.push(Field::new_value(&column.name_str(), Value::Decimal(value)));
-                });
+                handle_decimal(row, fields, index, col_name)
             }
-            ColumnType::MYSQL_TYPE_TINY => {
-                if column.flags().contains(consts::ColumnFlags::UNSIGNED_FLAG) {
-                    row.get::<u32, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::U32(value)));
-                    });
-                } else {
-                    row.get::<i32, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::I32(value)));
-                    });
-                }
-            }
-            ColumnType::MYSQL_TYPE_SHORT => {
-                if column.flags().contains(consts::ColumnFlags::UNSIGNED_FLAG) {
-                    row.get::<u16, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::U16(value)));
-                    });
-                } else {
-                    row.get::<i16, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::I16(value)));
-                    });
-                }
-            }
-            ColumnType::MYSQL_TYPE_LONG => {
-                if column.flags().contains(consts::ColumnFlags::UNSIGNED_FLAG) {
-                    row.get::<u32, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::U32(value)));
-                    });
-                } else {
-                    row.get::<i32, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::I32(value)));
-                    });
-                }
-            }
+            ColumnType::MYSQL_TYPE_TINY => handle_tiny(row, fields, index, col_name, col_flags),
+            ColumnType::MYSQL_TYPE_SHORT => handle_short(row, fields, index, col_name, col_flags),
+            ColumnType::MYSQL_TYPE_LONG
+            | ColumnType::MYSQL_TYPE_YEAR
+            | ColumnType::MYSQL_TYPE_INT24 => handle_long(row, fields, index, col_name, col_flags),
             ColumnType::MYSQL_TYPE_LONGLONG => {
-                if column.flags().contains(consts::ColumnFlags::UNSIGNED_FLAG) {
-                    row.get::<u64, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::U64(value)));
-                    });
-                } else {
-                    row.get::<i64, _>(index).map(|value| {
-                        fields.push(Field::new_value(&column.name_str(), Value::I64(value)));
-                    });
-                }
+                handle_longlong(row, fields, index, col_name, col_flags)
             }
-
-            ColumnType::MYSQL_TYPE_FLOAT => {
-                row.get::<f32, _>(index).map(|value| {
-                    fields.push(Field::new_value(&column.name_str(), Value::F32(value)));
-                });
-            }
-            ColumnType::MYSQL_TYPE_DOUBLE => {
-                row.get::<f64, _>(index).map(|value| {
-                    fields.push(Field::new_value(&column.name_str(), Value::F64(value)));
-                });
-            }
-            ColumnType::MYSQL_TYPE_NULL => {
-                fields.push(Field::new_value(&column.name_str(), Value::None));
-            }
+            ColumnType::MYSQL_TYPE_FLOAT => handle_float(row, fields, index, col_name),
+            ColumnType::MYSQL_TYPE_DOUBLE => handle_double(row, fields, index, col_name),
+            ColumnType::MYSQL_TYPE_NULL => handle_null(fields, col_name),
             ColumnType::MYSQL_TYPE_VARCHAR
             | ColumnType::MYSQL_TYPE_ENUM
             | ColumnType::MYSQL_TYPE_TINY_BLOB
@@ -169,71 +125,154 @@ fn handle_row(row: mysql::Row) -> Result<Record, Box<dyn std::error::Error>> {
             | ColumnType::MYSQL_TYPE_LONG_BLOB
             | ColumnType::MYSQL_TYPE_BLOB
             | ColumnType::MYSQL_TYPE_VAR_STRING
-            | ColumnType::MYSQL_TYPE_SET => {
-                row.get::<String, _>(index).map(|value| {
-                    fields.push(Field::new_value(&column.name_str(), Value::String(value)));
-                });
+            | ColumnType::MYSQL_TYPE_SET
+            | ColumnType::MYSQL_TYPE_JSON => handle_string(row, fields, index, col_name),
+            ColumnType::MYSQL_TYPE_STRING | ColumnType::MYSQL_TYPE_GEOMETRY => {
+                handle_blob(row, fields, index, col_name)
             }
-            ColumnType::MYSQL_TYPE_STRING => {
-                row.get::<Vec<u8>, _>(index).map(|value| {
-                    fields.push(Field::new_value(&column.name_str(), Value::Blob(value)));
-                });
+            ColumnType::MYSQL_TYPE_TIMESTAMP
+            | ColumnType::MYSQL_TYPE_DATETIME2
+            | ColumnType::MYSQL_TYPE_DATETIME
+            | ColumnType::MYSQL_TYPE_TIMESTAMP2 => handle_timestamp(row, fields, index, col_name),
+            ColumnType::MYSQL_TYPE_DATE | ColumnType::MYSQL_TYPE_NEWDATE => {
+                handle_date(row, fields, index, col_name)
+            }
+            ColumnType::MYSQL_TYPE_TIME | ColumnType::MYSQL_TYPE_TIME2 => {
+                handle_time(row, fields, index, col_name)
             }
 
-            // TODO finish implementing
-            // ColumnType::MYSQL_TYPE_TIMESTAMP => todo!(),
-            // ColumnType::MYSQL_TYPE_INT24 => todo!(),
-            // ColumnType::MYSQL_TYPE_DATE => todo!(),
-            // ColumnType::MYSQL_TYPE_TIME => todo!(),
-            // ColumnType::MYSQL_TYPE_DATETIME => todo!(),
-            // ColumnType::MYSQL_TYPE_YEAR => todo!(),
-            // ColumnType::MYSQL_TYPE_NEWDATE => todo!(),
+            // Yet unsupported types:
             // ColumnType::MYSQL_TYPE_BIT => todo!(),
-            // ColumnType::MYSQL_TYPE_TIMESTAMP2 => todo!(),
-            // ColumnType::MYSQL_TYPE_DATETIME2 => todo!(),
-            // ColumnType::MYSQL_TYPE_TIME2 => todo!(),
             // ColumnType::MYSQL_TYPE_TYPED_ARRAY => todo!(),
             // ColumnType::MYSQL_TYPE_VECTOR => todo!(),
             // ColumnType::MYSQL_TYPE_UNKNOWN => todo!(),
-            // ColumnType::MYSQL_TYPE_JSON => todo!(),
-            // ColumnType::MYSQL_TYPE_GEOMETRY => todo!(),
-            _ => return Err(format!("Unsupported type: {:?}", col_type).into()),
+            _ => return Err(format!("Unsupported type: {:?} for {}", col_type, col_name).into()),
         }
     }
 
     Ok(record)
 }
 
-#[cfg(test)]
-mod tests {
-    use model::{
-        Initializable,
-        import::{Importer, handlers::ClosureRecordHandler},
-        xml::config::Configuration,
-    };
+fn handle_time<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<NaiveTime>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::Time(value)));
+    });
+}
 
-    use crate::importer::MariaDBImporter;
+fn handle_date<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<NaiveDate>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::Date(value)));
+    });
+}
 
-    #[test]
-    #[ignore = "for manual testing"]
-    fn test_import_manual() {
-        let mut importer = MariaDBImporter::new();
-        let xml_file = "../../data/test/mariadb/mariadb-import-config.xml";
-        let config = Configuration::with_xml(xml_file);
-        let result = importer.init(Some(config));
-        assert!(result.is_ok());
-        assert!(importer.mariadb.is_some());
+fn handle_timestamp<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<NaiveDateTime>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::DateTime(value)));
+    });
+}
 
-        let mut handler = ClosureRecordHandler::new(|r| println!("{:?}", r));
-        let result = importer.read(&mut handler);
-        assert!(result.is_ok());
+fn handle_blob<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<Vec<u8>>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::Blob(value)));
+    });
+}
 
-        let mariadb = importer.mariadb.unwrap();
-        assert_eq!(mariadb.connection.host, "localhost");
-        assert_eq!(mariadb.connection.port, 3306);
-        assert_eq!(mariadb.connection.database, "mariadb");
-        assert_eq!(mariadb.connection.user, "user");
-        assert_eq!(mariadb.connection.password, "topsecret");
-        assert_eq!(mariadb.sql, "select * from customers");
+fn handle_string<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<String>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::String(value)));
+    });
+}
+
+fn handle_null(fields: &mut Vec<Field>, col_name: &str) {
+    fields.push(Field::new_value(col_name, Value::None));
+}
+
+fn handle_double<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<f64>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::F64(value)));
+    });
+}
+
+fn handle_float<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<f32>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::F32(value)));
+    });
+}
+
+fn handle_longlong<R: TableRow>(row: &R,
+    fields: &mut Vec<Field>,
+    index: usize,
+    col_name: &str,
+    col_flags: &ColumnFlags,
+) {
+    if col_flags.contains(consts::ColumnFlags::UNSIGNED_FLAG) {
+        row.get::<u64>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::U64(value)));
+        });
+    } else {
+        row.get::<i64>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::I64(value)));
+        });
     }
 }
+
+fn handle_long<R: TableRow>(row: &R,
+    fields: &mut Vec<Field>,
+    index: usize,
+    col_name: &str,
+    col_flags: &ColumnFlags,
+) {
+    if col_flags.contains(consts::ColumnFlags::UNSIGNED_FLAG) {
+        row.get::<u32>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::U32(value)));
+        });
+    } else {
+        row.get::<i32>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::I32(value)));
+        });
+    }
+}
+
+fn handle_short<R: TableRow>(row: &R,
+    fields: &mut Vec<Field>,
+    index: usize,
+    col_name: &str,
+    col_flags: &ColumnFlags,
+) {
+    if col_flags.contains(consts::ColumnFlags::UNSIGNED_FLAG) {
+        row.get::<u16>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::U16(value)));
+        });
+    } else {
+        row.get::<i16>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::I16(value)));
+        });
+    }
+}
+
+fn handle_tiny<R: TableRow>(
+    row: &R,
+    fields: &mut Vec<Field>,
+    index: usize,
+    col_name: &str,
+    col_flags: &ColumnFlags,
+) {
+    if col_flags.contains(consts::ColumnFlags::UNSIGNED_FLAG) {
+        row.get::<u8>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::U8(value)));
+        });
+    } else {
+        row.get::<i8>(index).map(|value| {
+            fields.push(Field::new_value(col_name, Value::I8(value)));
+        });
+    }
+}
+
+fn handle_decimal<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col_name: &str) {
+    row.get::<Decimal>(index).map(|value| {
+        fields.push(Field::new_value(col_name, Value::Decimal(value)));
+    });
+}
+
+#[cfg(test)]
+mod tests;

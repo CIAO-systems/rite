@@ -1887,6 +1887,7 @@ dependencies = [
  "btoi",
  "byteorder",
  "bytes",
+ "chrono",
  "crc32fast",
  "flate2",
  "getrandom 0.3.3",
@@ -2878,6 +2879,7 @@ dependencies = [
 name = "rite_mariadb"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "model",
  "mysql",
  "rust_decimal",
