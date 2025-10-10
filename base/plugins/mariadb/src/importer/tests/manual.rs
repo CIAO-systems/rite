@@ -22,7 +22,7 @@ fn test_import_manual() {
 
     let mariadb = importer.mariadb.unwrap();
     assert_eq!(mariadb.connection.host, "localhost");
-    assert_eq!(mariadb.connection.port, 3306);
+    assert_eq!(mariadb.connection.port, 3306); 
     assert_eq!(mariadb.connection.database, "mariadb");
     assert_eq!(mariadb.connection.user, "user");
     assert_eq!(mariadb.connection.password, "topsecret");

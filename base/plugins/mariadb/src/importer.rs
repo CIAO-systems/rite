@@ -13,6 +13,7 @@ use mysql::prelude::Queryable;
 use mysql::{Opts, Pool, consts};
 use rust_decimal::Decimal;
 
+use crate::connect;
 use crate::importer::config::RiteMariaDBImport;
 use crate::importer::tablerow::TableRow;
 
@@ -63,18 +64,8 @@ impl Importer for MariaDBImporter {
     fn read(&mut self, handler: &mut dyn RecordHandler) -> Result<(), Box<dyn std::error::Error>> {
         if let Some(ref mariadb) = self.mariadb {
             // connect to database
-            // execute query
-            let connection_string = format!(
-                "mysql://{user}:{password}@{host}:{port}/{database}",
-                host = mariadb.connection.host,
-                port = mariadb.connection.port,
-                user = mariadb.connection.user,
-                password = mariadb.connection.password,
-                database = mariadb.connection.database
-            );
+            let mut client = connect(&mariadb.connection)?;
 
-            let pool = Pool::new(Opts::from_url(&connection_string)?)?;
-            let mut client = pool.get_conn()?;
             // Execute the query
             let rows = client.query_iter(&mariadb.sql)?;
 
@@ -199,7 +190,8 @@ fn handle_float<R: TableRow>(row: &R, fields: &mut Vec<Field>, index: usize, col
     });
 }
 
-fn handle_longlong<R: TableRow>(row: &R,
+fn handle_longlong<R: TableRow>(
+    row: &R,
     fields: &mut Vec<Field>,
     index: usize,
     col_name: &str,
@@ -216,7 +208,8 @@ fn handle_longlong<R: TableRow>(row: &R,
     }
 }
 
-fn handle_long<R: TableRow>(row: &R,
+fn handle_long<R: TableRow>(
+    row: &R,
     fields: &mut Vec<Field>,
     index: usize,
     col_name: &str,
@@ -233,7 +226,8 @@ fn handle_long<R: TableRow>(row: &R,
     }
 }
 
-fn handle_short<R: TableRow>(row: &R,
+fn handle_short<R: TableRow>(
+    row: &R,
     fields: &mut Vec<Field>,
     index: usize,
     col_name: &str,

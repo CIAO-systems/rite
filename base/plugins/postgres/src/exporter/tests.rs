@@ -1,13 +1,10 @@
 use std::{error::Error, io::Write};
 
-use model::{Initializable, export::Exporter, field::add_field, record::Record, value::Value, xml};
+use model::{export::Exporter, field::add_field, record::Record, value::Value, xml::{self, common::Table}, Initializable};
 
 use crate::{
     embedded::Embedded,
-    exporter::{
-        PostgresExporter,
-        config::{RitePostgresExport, Table},
-    },
+    exporter::{PostgresExporter, config::RitePostgresExport},
 };
 use model::xml::common::DatabaseConnection;
 use tempfile::NamedTempFile;

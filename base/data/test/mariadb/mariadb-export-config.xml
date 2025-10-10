@@ -1,0 +1,19 @@
+<rite-mariadb-export>
+    <connection 
+        host="localhost"
+        port="3306"
+        database="mariadb"
+        user="user"
+        password="${MARIADB_PASSWORD:topsecret}"
+    />
+    <table name="backup_customer" uniqueFields="id">
+        <create>
+        <![CDATA[
+CREATE TABLE backup_customer (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ]]>
+        </create>
+    </table>
+</rite-mariadb-export>
