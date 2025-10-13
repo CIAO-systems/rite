@@ -8,9 +8,8 @@ use model::{
     Initializable,
     xml::{self},
 };
-use mysql::consts::{ColumnFlags, ColumnType};
+use mysql::consts::{self, ColumnFlags, ColumnType};
 use mysql::prelude::Queryable;
-use mysql::{Opts, Pool, consts};
 use rust_decimal::Decimal;
 
 use crate::connect;

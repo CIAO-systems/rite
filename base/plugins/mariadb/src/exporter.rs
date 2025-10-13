@@ -1,9 +1,15 @@
-use model::{Initializable, export::Exporter, xml::file::load_and_substitute_from_env};
+use model::export::Exporter;
 use mysql::{PooledConn, prelude::Queryable};
+use rite_sql::{generate_insert_statement, generate_update_statement};
 
-use crate::{connect, exporter::config::RiteMariaDBExport};
+use crate::{
+    connect,
+    exporter::{config::RiteMariaDBExport, sql::MariaDBFlavor},
+};
 
 mod config;
+mod initializable;
+mod sql;
 
 pub struct MariaDBExporter {
     mariadb: Option<RiteMariaDBExport>,
@@ -61,64 +67,73 @@ impl MariaDBExporter {
         Ok(())
     }
 
-    fn insert_or_update(&self, record: &model::record::Record) -> Result<(), model::BoxedError> {
-        if let Some(client) = &self.client {
-            // try to insert the record
-            let insert_result = self.insert(client, record);
-        }
-
-        Ok(())
-    }
-
-    fn insert(
-        &self,
-        client: &PooledConn,
+    fn insert_or_update(
+        &mut self,
         record: &model::record::Record,
     ) -> Result<(), model::BoxedError> {
-        
+        if let Some(ref mut client) = self.client {
+            if let Some(ref config) = self.mariadb {
+                // try to insert the record
+                let insert_result = insert(config, client, record);
+                return match insert_result {
+                    Ok(_count) => Ok(()),
+                    Err(e) => {
+                        if let Some(mysql::Error::MySqlError(e)) = e.downcast_ref::<mysql::Error>()
+                        {
+                            if e.code == sql::error_code::ER_DUP_ENTRY {
+                                return match update(config, client, record) {
+                                    Ok(_count) => Ok(()),
+                                    Err(e) => Err(e),
+                                };
+                            }
+                        }
+                        Err(e)
+                    }
+                };
+            }
+        }
+
         Ok(())
     }
 }
 
-impl Initializable for MariaDBExporter {
-    fn init(
-        &mut self,
-        config: Option<model::xml::config::Configuration>,
-    ) -> Result<(), model::BoxedError> {
-        if let Some(config) = config {
-            if let Some(ref xml) = config.xml {
-                match load_and_substitute_from_env(xml, &std::collections::HashMap::new()) {
-                    Ok(xml_contents) => {
-                        let mariadb: config::RiteMariaDBExport =
-                            match serde_xml_rs::from_str(&xml_contents) {
-                                Ok(x) => x,
-                                Err(e) => {
-                                    return Err(format!(
-                                        "Cannot parse contents from {}: {}",
-                                        xml, e
-                                    )
-                                    .into());
-                                }
-                            };
-                        self.mariadb = Some(mariadb);
+fn insert(
+    config: &RiteMariaDBExport,
+    client: &mut PooledConn,
+    record: &model::record::Record,
+) -> Result<u64, model::BoxedError> {
+    let affected_rows = if let Ok(statement) =
+        generate_insert_statement::<MariaDBFlavor>(&config.table.name, record)
+    {
+        let params: Vec<mysql::Value> = statement.params.iter().map(|p| p.into()).collect();
 
-                        // Connect here already, because write is called from outside
-                        self.connect()?;
+        client.exec_drop(&statement.sql, params)?;
+        client.affected_rows()
+    } else {
+        0
+    };
+    Ok(affected_rows)
+}
 
-                        // Create table, if necessary
-                        if self.needs_creating() {
-                            self.create()?;
-                        }
-                    }
-                    Err(e) => {
-                        eprintln!("Error while loading {}: {}", xml, e);
-                        return Err(e.into());
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
+fn update(
+    config: &RiteMariaDBExport,
+    client: &mut PooledConn,
+    record: &model::record::Record,
+) -> Result<u64, model::BoxedError> {
+    let unique_fields = config.table.get_unique_fields_as_vec();
+    let affected_rows = if let Ok(statement) =
+        generate_update_statement::<MariaDBFlavor>(&config.table.name, record, &unique_fields)
+    {
+        let params: Vec<mysql::Value> = statement.params.iter().map(|p| p.into()).collect();
+        println!("sql={}\nparams={:?}", statement.sql, statement.params);
+        client.exec_drop(&statement.sql, params)?;
+
+        client.affected_rows()
+    } else {
+        0
+    };
+
+    Ok(affected_rows)
 }
 
 impl Exporter for MariaDBExporter {
@@ -128,3 +143,6 @@ impl Exporter for MariaDBExporter {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

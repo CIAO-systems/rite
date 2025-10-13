@@ -18,4 +18,7 @@ members = [
     # Extended plugins
     "extended/plugins/youtrack", 
     "extended/plugins/personio",
+    # Libraries
+    "base/libraries/sql", 
+
 ]
