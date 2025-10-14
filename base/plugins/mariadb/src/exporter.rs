@@ -120,7 +120,7 @@ fn update(
     client: &mut PooledConn,
     record: &model::record::Record,
 ) -> Result<u64, model::BoxedError> {
-    let unique_fields = config.table.get_unique_fields_as_vec();
+    let unique_fields = config.table.get_unique_fields_as_set();
     let affected_rows = if let Ok(statement) =
         generate_update_statement::<MariaDBFlavor>(&config.table.name, record, &unique_fields)
     {

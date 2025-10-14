@@ -1803,8 +1803,8 @@ dependencies = [
 
 [[package]]
 name = "model"
-version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#4d986ff205df8a4d07230ab1b6ae9eaab036893a"
+version = "0.1.1"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#5a320a18cfe4aced6cb61331003a5da8562f77e1"
 dependencies = [
  "chrono",
  "libloading",

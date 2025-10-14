@@ -132,7 +132,7 @@ fn update(
     record: &Record,
     client: &mut Client,
 ) -> Result<u64, postgres::Error> {
-    let unique_fields = config.table.get_unique_fields_as_vec();
+    let unique_fields = config.table.get_unique_fields_as_set();
     if let Ok(statement) =
         generate_update_statement::<PostgresFlavor>(&config.table.name, record, &unique_fields)
     {

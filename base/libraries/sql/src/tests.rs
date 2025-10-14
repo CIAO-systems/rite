@@ -49,7 +49,7 @@ fn test_generate_update() {
     add_field(fields, "bool", Value::Bool(true));
     add_field(fields, "int", Value::I32(73));
 
-    let unique_fields = vec!["id".to_string()];
+    let unique_fields = ["id"].iter().cloned().collect();
     let query =
         generate_update_statement::<TestDatabaseFlavor>("table_name", &record, &unique_fields);
     assert!(query.is_ok());
@@ -101,7 +101,7 @@ fn test_generate_update_statement() {
         Value::String("Some name".to_string()),
         Value::I32(0),
         Value::String("user@company".to_string()),
-    ]; 
+    ];
 
     let mut record = Record::new();
     let fields = record.fields_as_mut();
@@ -109,7 +109,7 @@ fn test_generate_update_statement() {
     fields.push(Field::new_value("index", expected[1].clone()));
     fields.push(Field::new_value("email", expected[2].clone()));
 
-    let unique_fields = ["index".to_string(), "email".to_string()].to_vec();
+    let unique_fields = ["index", "email"].iter().cloned().collect();
     if let Ok(statement) =
         generate_update_statement::<AnotherTestDatabaseFlavor>("tablename", &record, &unique_fields)
     {
@@ -122,7 +122,10 @@ fn test_generate_update_statement() {
         println!("expected={:?}", expected);
         assert_eq!(3, statement.params.len());
         for (i, value) in expected.iter().enumerate() {
-            println!("i={:?}, value={:?}, param[i]={:?}", i, value, statement.params[i].0);
+            println!(
+                "i={:?}, value={:?}, param[i]={:?}",
+                i, value, statement.params[i].0
+            );
             assert_eq!(*value, statement.params[i].0);
         }
     }
