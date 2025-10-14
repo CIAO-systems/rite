@@ -56,7 +56,7 @@ fn test_generate_update() {
     let query = query.unwrap();
     assert_eq!(
         query.sql,
-        "UPDATE table_name SET bool = <2>, int = <3> WHERE id = <1>;"
+        "UPDATE table_name SET bool = <1>, int = <2> WHERE id = <3>;"
     );
     assert_eq!(query.params.len(), 3);
 }
@@ -98,28 +98,31 @@ fn test_generate_insert_statement() {
 #[test]
 fn test_generate_update_statement() {
     let expected = [
+        Value::String("Some name".to_string()),
         Value::I32(0),
         Value::String("user@company".to_string()),
-        Value::String("Some name".to_string()),
-    ];
+    ]; 
 
     let mut record = Record::new();
     let fields = record.fields_as_mut();
-    fields.push(Field::new_value("index", expected[0].clone()));
-    fields.push(Field::new_value("email", expected[1].clone()));
-    fields.push(Field::new_value("name", expected[2].clone()));
+    fields.push(Field::new_value("name", expected[0].clone()));
+    fields.push(Field::new_value("index", expected[1].clone()));
+    fields.push(Field::new_value("email", expected[2].clone()));
 
     let unique_fields = ["index".to_string(), "email".to_string()].to_vec();
     if let Ok(statement) =
         generate_update_statement::<AnotherTestDatabaseFlavor>("tablename", &record, &unique_fields)
     {
         assert_eq!(
-            "UPDATE tablename SET name = $3 WHERE index = $1 AND email = $2;",
+            "UPDATE tablename SET name = $1 WHERE index = $2 AND email = $3;",
             statement.sql
         );
 
+        println!("params={:?}", statement.params);
+        println!("expected={:?}", expected);
         assert_eq!(3, statement.params.len());
         for (i, value) in expected.iter().enumerate() {
+            println!("i={:?}, value={:?}, param[i]={:?}", i, value, statement.params[i].0);
             assert_eq!(*value, statement.params[i].0);
         }
     }
