@@ -42,3 +42,20 @@ impl Initializable for MariaDBExporter {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use model::{xml::config::Configuration, Initializable};
+
+    use crate::exporter::MariaDBExporter;
+
+    #[test]
+    fn test_init() {
+        let mut exporter = MariaDBExporter::new();
+        let config = Configuration::with_xml("../../data/test/mariadb/unit-test-export.xml");
+        let result = exporter.init(Some(config));
+        assert!(result.is_err());
+        let e = result.err().unwrap().to_string();
+        assert!(e.contains("unknown:73"));
+    }
+}

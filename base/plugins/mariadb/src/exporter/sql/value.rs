@@ -18,7 +18,7 @@ impl From<ValueWrapper> for mysql::Value {
             Value::I16(v) => mysql::Value::Int(v as i64),
             Value::I32(v) => mysql::Value::Int(v as i64),
             Value::I64(v) => mysql::Value::Int(v),
-            Value::I128(v) => mysql::Value::Bytes(v.to_string().into_bytes()),
+            Value::I128(v) => mysql::Value::Double(v as f64),
             Value::ISize(v) => mysql::Value::Int(v as i64),
 
             // --- Unsigned integers ---
@@ -26,15 +26,12 @@ impl From<ValueWrapper> for mysql::Value {
             Value::U16(v) => mysql::Value::UInt(v as u64),
             Value::U32(v) => mysql::Value::UInt(v as u64),
             Value::U64(v) => mysql::Value::UInt(v),
-            Value::U128(v) => mysql::Value::Bytes(v.to_string().into_bytes()),
+            Value::U128(v) => mysql::Value::Double(v as f64),
             Value::USize(v) => mysql::Value::UInt(v as u64),
 
             // --- Floating-point numbers ---
             Value::F32(v) => mysql::Value::Float(v),
             Value::F64(v) => mysql::Value::Double(v),
-
-            // --- Decimal ---
-            Value::Decimal(d) => mysql::Value::Bytes(d.to_string().into_bytes()),
 
             // --- Strings ---
             Value::String(s) => mysql::Value::Bytes(s.into_bytes()),
@@ -72,7 +69,147 @@ impl From<ValueWrapper> for mysql::Value {
 
             // --- None/null ---
             Value::None => mysql::Value::NULL,
+            // Unsupported types
+            // --- Decimal ---
+            // Value::Decimal(d) => mysql::Value::Bytes(d.to_string().into_bytes()),
             _ => mysql::Value::NULL,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chrono::{NaiveDate, NaiveTime};
+    use rust_decimal::dec;
+
+    use crate::exporter::sql::value::ValueWrapper;
+
+    #[test]
+    fn test_from_bool() {
+        let v = ValueWrapper(model::value::Value::Bool(true));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(1));
+    }
+
+    #[test]
+    fn test_from_char() {
+        let v = ValueWrapper(model::value::Value::Char('A'));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Bytes("A".as_bytes().to_vec()));
+    }
+
+    #[test]
+    fn test_from_int() {
+        let v = ValueWrapper(model::value::Value::I8(8));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(8));
+
+        let v = ValueWrapper(model::value::Value::I16(-16));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(-16));
+
+        let v = ValueWrapper(model::value::Value::I32(32));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(32));
+
+        let v = ValueWrapper(model::value::Value::I64(-64));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(-64));
+
+        let v = ValueWrapper(model::value::Value::I128(128));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Double(128.0));
+
+        let v = ValueWrapper(model::value::Value::ISize(-256));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Int(-256));
+    }
+
+    #[test]
+    fn test_from_uint() {
+        let v = ValueWrapper(model::value::Value::U8(8));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::UInt(8));
+
+        let v = ValueWrapper(model::value::Value::U16(16));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::UInt(16));
+
+        let v = ValueWrapper(model::value::Value::U32(32));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::UInt(32));
+
+        let v = ValueWrapper(model::value::Value::U64(64));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::UInt(64));
+
+        let v = ValueWrapper(model::value::Value::U128(128));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Double(128.0));
+
+        let v = ValueWrapper(model::value::Value::USize(256));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::UInt(256));
+    }
+
+    #[test]
+    fn test_from_float() {
+        let v = ValueWrapper(model::value::Value::F32(84.72));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Float(84.72));
+
+        let v = ValueWrapper(model::value::Value::F64(84.72));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Double(84.72));
+    }
+
+    #[test]
+    fn test_from_string() {
+        const EXPECTED: &str = "I am your father";
+        let v = ValueWrapper(model::value::Value::String(EXPECTED.into()));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Bytes(EXPECTED.as_bytes().to_vec()));
+    }
+
+    #[test]
+    fn test_from_blob() {
+        const EXPECTED: &str = "I am your father";
+        let v = ValueWrapper(model::value::Value::Blob(EXPECTED.into()));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Bytes(EXPECTED.into()));
+    }
+
+    #[test]
+    fn test_from_temporal() {
+        let expected = NaiveDate::from_ymd_opt(1991, 11, 24).unwrap();
+        let v = ValueWrapper(model::value::Value::Date(expected));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Date(1991, 11, 24, 0, 0, 0, 0));
+
+        let v = ValueWrapper(model::value::Value::DateTime(
+            expected.and_hms_opt(12, 13, 14).unwrap(),
+        ));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Date(1991, 11, 24, 12, 13, 14, 0));
+
+        let v = ValueWrapper(model::value::Value::Time(
+            NaiveTime::from_hms_opt(12, 13, 14).unwrap(),
+        ));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::Time(false, 0, 12, 13, 14, 0));
+    }
+
+    #[test]
+    fn test_from_null() {
+        let v = ValueWrapper(model::value::Value::None);
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::NULL);
+    }
+
+    #[test]
+    fn test_from_decimal() {
+        let v = ValueWrapper(model::value::Value::Decimal(dec!(84.72)));
+        let mv: mysql::Value = v.into();
+        assert_eq!(mv, mysql::Value::NULL); // Not supported -> NULL
     }
 }

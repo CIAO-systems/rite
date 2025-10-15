@@ -33,9 +33,12 @@ pub fn generate_insert_statement<F: DatabaseFlavor>(
         index += 1;
     }
 
+    if column_names.is_empty() {
+        return Err("No fields to insert".into());
+    }
+
     let sql = format!(
-        "INSERT INTO {} ({}) VALUES ({});",
-        table_name,
+        "INSERT INTO {table_name} ({}) VALUES ({});",
         column_names.join(", "),
         param_placeholders.join(", ")
     );
@@ -94,8 +97,7 @@ pub fn generate_update_statement<F: DatabaseFlavor>(
 
     //Construct SQL
     let sql = format!(
-        "UPDATE {} SET {} WHERE {};",
-        table_name,
+        "UPDATE {table_name} SET {} WHERE {};",
         set_clauses.join(", "),
         where_clauses.join(" AND ")
     );

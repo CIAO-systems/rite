@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use model::{
     field::{Field, add_field},
     record::Record,
@@ -129,4 +131,34 @@ fn test_generate_update_statement() {
             assert_eq!(*value, statement.params[i].0);
         }
     }
+}
+
+#[test]
+fn test_generate_insert_err() {
+    let record = Record::new();
+    let result = generate_insert_statement::<TestDatabaseFlavor>("table_name", &record);
+    assert!(result.is_err());
+    let e = result.err().unwrap();
+    assert_eq!(e.to_string(), "No fields to insert");
+}
+
+#[test]
+fn test_generate_update_err() {
+    let record = Record::new();
+    let result =
+        generate_update_statement::<TestDatabaseFlavor>("table_name", &record, &HashSet::new());
+    assert!(result.is_err());
+    let e = result.err().unwrap();
+    assert_eq!(e.to_string(), "No non-unique fields to update");
+}
+
+#[test]
+fn test_generate_update_err_no_unique() {
+    let mut record = Record::new();
+    add_field(record.fields_as_mut(), "field", 42.into());
+    let result =
+        generate_update_statement::<TestDatabaseFlavor>("table_name", &record, &HashSet::new());
+    assert!(result.is_err());
+    let e = result.err().unwrap();
+    assert_eq!(e.to_string(), "No unique fields specified for WHERE clause (required for update)");
 }

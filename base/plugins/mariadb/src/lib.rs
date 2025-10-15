@@ -24,16 +24,21 @@ pub fn create_exporter(
     Ok(Box::new(MariaDBExporter::new()))
 }
 
-/// Connect to a MariaDB/MySQL database
-pub fn connect(connection: &DatabaseConnection) -> Result<PooledConn, BoxedError> {
-    let connection_string = format!(
+/// Create the MySQL connection string
+pub fn create_connection_string(connection: &DatabaseConnection) -> String {
+    format!(
         "mysql://{user}:{password}@{host}:{port}/{database}",
         host = connection.host,
         port = connection.port,
         user = connection.user,
         password = connection.password,
         database = connection.database
-    );
+    )
+}
+
+/// Connect to a MariaDB/MySQL database
+pub fn connect(connection: &DatabaseConnection) -> Result<PooledConn, BoxedError> {
+    let connection_string = create_connection_string(connection);
 
     let pool = Pool::new(Opts::from_url(&connection_string)?)?;
     Ok(pool.get_conn()?)
@@ -41,7 +46,9 @@ pub fn connect(connection: &DatabaseConnection) -> Result<PooledConn, BoxedError
 
 #[cfg(test)]
 mod tests {
-    use crate::create_importer;
+    use model::xml::common::DatabaseConnection;
+
+    use crate::{connect, create_connection_string, create_exporter, create_importer};
 
     fn type_of<T>(_: &T) -> &str {
         std::any::type_name::<T>()
@@ -56,5 +63,46 @@ mod tests {
             type_of(&importer),
             "alloc::boxed::Box<dyn model::import::Importer>"
         );
+    }
+
+    #[test]
+    fn test_create_exporter() {
+        let exporter = create_exporter("any");
+        assert!(exporter.is_ok());
+        let exporter = exporter.unwrap();
+        assert_eq!(
+            type_of(&exporter),
+            "alloc::boxed::Box<dyn model::export::Exporter>"
+        );
+    }
+
+    #[test]
+    fn test_create_connection_string() {
+        let connection = DatabaseConnection {
+            host: "host".into(),
+            port: 73,
+            database: "database".into(),
+            user: "user".into(),
+            password: "password".into(),
+        };
+
+        let connection_string = create_connection_string(&connection);
+        assert_eq!(connection_string, "mysql://user:password@host:73/database");
+    }
+
+    #[test]
+    fn test_connect() {
+        let connection = DatabaseConnection {
+            host: "host".into(),
+            port: 73,
+            database: "database".into(),
+            user: "user".into(),
+            password: "password".into(),
+        };
+
+        let result = connect(&connection);
+        assert!(result.is_err());
+        let e = result.err().unwrap().to_string();
+        assert!(e.contains("host:73"));
     }
 }

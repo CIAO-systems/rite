@@ -7,6 +7,8 @@ cargo tarpaulin \
     --exclude-files "base/rite/src/main.rs" \
     --exclude-files "base/rite/src/processor/process.rs" \
     --exclude-files "base/plugins/llm/src/importers/**" \
+    --exclude-files "base/plugins/mariadb/src/exporter.rs" \
+    --exclude-files "base/plugins/mariadb/src/exporter/tests.rs" \
     --exclude-files "extended/plugins/personio/src/importers/absences/importer.rs" \
     --exclude-files "extended/plugins/personio/src/importers/absences/initializable.rs" \
     --exclude-files "extended/plugins/personio/src/importers/attendances/importer.rs" \
