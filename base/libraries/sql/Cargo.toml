@@ -1,0 +1,7 @@
+[package]
+name = "rite-sql"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }

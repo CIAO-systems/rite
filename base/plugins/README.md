@@ -7,6 +7,8 @@ See the [documentation](csv/README.md)
 See the [documentation](faker/README.md)
 ## Postgres
 See the [documentation](postgres/README.md)
+## MariaDB
+See the [documentation](mariadb/README.md)
 ## REST
 See the [documentation](rest/README.md)
 ## LLM

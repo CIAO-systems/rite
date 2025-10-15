@@ -1,7 +1,9 @@
 use log::debug;
-use model::{record::Record, xml::file::load_and_substitute_from_env, Initializable};
+use model::{Initializable, record::Record, xml::file::load_and_substitute_from_env};
 use postgres::Client;
-use sql::{generate_insert_statement, generate_update_statement};
+use rite_sql::{generate_insert_statement, generate_update_statement};
+
+use crate::exporter::sql::PostgresFlavor;
 
 mod config;
 mod sql;
@@ -42,7 +44,7 @@ impl PostgresExporter {
                         "postgres plugin: {}, connection string: {}",
                         e, connection_string
                     )
-                    .into())
+                    .into());
                 }
             }
         }
@@ -113,7 +115,7 @@ fn insert(
     record: &Record,
     client: &mut Client,
 ) -> Result<u64, postgres::Error> {
-    if let Ok(statement) = generate_insert_statement(&config.table.name, record) {
+    if let Ok(statement) = generate_insert_statement::<PostgresFlavor>(&config.table.name, record) {
         let params = statement
             .params
             .iter()
@@ -130,8 +132,10 @@ fn update(
     record: &Record,
     client: &mut Client,
 ) -> Result<u64, postgres::Error> {
-    let unique_fields = config.table.get_unique_fields_as_vec();
-    if let Ok(statement) = generate_update_statement(&config.table.name, record, &unique_fields) {
+    let unique_fields = config.table.get_unique_fields_as_set();
+    if let Ok(statement) =
+        generate_update_statement::<PostgresFlavor>(&config.table.name, record, &unique_fields)
+    {
         let params = statement
             .params
             .iter()
@@ -160,7 +164,7 @@ impl Initializable for PostgresExporter {
                                         "Cannot parse contents from {}: {}",
                                         xml, e
                                     )
-                                    .into())
+                                    .into());
                                 }
                             };
                         self.postgres = Some(postgres);

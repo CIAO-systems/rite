@@ -1,0 +1,20 @@
+<rite-mariadb-export>
+    <connection 
+        host="unknown"
+        port="73"
+        database="not_existing"
+        user="nobody"
+        password="wrongpassword}"
+    />
+    <table name="test_db" uniqueFields="id">
+        <create>
+        <![CDATA[
+        CREATE TEMPORARY TABLE test_db (
+            id INT PRIMARY KEY,
+            name VARCHAR(100),
+            age INT
+        )
+        ]]>
+        </create>
+    </table>
+</rite-mariadb-export>

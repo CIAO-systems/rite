@@ -1,4 +1,6 @@
-use std::path::{Path, PathBuf};
+use std::
+    path::{Path, PathBuf}
+;
 
 use rite::processor::rite::Rite;
 
@@ -38,6 +40,10 @@ impl Drop for TemporaryChangeDirectory {
 fn test_rite_new_and_init() {
     let _tcd = TemporaryChangeDirectory::new("../../examples");
     let rite = Rite::new("data/example.xml");
+    if let Err(ref e) = rite {
+        println!("{:?}", e);
+    }
+
     assert!(rite.is_ok());
 
     match rite {

@@ -1724,13 +1724,14 @@ dependencies = [
 [[package]]
 name = "model"
 version = "0.1.0"
-source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#5904108061154fc0284f84ed5d9a63ed5762810c"
+source = "git+https://github.com/CIAO-systems/rite-lib-model.git?branch=main#b5bcd216820b89d23d669322f2308072e8fbe219"
 dependencies = [
  "chrono",
  "libloading",
  "log",
+ "rust_decimal",
  "serde",
- "serde-xml-rs 0.5.1",
+ "serde-xml-rs 0.8.1",
  "serde_json",
  "subst",
  "xml-rs",
@@ -2672,6 +2673,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "rite-sql"
+version = "0.1.0"
+dependencies = [
+ "model",
+]
+
+[[package]]
 name = "rite_common"
 version = "0.1.3"
 dependencies = [
@@ -2732,6 +2740,7 @@ dependencies = [
  "chrono",
  "model",
  "mysql",
+ "rite-sql",
  "rust_decimal",
  "serde",
  "serde-xml-rs 0.8.1",
@@ -2749,6 +2758,7 @@ dependencies = [
  "postgres",
  "postgres-types",
  "postgresql_embedded",
+ "rite-sql",
  "rust_decimal",
  "serde",
  "serde-xml-rs 0.8.1",
