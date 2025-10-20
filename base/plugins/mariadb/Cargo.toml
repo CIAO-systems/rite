@@ -12,7 +12,6 @@ name = "rite_mariadb"
 crate-type = ["dylib"]
 
 [dependencies]
-chrono = "0.4.42"
 model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
 rite-sql = { path = "../../libraries/sql" }
 
@@ -20,3 +19,4 @@ mysql = { version = "*", features = ["rust_decimal", "chrono"]}
 rust_decimal = { version = "1.38.0", features = ["macros"]}
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
+chrono = "0.4.42"

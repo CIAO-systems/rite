@@ -1,0 +1,4 @@
+<rite-sqlite-import>
+    <filename>$RITE_CONFIG_PATH/customers.db</filename>
+    <sql>select * from customers</sql>
+</rite-sqlite-import>

@@ -5,6 +5,7 @@ members = [
     "plugins/common",
     "plugins/postgres",
     "plugins/mariadb",
+    "plugins/sqlite",
     "plugins/rest",
     "plugins/faker",
     "plugins/csv",

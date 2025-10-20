@@ -1,0 +1,13 @@
+<rite-sqlite-export>
+    <filename>$RITE_CONFIG_PATH/customers_export.db</filename>
+    <table name="customers" uniqueFields="id">
+        <create>
+        <![CDATA[
+CREATE TABLE customers (
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	name TEXT(255)
+);
+        ]]>
+        </create>
+    </table>
+</rite-sqlite-export>

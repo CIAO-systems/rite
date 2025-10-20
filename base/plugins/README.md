@@ -9,6 +9,8 @@ See the [documentation](faker/README.md)
 See the [documentation](postgres/README.md)
 ## MariaDB
 See the [documentation](mariadb/README.md)
+## SQLite
+See the [documentation](sqlite/README.md)
 ## REST
 See the [documentation](rest/README.md)
 ## LLM
