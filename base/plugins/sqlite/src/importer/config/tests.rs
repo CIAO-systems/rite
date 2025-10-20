@@ -29,8 +29,8 @@ fn test_xml_file() {
 
     let xml = result.unwrap();
     let config: RiteSQLiteImport = serde_xml_rs::from_str(&xml).unwrap();
-    assert_eq!(config.filename, "/tmp/demo.db");
-    assert_eq!(config.sql, "select * from customer");
+    assert_eq!(config.filename, "$RITE_CONFIG_PATH/customers.db");
+    assert_eq!(config.sql, "select * from customers");
 }
 
 #[test]
