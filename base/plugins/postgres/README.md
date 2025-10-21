@@ -25,7 +25,7 @@ There are no named importers or exporters available, so `name` must be empty.
 ## Importer
 The importer takes an SQL SELECT statement to read records and converts them to 
 the `model::Record` that is then passed to the transformers and exporters.
-The importer does not use any key/value configuration itmes, instead it reads the configuration from an XML file given in the attribute `xml`
+The importer does not use any key/value configuration items, instead it reads the configuration from an XML file given in the attribute `xml`
 ### Example
 ```xml
 <importer plugin="postgres">
@@ -65,7 +65,7 @@ For better security, it is recommended to use an environment variable for the `p
 This element contains the SQL statement, that will be executed to get a result set, that will be converted to records for further processing.
 
 ## Exporter
-The exporter writes the transformed record to the configured table. The exporter does not use any key/value configuration itmes, instead it reads the configuration from an XML file given in the attribute `xml`
+The exporter writes the transformed record to the configured table. The exporter does not use any key/value configuration items, instead it reads the configuration from an XML file given in the attribute `xml`
 
 ### Example
 ```xml

@@ -1,0 +1,19 @@
+[package]
+name = "rite_sqlite"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "rite_sqlite"
+crate-type = ["dylib"]
+
+[dependencies]
+chrono = "0.4.42"
+model = { git = "https://github.com/CIAO-systems/rite-lib-model.git", branch = "main" }
+rite-sql = { path = "../../libraries/sql" }
+
+rusqlite = { version = "0.37", features = ["bundled", "serde_json", "chrono", "time"] }
+serde = { version = "1.0", features = ["derive"] }
+serde-xml-rs = "0.8"
+
+
