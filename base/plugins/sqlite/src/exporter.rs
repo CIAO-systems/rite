@@ -37,7 +37,7 @@ impl SQLiteExporter {
             Ok(_affected) => Ok(()),
             Err(e) => {
                 if let Some(err) = e.downcast_ref::<rusqlite::Error>() {
-                    if let rusqlite::Error::SqliteFailure(err, msg) = err {
+                    if let rusqlite::Error::SqliteFailure(err, _msg) = err {
                         if err.code == ErrorCode::ConstraintViolation {
                             // Insert failed, because record already exists
                             let _ = self.update(connection, record)?;
