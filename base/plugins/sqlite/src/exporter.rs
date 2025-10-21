@@ -5,8 +5,8 @@ use model::{
     export::Exporter,
     xml::{common::Table, file::load_and_substitute_from_env},
 };
-use rite_sql::generate_insert_statement;
-use rusqlite::{Connection, params_from_iter};
+use rite_sql::{generate_insert_statement, generate_update_statement};
+use rusqlite::{Connection, ErrorCode, params_from_iter};
 
 use crate::exporter::{config::RiteSQLiteExport, sql::SQLiteFlavor};
 
@@ -36,8 +36,16 @@ impl SQLiteExporter {
         match self.insert(connection, record) {
             Ok(_affected) => Ok(()),
             Err(e) => {
-                // when the error is a key violation, we try to update
-                println!("{e}");
+                if let Some(err) = e.downcast_ref::<rusqlite::Error>() {
+                    if let rusqlite::Error::SqliteFailure(err, msg) = err {
+                        if err.code == ErrorCode::ConstraintViolation {
+                            // Insert failed, because record already exists
+                            let _ = self.update(connection, record)?;
+                            return Ok(());
+                        }
+                    }
+                }
+
                 Err(e)
             }
         }
@@ -49,13 +57,10 @@ impl SQLiteExporter {
         record: &model::record::Record,
     ) -> Result<usize, model::BoxedError> {
         if let Some(table) = &self.table {
-            let s = generate_insert_statement::<SQLiteFlavor>(&table.name, record)?;
-            println!("{}", s.sql);
-            println!("{:?}", s.params);
+            let statement = generate_insert_statement::<SQLiteFlavor>(&table.name, record)?;
+            let params = params_from_iter(statement.params.iter());
 
-            let params = params_from_iter(s.params.iter());
-
-            let r = connection.execute(&s.sql, params)?;
+            let r = connection.execute(&statement.sql, params)?;
             return Ok(r);
         }
 
@@ -64,9 +69,20 @@ impl SQLiteExporter {
 
     fn update(
         &self,
-        _connection: &Connection,
-        _record: &model::record::Record,
+        connection: &Connection,
+        record: &model::record::Record,
     ) -> Result<usize, model::BoxedError> {
+        if let Some(table) = &self.table {
+            let statement = generate_update_statement::<SQLiteFlavor>(
+                &table.name,
+                record,
+                &table.get_unique_fields_as_set(),
+            )?;
+            let params = params_from_iter(statement.params.iter());
+
+            let r = connection.execute(&statement.sql, params)?;
+            return Ok(r);
+        }
         Ok(0)
     }
 }
@@ -119,7 +135,6 @@ mod tests {
 
     #[test]
     fn test_export() {
-        // Arrange
         let _ = std::fs::remove_file("../../data/test/sqlite/customers_export.db");
         let mut exporter = SQLiteExporter::new();
         let config = Configuration::with_xml("../../data/test/sqlite/export-config.xml");
@@ -131,12 +146,21 @@ mod tests {
         add_field(fields, "id", Value::I32(1));
         add_field(fields, "name", Value::String("Exported customer".into()));
 
-        // Act
         let result = exporter.init(Some(config));
         assert!(result.is_ok());
 
+        // Test INSERT
         let result = exporter.write(&record);
-        // Assert
+        println!("{:?}", result);
+        assert!(result.is_ok());
+
+        // Test UPDATE
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        add_field(fields, "id", Value::I32(1));
+        add_field(fields, "name", Value::String("Updated customer".into()));
+
+        let result = exporter.write(&record);
         println!("{:?}", result);
         assert!(result.is_ok());
     }
