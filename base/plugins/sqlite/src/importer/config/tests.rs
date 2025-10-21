@@ -20,16 +20,16 @@ fn test_xml() {
 
 #[test]
 fn test_xml_file() {
-    let result = load_and_substitute_from_env(
-        "../../data/test/sqlite/import-config.xml",
-        &HashMap::new(),
-    );
+    unsafe { std::env::set_var("RITE_CONFIG_PATH", "../../data/test/sqlite") };
+
+    let result =
+        load_and_substitute_from_env("../../data/test/sqlite/import-config.xml", &HashMap::new());
 
     assert!(result.is_ok());
 
     let xml = result.unwrap();
     let config: RiteSQLiteImport = serde_xml_rs::from_str(&xml).unwrap();
-    assert_eq!(config.filename, "$RITE_CONFIG_PATH/customers.db");
+    assert_eq!(config.filename, "../../data/test/sqlite/customers.db");
     assert_eq!(config.sql, "select * from customers");
 }
 

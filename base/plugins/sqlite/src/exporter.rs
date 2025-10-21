@@ -1,14 +1,21 @@
 use std::collections::HashMap;
 
-use model::{Initializable, export::Exporter, xml::file::load_and_substitute_from_env};
-use rusqlite::Connection;
+use model::{
+    Initializable,
+    export::Exporter,
+    xml::{common::Table, file::load_and_substitute_from_env},
+};
+use rite_sql::generate_insert_statement;
+use rusqlite::{Connection, params_from_iter};
 
-use crate::exporter::config::RiteSQLiteExport;
+use crate::exporter::{config::RiteSQLiteExport, sql::SQLiteFlavor};
 
 mod config;
+mod sql;
 
 pub struct SQLiteExporter {
     connection: Option<Connection>,
+    table: Option<Table>,
     created: bool,
 }
 
@@ -17,7 +24,50 @@ impl SQLiteExporter {
         SQLiteExporter {
             connection: None,
             created: false,
+            table: None,
         }
+    }
+
+    fn insert_or_update(
+        &self,
+        connection: &Connection,
+        record: &model::record::Record,
+    ) -> Result<(), model::BoxedError> {
+        match self.insert(connection, record) {
+            Ok(_affected) => Ok(()),
+            Err(e) => {
+                // when the error is a key violation, we try to update
+                println!("{e}");
+                Err(e)
+            }
+        }
+    }
+
+    fn insert(
+        &self,
+        connection: &Connection,
+        record: &model::record::Record,
+    ) -> Result<usize, model::BoxedError> {
+        if let Some(table) = &self.table {
+            let s = generate_insert_statement::<SQLiteFlavor>(&table.name, record)?;
+            println!("{}", s.sql);
+            println!("{:?}", s.params);
+
+            let params = params_from_iter(s.params.iter());
+
+            let r = connection.execute(&s.sql, params)?;
+            return Ok(r);
+        }
+
+        Ok(0)
+    }
+
+    fn update(
+        &self,
+        _connection: &Connection,
+        _record: &model::record::Record,
+    ) -> Result<usize, model::BoxedError> {
+        Ok(0)
     }
 }
 
@@ -34,7 +84,7 @@ impl Initializable for SQLiteExporter {
                 let connection = Connection::open(sqlite_config.filename)?;
 
                 if !self.created
-                    && let Some(create) = sqlite_config.table.create
+                    && let Some(ref create) = sqlite_config.table.create
                 {
                     // Create table
                     connection.execute(&create, [])?;
@@ -42,6 +92,7 @@ impl Initializable for SQLiteExporter {
                 }
 
                 self.connection = Some(connection);
+                self.table = Some(sqlite_config.table);
             }
         }
         Ok(())
@@ -51,53 +102,42 @@ impl Initializable for SQLiteExporter {
 impl Exporter for SQLiteExporter {
     fn write(&mut self, record: &model::record::Record) -> Result<(), model::BoxedError> {
         if let Some(connection) = &self.connection {
-            insert_or_update(connection, record)?;
+            self.insert_or_update(connection, record)?;
         }
         Ok(())
     }
 }
 
-fn insert_or_update(
-    connection: &Connection,
-    record: &model::record::Record,
-) -> Result<(), model::BoxedError> {
-    match insert(connection, record) {
-        Ok(_affected) => Ok(()),
-        Err(e) => {
-            // when the error is a key violation, we try to update
-            println!("{e}");
-            Err(e)
-        }
-    }
-}
-
-fn insert(
-    connection: &Connection,
-    record: &model::record::Record,
-) -> Result<usize, model::BoxedError> {
-    Ok(0)
-}
-
-fn update(
-    connection: &Connection,
-    record: &model::record::Record,
-) -> Result<usize, model::BoxedError> {
-    Ok(0)
-}
-
 #[cfg(test)]
 mod tests {
-    use model::{Initializable, xml::config::Configuration};
+    use model::{
+        Initializable, export::Exporter, field::add_field, record::Record, value::Value,
+        xml::config::Configuration,
+    };
 
     use crate::exporter::SQLiteExporter;
 
     #[test]
     fn test_export() {
+        // Arrange
+        let _ = std::fs::remove_file("../../data/test/sqlite/customers_export.db");
         let mut exporter = SQLiteExporter::new();
         let config = Configuration::with_xml("../../data/test/sqlite/export-config.xml");
 
-        unsafe { std::env::set_var("RITE_CONFIG_PAT", "../../data/test/sqlite") };
+        unsafe { std::env::set_var("RITE_CONFIG_PATH", "../../data/test/sqlite") };
+
+        let mut record = Record::new();
+        let fields = record.fields_as_mut();
+        add_field(fields, "id", Value::I32(1));
+        add_field(fields, "name", Value::String("Exported customer".into()));
+
+        // Act
         let result = exporter.init(Some(config));
+        assert!(result.is_ok());
+
+        let result = exporter.write(&record);
+        // Assert
         println!("{:?}", result);
+        assert!(result.is_ok());
     }
 }
