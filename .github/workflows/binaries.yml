@@ -1,0 +1,126 @@
+name: Binaries
+on:
+    workflow_dispatch:
+    push:
+        branches: [ "main" ] 
+    pull_request:
+        branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_targets:
+    name: Build ${{ matrix.target.os }}
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      matrix:
+        target:
+          # Linux
+          - name: linux-x64
+            target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact_ext: tar.gz
+            bin_name: rite
+          # Windows
+          - name: windows-x64
+            target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_ext: zip
+            bin_name: rite
+          # macOS
+          # - name: macos
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.ORG_GITHUB_PAT }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: ${{ matrix.target.target }}
+          components: rustfmt, clippy
+          targets: ${{ matrix.target.target }}
+      
+      - name: Install musl-tools for Linux
+        if: matrix.target.target == 'x86_64-unknown-linux-musl'
+        run: sudo apt update && sudo apt install -y musl-tools
+
+      - name: Build project
+        run: cargo build --release --target ${{ matrix.target.target }}
+
+      - name: Determine the artifact name and version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create bundle directory
+        id: create_bundle_dir
+        run: |
+          BUNDLE_DIR="${{ github.event.repository.name }}-${{ env.VERSION }}-${{ matrix.target.target }}"
+          mkdir $BUNDLE_DIR
+          echo "BUNDLE_DIR=$BUNDLE_DIR" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Copy Executable and Libraries
+        run: |
+          BIN_PATH="target/${{ matrix.target.target }}/release"
+          # Copy the executable
+          cp $BIN_PATH/${{ matrix.target.bin_name }} ${{ env.BUNDLE_DIR }}/
+          # Copy all dynamic libraires (rite_*) 
+          cp $BIN_PATH/rite_* ${{ env.BUNDLE_DIR }}/
+        shell: bash
+
+      - name: Create bundle (Linux)
+        if: matrix.target.os == "ubuntu-latest"
+        run: tar -czf ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }} ${{ env.BUNDLE_DIR }}
+        shell: bash
+
+      - name: Create bundle (Windows)
+        if: matrix.target.os == "windows-latest"
+        run: Compress-Archive -Path ${{ env.BUNDLE_DIR }} -DestinationPath ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }}
+        shell: powershell
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }}
+          path: ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }}
+
+  create_release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    needs: build_targets
+    if: success() 
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Determine the tag name and version
+      - name: Get Version
+        id: get_version
+        run: echo "TAG_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      # Create the GitHub Release
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          files: artifacts/*/* # Finds all compressed files in subdirectories of 'artifacts'
+          body: |
+            # Release ${{ env.TAG_NAME }}
+            
+            Multi-platform binaries compiled with Rust.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+
