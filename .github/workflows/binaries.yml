@@ -18,7 +18,7 @@ jobs:
         target:
           # Linux
           - name: linux-x64
-            target: x86_64-unknown-linux-musl
+            target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             artifact_ext: tar.gz
             bin_name: rite
@@ -45,10 +45,6 @@ jobs:
           components: rustfmt, clippy
           targets: ${{ matrix.target.target }}
       
-      - name: Install musl-tools for Linux
-        if: matrix.target.target == 'x86_64-unknown-linux-musl'
-        run: sudo apt update && sudo apt install -y musl-tools
-
       - name: Build project
         run: cargo build --release --target ${{ matrix.target.target }}
 
