@@ -75,12 +75,12 @@ jobs:
         shell: bash
 
       - name: Create bundle (Linux)
-        if: matrix.target.os == "ubuntu-latest"
+        if: matrix.target.os == 'ubuntu-latest'
         run: tar -czf ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }} ${{ env.BUNDLE_DIR }}
         shell: bash
 
       - name: Create bundle (Windows)
-        if: matrix.target.os == "windows-latest"
+        if: matrix.target.os == 'windows-latest'
         run: Compress-Archive -Path ${{ env.BUNDLE_DIR }} -DestinationPath ${{ env.BUNDLE_DIR }}.${{ matrix.target.artifact_ext }}
         shell: powershell
 
@@ -98,7 +98,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       # Determine the tag name and version
       - name: Get Version
         id: get_version
