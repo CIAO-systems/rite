@@ -63,7 +63,7 @@ jobs:
 
       - name: Copy Executable and Libraries
         run: |
-          BIN_PATH="target/release"
+          BIN_PATH="target/${{ matrix.target.target }}/release"
           # Copy the executable
           cp $BIN_PATH/${{ matrix.target.bin_name }} ${{ env.BUNDLE_DIR }}/
           # Copy all dynamic libraries 
