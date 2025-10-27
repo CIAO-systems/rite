@@ -67,8 +67,12 @@ jobs:
           # Copy the executable
           cp $BIN_PATH/${{ matrix.target.bin_name }} ${{ env.BUNDLE_DIR }}/
           # Copy all dynamic libraries 
-          cp $BIN_PATH/librite_*.so ${{ env.BUNDLE_DIR }}/
-          cp $BIN_PATH/rite_*.dll ${{ env.BUNDLE_DIR }}/
+          if [[if [[ "${{ matrix.target.os }}" == "ubuntu-latest" ]]; then
+            cp $BIN_PATH/librite_*.so ${{ env.BUNDLE_DIR }}/
+          fi
+          if [[ "${{ matrix.target.os }}" == "windows-latest" ]]; then
+            cp $BIN_PATH/rite_*.dll ${{ env.BUNDLE_DIR }}/
+          fi
         shell: bash
 
       - name: Create bundle (Linux)
