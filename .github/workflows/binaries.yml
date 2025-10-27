@@ -67,7 +67,7 @@ jobs:
           # Copy the executable
           cp $BIN_PATH/${{ matrix.target.bin_name }} ${{ env.BUNDLE_DIR }}/
           # Copy all dynamic libraries 
-          if [[if [[ "${{ matrix.target.os }}" == "ubuntu-latest" ]]; then
+          if [[ "${{ matrix.target.os }}" == "ubuntu-latest" ]]; then
             cp $BIN_PATH/librite_*.so ${{ env.BUNDLE_DIR }}/
           fi
           if [[ "${{ matrix.target.os }}" == "windows-latest" ]]; then
@@ -93,9 +93,11 @@ jobs:
 
   create_release:
     name: Create GitHub release
-    runs-on: ubuntu-latest
-    needs: build_targets
     if: success() 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: build_targets
 
     steps:
       - uses: actions/checkout@v4
